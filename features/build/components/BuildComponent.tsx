@@ -354,8 +354,7 @@ export const BuildComponent = ({
 
   function setAllMessages(
     msgObjects: any[],
-    label?: string,
-    extra?: { conditions?: ExecutionConditions },
+    extra?: { conditions?: ExecutionConditions, configuration?: ExecutionConfiguration },
     templateLabel?: string
   ) {
     try {
@@ -365,7 +364,7 @@ export const BuildComponent = ({
         msg = msg.replaceAll('into', prefix);
         return msg;
       });
-
+      console.log('setAllMessages extra:', extra);
       // Always ensure conditions is an object, even if empty
       const conditions = extra?.conditions || {
         feedbackLoops: [],
@@ -377,15 +376,25 @@ export const BuildComponent = ({
         useAndForComparisons: false
       };
 
+      console.log('setAllMessages conditions:', conditions);
+
+      const configuration: ExecutionConfiguration = extra?.configuration || {
+        saveResponses: true,
+        updatingDisabled: false,
+        stopOnSuccess: false,
+        stopOnFailure: false,
+        stopOnTimeout: false,
+        walletFallback: true,
+      };
+      console.log('setAllMessages configuration:', configuration);
       let updatedFlowInput = {
         ...flowInput,
         msgs: processedMsgs,
-        conditions
+        conditions,
+        configuration
       };
 
-      if (label) {
-        updatedFlowInput.label = label;
-      }
+      console.log('setAllMessages updatedFlowInput:', updatedFlowInput);
       // Set selected template label if provided
       if (templateLabel !== undefined) {
         updatedFlowInput.label = templateLabel;

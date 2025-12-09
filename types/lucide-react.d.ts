@@ -225,4 +225,5 @@ declare module 'lucide-react' {
   export const PieChart: FC<IconProps>;
   export const LineChart: FC<IconProps>;
   export const Flame: FC<IconProps>;
+  export const Sparkles: FC<IconProps>;
 }

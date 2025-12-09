@@ -47,6 +47,44 @@ export const executeSubmitFlow = async ({
   let interval = flowInput.interval + 'ms'
   let msgs: any[] = []
 
+  // Adjust condition operands for TWAP accumulators based on interval seconds
+  try {
+    const intervalSeconds = flowInput.interval
+      ? Math.floor(flowInput.interval / 1000)
+      : 0
+    if (
+      intervalSeconds > 0 &&
+      flowInput.conditions &&
+      Array.isArray((flowInput.conditions as any).comparisons)
+    ) {
+      const comps: any[] = (flowInput.conditions as any).comparisons
+      for (const c of comps) {
+        if (
+          (c?.responseKey ===
+            'osmosistwapv1beta1.TwapRecord.P0ArithmeticTwapAccumulator' &&
+            c?.valueType ===
+              'osmosistwapv1beta1.TwapRecord.P0ArithmeticTwapAccumulator') ||
+          (c?.responseKey ===
+            'osmosistwapv1beta1.TwapRecord.P1ArithmeticTwapAccumulator' &&
+            c?.valueType ===
+              'osmosistwapv1beta1.TwapRecord.P1ArithmeticTwapAccumulator')
+        ) {
+          const opStr: string = c.operand?.toString?.() ?? ''
+          const opNum = parseFloat(opStr)
+          if (!Number.isNaN(opNum)) {
+            const multiplied = opNum * intervalSeconds
+            c.operand = multiplied.toString()
+          }
+        }
+      }
+    }
+  } catch (e) {
+    console.warn(
+      'Failed to adjust TWAP accumulator operands by interval seconds',
+      e
+    )
+  }
+
   // Process messages and replace any placeholder addresses
   const inputMsgs = Array.isArray(flowInput.msgs)
     ? flowInput.msgs
@@ -67,19 +105,19 @@ export const executeSubmitFlow = async ({
         return {
           $typeUrl: '/cosmos.authz.v1beta1.MsgExec',
           typeUrl: '/cosmos.authz.v1beta1.MsgExec',
-          msgs: [msg], 
-        grantee: flowInput.icaAddressForAuthZ,
-      }
-    } else {
-      const execMsg = { 
-        typeUrl: '/cosmos.authz.v1beta1.MsgExec',
-        value: {
-        grantee: flowInput.icaAddressForAuthZ,
-        msgs: [msg],
+          msgs: [msg],
+          grantee: flowInput.icaAddressForAuthZ,
         }
+      } else {
+        const execMsg = {
+          typeUrl: '/cosmos.authz.v1beta1.MsgExec',
+          value: {
+            grantee: flowInput.icaAddressForAuthZ,
+            msgs: [msg],
+          },
+        }
+        return client.registry.encodeAsAny(execMsg)
       }
-      return client.registry.encodeAsAny(execMsg)
-    }
     })
   }
 

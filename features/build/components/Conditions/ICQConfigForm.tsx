@@ -170,23 +170,6 @@ export const ICQConfigForm = ({ icqConfig, onChange, setDisabled }: ICQConfigPro
     }
   };
 
-  const createOsmosisTwapQueryKey = (poolId: number, denom1: string, denom2: string): string => {
-    try {
-      // Sort denominations
-      if (denom1 > denom2) {
-        [denom1, denom2] = [denom2, denom1];
-      }
-
-      const poolIdBz = poolId.toString().padStart(20, "0");
-      const prefix = "recent_twap|";
-      const queryKey = `${prefix}${poolIdBz}|${denom1}|${denom2}`;
-
-      return btoa(queryKey);
-    } catch (error) {
-      console.error("Error generating Osmosis TWAP query key: ", error);
-      return "";
-    }
-  };
   const WASM_STORE_PREFIX = Uint8Array.from([0x03]);
 
   const createCosmwasmItemQueryKey = (contractAddr: string, itemKey: string): string => {
@@ -205,52 +188,52 @@ export const ICQConfigForm = ({ icqConfig, onChange, setDisabled }: ICQConfigPro
 
 
 
-function createCosmwasmMapQueryKey(
-  contractAddr: string,
-  namespace: string,
-  key: number | bigint
-): string {
-  const { data: addrBytes } = fromBech32(contractAddr);
-  const mapKey = createMapKey(namespace, key);
+  function createCosmwasmMapQueryKey(
+    contractAddr: string,
+    namespace: string,
+    key: number | bigint
+  ): string {
+    const { data: addrBytes } = fromBech32(contractAddr);
+    const mapKey = createMapKey(namespace, key);
 
-  const fullKey = new Uint8Array(WASM_STORE_PREFIX.length + addrBytes.length + mapKey.length);
-  fullKey.set(WASM_STORE_PREFIX, 0);
-  fullKey.set(addrBytes, WASM_STORE_PREFIX.length);
-  fullKey.set(mapKey, WASM_STORE_PREFIX.length + addrBytes.length);
+    const fullKey = new Uint8Array(WASM_STORE_PREFIX.length + addrBytes.length + mapKey.length);
+    fullKey.set(WASM_STORE_PREFIX, 0);
+    fullKey.set(addrBytes, WASM_STORE_PREFIX.length);
+    fullKey.set(mapKey, WASM_STORE_PREFIX.length + addrBytes.length);
 
-  return addBase64Padding(Buffer.from(fullKey).toString("base64"));
-}
-
-
-
-function encodeU64BE(value: number | bigint): Uint8Array {
-  const buf = Buffer.alloc(8);
-  buf.writeBigUInt64BE(BigInt(value));
-  return new Uint8Array(buf);
-}
-
-function createMapKey(namespace: string, key: number | bigint): Uint8Array {
-  const nsBytes = toUtf8(namespace);
-  if (nsBytes.length > 255) throw new Error("Namespace too long");
-
-  // 0x00 + len + ns + u64 BE
-  const out = new Uint8Array(1 + 1 + nsBytes.length + 8);
-  out[0] = 0x00; // hardcoded prefix used by cw-storage-plus
-  out[1] = nsBytes.length;
-  out.set(nsBytes, 2);
-  out.set(encodeU64BE(key), 2 + nsBytes.length);
-
-  return out
-}
-
-function addBase64Padding(str: string): string {
-  while (str.length % 4 !== 0) {
-    str += "=";
+    return addBase64Padding(Buffer.from(fullKey).toString("base64"));
   }
-  return str;
-}
 
-  
+
+
+  function encodeU64BE(value: number | bigint): Uint8Array {
+    const buf = Buffer.alloc(8);
+    buf.writeBigUInt64BE(BigInt(value));
+    return new Uint8Array(buf);
+  }
+
+  function createMapKey(namespace: string, key: number | bigint): Uint8Array {
+    const nsBytes = toUtf8(namespace);
+    if (nsBytes.length > 255) throw new Error("Namespace too long");
+
+    // 0x00 + len + ns + u64 BE
+    const out = new Uint8Array(1 + 1 + nsBytes.length + 8);
+    out[0] = 0x00; // hardcoded prefix used by cw-storage-plus
+    out[1] = nsBytes.length;
+    out.set(nsBytes, 2);
+    out.set(encodeU64BE(key), 2 + nsBytes.length);
+
+    return out
+  }
+
+  function addBase64Padding(str: string): string {
+    while (str.length % 4 !== 0) {
+      str += "=";
+    }
+    return str;
+  }
+
+
   return (
     <>
       <Divider offsetTop="$10" offsetBottom="$5" />
@@ -345,4 +328,23 @@ const TimeoutPolicyLabels: { [key in TimeoutPolicy]: string } = {
   [TimeoutPolicy.EXECUTE_QUERY_CALLBACK]: "Execute Flow",
   [TimeoutPolicy.UNRECOGNIZED]: "",
   [TimeoutPolicy.RETRY_QUERY_REQUEST]: "Retry Once",
+};
+
+
+export const createOsmosisTwapQueryKey = (poolId: number, denom1: string, denom2: string): string => {
+  try {
+    // Sort denominations
+    if (denom1 > denom2) {
+      [denom1, denom2] = [denom2, denom1];
+    }
+
+    const poolIdBz = poolId.toString().padStart(20, "0");
+    const prefix = "recent_twap|";
+    const queryKey = `${prefix}${poolIdBz}|${denom1}|${denom2}`;
+
+    return btoa(queryKey);
+  } catch (error) {
+    console.error("Error generating Osmosis TWAP query key: ", error);
+    return "";
+  }
 };
