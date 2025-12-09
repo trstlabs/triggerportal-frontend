@@ -26,6 +26,9 @@ export function TemplateList({
   const isDark = themeController.theme.name === 'dark'
   const applicable = TEMPLATES.filter(t => (!filterIds || filterIds.includes(t.id)) && t.assets.includes(asset) && t.availability.state !== 'hidden')
 
+  // Track which chip's menu is currently open (by template ID)
+  const [openMenuId, setOpenMenuId] = React.useState<string | null>(null)
+
   const selectedTemplate = applicable.find(t => {
     const label = typeof t.ui.label === 'function' ? (t.ui.label as any)(asset) : t.ui.label
     return label === selectedTemplateLabel
@@ -183,6 +186,15 @@ export function TemplateList({
             }}
             menuItems={templateMenu}
             onMenuSelect={templateMenu ? handleMenuSelect : undefined}
+            menuOpen={openMenuId === t.id}
+            onMenuOpenChange={(open) => {
+              if (open) {
+                setOpenMenuId(t.id);
+              } else if (openMenuId === t.id) {
+                // Only close if this chip's menu is currently open
+                setOpenMenuId(null);
+              }
+            }}
           />
         )
       })}

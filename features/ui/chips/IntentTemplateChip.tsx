@@ -2,13 +2,56 @@ import React, { useState } from 'react'
 import { Inline, useControlTheme } from 'junoblocks'
 import { ChevronDown, Clock } from 'lucide-react'
 
-export function IntentTemplateChip({ label, iconUrl, gradient, onClick, soon = false, disabled = false, description, autoParse = false, selected = false, menuItems, onMenuSelect }: { label: string; iconUrl?: string; gradient: string; onClick?: () => void; soon?: boolean; disabled?: boolean; description?: string; autoParse?: boolean; selected?: boolean; menuItems?: Array<{ id: string; label: string }>; onMenuSelect?: (id: string) => void }) {
+export function IntentTemplateChip({
+  label,
+  iconUrl,
+  gradient,
+  onClick,
+  soon = false,
+  disabled = false,
+  description,
+  autoParse = false,
+  selected = false,
+  menuItems,
+  onMenuSelect,
+  menuOpen,
+  onMenuOpenChange
+}: {
+  label: string;
+  iconUrl?: string;
+  gradient: string;
+  onClick?: () => void;
+  soon?: boolean;
+  disabled?: boolean;
+  description?: string;
+  autoParse?: boolean;
+  selected?: boolean;
+  menuItems?: Array<{ id: string; label: string }>;
+  onMenuSelect?: (id: string) => void;
+  menuOpen?: boolean;
+  onMenuOpenChange?: (open: boolean) => void;
+}) {
   const themeController = useControlTheme();
   const isDark = themeController.theme.name === 'dark';
-  const [openMenu, setOpenMenu] = useState(false);
+
+  // Use internal state only if not controlled by parent
+  const [internalOpenMenu, setInternalOpenMenu] = useState(false);
+  const openMenu = menuOpen !== undefined ? menuOpen : internalOpenMenu;
+  const setOpenMenu = onMenuOpenChange !== undefined
+    ? onMenuOpenChange
+    : setInternalOpenMenu;
+
   const [closeTimeout, setCloseTimeout] = useState<NodeJS.Timeout | null>(null);
 
   const [selectedId, setSelectedId] = useState<string | null>(null);
+
+  // Clear any pending close timeout when menu is opened
+  React.useEffect(() => {
+    if (openMenu && closeTimeout) {
+      clearTimeout(closeTimeout);
+      setCloseTimeout(null);
+    }
+  }, [openMenu, closeTimeout]);
 
 
   const darkGradient = gradient.includes('#')
@@ -43,7 +86,7 @@ export function IntentTemplateChip({ label, iconUrl, gradient, onClick, soon = f
         opacity: soon || disabled ? 0.5 : 1,
         pointerEvents: soon ? 'none' : 'auto',
         filter: disabled ? 'grayscale(1)' : 'none',
-        zIndex: (menuItems && (openMenu || selected)) ? 100 : 20
+        zIndex: (menuItems && openMenu) ? 100 : 20
       }}
       title={description || undefined}
       onClick={() => { if (!menuItems && onClick) { onClick(); } }}
@@ -55,6 +98,7 @@ export function IntentTemplateChip({ label, iconUrl, gradient, onClick, soon = f
         }
 
         if (menuItems) {
+          // Immediately open this menu (parent will close others)
           setOpenMenu(true);
         } else {
           (e.currentTarget as HTMLDivElement).style.transform = 'scale(1.05)'
@@ -172,7 +216,7 @@ export function IntentTemplateChip({ label, iconUrl, gradient, onClick, soon = f
           )}
         </span>
       </Inline>
-      {(menuItems && menuItems.length > 0 && (openMenu || selected)) && (
+      {(menuItems && menuItems.length > 0 && openMenu) && (
         <div
           style={{
             position: 'absolute',
