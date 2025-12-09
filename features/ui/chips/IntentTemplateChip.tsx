@@ -67,8 +67,8 @@ export function IntentTemplateChip({ label, iconUrl, gradient, onClick, soon = f
         if (menuItems) {
           // Set a timeout before closing the menu
           const timeout = setTimeout(() => {
-            if (!selected) setOpenMenu(false);
-          }, 200); // 200ms delay before closing
+            setOpenMenu(false);
+          }, 150); // 150ms delay before closing
           setCloseTimeout(timeout);
         } else {
           (e.currentTarget as HTMLDivElement).style.transform = 'scale(1)'
@@ -76,9 +76,6 @@ export function IntentTemplateChip({ label, iconUrl, gradient, onClick, soon = f
               ? '0 2px 16px 0 rgba(30,40,70,0.18)'
               : '0 2px 12px 0 rgba(80,80,200,0.10)'
         }
-        (e.currentTarget as HTMLDivElement).style.boxShadow = isDark
-          ? '0 2px 16px 0 rgba(30,40,70,0.18)'
-          : '0 2px 12px 0 rgba(80,80,200,0.10)';
       }}
     >
       {soon && (
@@ -201,8 +198,8 @@ export function IntentTemplateChip({ label, iconUrl, gradient, onClick, soon = f
           onMouseLeave={() => {
             // Set a timeout before closing the menu
             const timeout = setTimeout(() => {
-              if (!selected) setOpenMenu(false);
-            }, 200); // 200ms delay before closing
+              setOpenMenu(false);
+            }, 150); // 150ms delay before closing
             setCloseTimeout(timeout);
           }}
         >

@@ -529,6 +529,8 @@ export const TEMPLATES: IntentTemplate[] = [
     assets: ['OSMO'],
     ui: {
       label: 'Spot vs TWAP arbitrage BTC (beta)',
+      description:
+        'Swaps 1 USDC into BTC every time when the spot price is lower than the time-weighted average price.',
       gradient:
         'linear-gradient(90deg,rgb(67, 142, 233) 50%,rgba(240, 190, 97, 0.6) 100%)',
       autoParse: true,
@@ -584,6 +586,8 @@ export const TEMPLATES: IntentTemplate[] = [
     assets: ['OSMO'],
     ui: {
       label: 'Spot vs TWAP arbitrage ATOM (beta)',
+      description:
+        'Swaps 1 USDC into ATOM every time when the spot price is lower than the time-weighted average price.',
       gradient:
         'linear-gradient(90deg,rgb(67, 142, 233) 50%,rgba(240, 190, 97, 0.6) 100%)',
       autoParse: true,
