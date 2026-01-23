@@ -1,4 +1,4 @@
-import { useQuery } from 'react-query'
+import { useQuery } from '@tanstack/react-query'
 
 import {
   /*   DEFAULT_REFETCH_INTERVAL, */
@@ -8,15 +8,15 @@ import { useIntentoRpcClient } from './useRPCClient'
 import { QueryFlowsResponse } from 'intentojs/dist/codegen/intento/intent/v1/query'
 import { GlobalDecoderRegistry } from 'intentojs'
 import { PageRequest } from 'intentojs/dist/codegen/cosmos/base/query/v1beta1/pagination'
-import { useRecoilValue } from 'recoil'
+import { useAtomValue } from 'jotai'
 import { walletState } from '../state/atoms/walletAtoms'
 
 export const useFlows = (limit: number, key: any) => {
   const client = useIntentoRpcClient()
 
-  const { data, isLoading } = useQuery(
-    `useFlows/${key}`,
-    async () => {
+  const { data, isPending: isLoading } = useQuery({
+    queryKey: [`useFlows/${key}`],
+    queryFn: async () => {
       const pageRequest = PageRequest.fromPartial({
         limit: BigInt(limit),
         key,
@@ -45,7 +45,7 @@ export const useFlows = (limit: number, key: any) => {
             const wrappedMsg = GlobalDecoderRegistry.wrapAny(msg)
             wrappedMsg.typeUrl =
               wrappedMsg.typeUrl ==
-              '/cosmos.authz.v1beta1.QueryGranteeGrantsRequest'
+                '/cosmos.authz.v1beta1.QueryGranteeGrantsRequest'
                 ? '/cosmos.authz.v1beta1.MsgExec'
                 : wrappedMsg.typeUrl
 
@@ -60,15 +60,13 @@ export const useFlows = (limit: number, key: any) => {
 
       return { flows: flows, pagination: resp.pagination, total: resp.pagination.total }
     },
-    {
-      enabled: Boolean(client && client.intento),
-      refetchOnMount: false,
-      staleTime: 60000, // Cache data for 60 seconds
-      cacheTime: 300000, // Cache data for 5 minutes
-      //refetchInterval: DEFAULT_LONG_REFETCH_INTERVAL,
-      //refetchIntervalInBackground: true,
-    }
-  )
+    enabled: Boolean(client && client.intento),
+    refetchOnMount: false,
+    staleTime: 60000, // Cache data for 60 seconds
+    gcTime: 300000, // Cache data for 5 minutes
+    //refetchInterval: DEFAULT_LONG_REFETCH_INTERVAL,
+    //refetchIntervalInBackground: true,
+  })
 
   return [data, isLoading] as const
 }
@@ -76,11 +74,11 @@ export const useFlows = (limit: number, key: any) => {
 export const useFlowsByOwner = (limit: number, key: any, address?: string) => {
   const client = useIntentoRpcClient()
   // Always call hooks unconditionally
-  const wallet = useRecoilValue(walletState)
+  const wallet = useAtomValue(walletState)
   const owner = address ?? wallet?.address
-  const { data, isLoading } = useQuery(
-    ['useFlowsByOwner', owner, limit, key],
-    async () => {
+  const { data, isPending: isLoading } = useQuery({
+    queryKey: ['useFlowsByOwner', owner, limit, key],
+    queryFn: async () => {
       const pageRequest = PageRequest.fromPartial({
         limit: BigInt(limit),
         key,
@@ -103,7 +101,7 @@ export const useFlowsByOwner = (limit: number, key: any, address?: string) => {
             const wrappedMsg = GlobalDecoderRegistry.wrapAny(msg)
             wrappedMsg.typeUrl =
               wrappedMsg.typeUrl ==
-              '/cosmos.authz.v1beta1.QueryGranteeGrantsRequest'
+                '/cosmos.authz.v1beta1.QueryGranteeGrantsRequest'
                 ? '/cosmos.authz.v1beta1.MsgExec'
                 : wrappedMsg.typeUrl
             return {
@@ -117,22 +115,20 @@ export const useFlowsByOwner = (limit: number, key: any, address?: string) => {
 
       return { flows: flows, pagination: resp.pagination, total: resp.pagination.total }
     },
-    {
-      enabled: Boolean(client && client.intento && owner),
-      refetchOnMount: 'always',
-      staleTime: 10000,
-      cacheTime: 60000,
-    }
-  )
+    enabled: Boolean(client && client.intento && owner),
+    refetchOnMount: 'always',
+    staleTime: 10000,
+    gcTime: 60000,
+  })
 
   return [data, isLoading] as const
 }
 
 export const useFlow = (id) => {
   const client = useIntentoRpcClient()
-  const { data, isLoading } = useQuery(
-    `flowId/${id}`,
-    async () => {
+  const { data, isPending: isLoading } = useQuery({
+    queryKey: [`flowId/${id}`],
+    queryFn: async () => {
       if (!id || !client || !client.intento) {
         throw new Error('Invalid ID or client not available')
       }
@@ -143,7 +139,7 @@ export const useFlow = (id) => {
           const wrappedMsg = GlobalDecoderRegistry.wrapAny(msg)
           wrappedMsg.typeUrl =
             wrappedMsg.typeUrl ==
-            '/cosmos.authz.v1beta1.QueryGranteeGrantsRequest'
+              '/cosmos.authz.v1beta1.QueryGranteeGrantsRequest'
               ? '/cosmos.authz.v1beta1.MsgExec'
               : wrappedMsg.typeUrl
           return {
@@ -154,21 +150,19 @@ export const useFlow = (id) => {
         }),
       }
     },
-    {
-      enabled: !!id && !!client?.intento,
-      refetchOnMount: 'always',
-      refetchInterval: DEFAULT_LONG_REFETCH_INTERVAL,
-    }
-  )
+    enabled: !!id && !!client?.intento,
+    refetchOnMount: 'always',
+    refetchInterval: DEFAULT_LONG_REFETCH_INTERVAL,
+  })
 
   return [data, isLoading] as const
 }
 
 export const useFlowHistory = (id, limit: number, key: Uint8Array) => {
   const client = useIntentoRpcClient()
-  const { data, isLoading } = useQuery(
-    `flowHistory/${id}/${key}`,
-    async () => {
+  const { data, isPending: isLoading } = useQuery({
+    queryKey: [`flowHistory/${id}/${key}`],
+    queryFn: async () => {
       if (!id || !client || !client.intento) {
         throw new Error('Invalid ID or client not available')
       }
@@ -186,13 +180,11 @@ export const useFlowHistory = (id, limit: number, key: Uint8Array) => {
       })
       return flowHistoryResponse
     },
-    {
-      enabled: !!id && !!client?.intento,
-      refetchOnMount: false, // Prevent refetch on remount
-      staleTime: 60000, // Cache data for 60 seconds
-      cacheTime: 300000, // Cache data for 5 minutes
-    }
-  )
+    enabled: !!id && !!client?.intento,
+    refetchOnMount: false, // Prevent refetch on remount
+    staleTime: 60000, // Cache data for 60 seconds
+    gcTime: 300000, // Cache data for 5 minutes
+  })
 
   return [data, isLoading] as const
 }

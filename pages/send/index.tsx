@@ -8,7 +8,7 @@ import {
   Inline,
   Text,
   styled,
-} from 'junoblocks'
+} from 'components/ui-blocks'
 import React from 'react'
 import { TokenSendModule } from 'features/send'
 // import Link from 'next/link'

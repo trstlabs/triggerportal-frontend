@@ -7,7 +7,7 @@ import {
   useChainRegistryList,
 } from '../../../../hooks/useChainList'
 
-import { Dialog } from 'junoblocks'
+import { Dialog } from 'components/ui-blocks'
 
 export const ChainSelectorDialog = ({
   activeChain,
@@ -21,10 +21,10 @@ export const ChainSelectorDialog = ({
 
   const [icaChainList] = useIBCAssetList()
   //useConnectChains(chainList)
-  
+
   return (
     <Dialog isShowing={true} onRequestClose={undefined}>
-                   
+
       <ChainSelectorList
         {...props}
         icaChainList={

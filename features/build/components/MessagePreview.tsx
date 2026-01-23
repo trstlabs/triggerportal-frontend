@@ -9,7 +9,7 @@
 //   Column,
 //   Inline,
 //   Union,
-// } from 'junoblocks'
+// } from 'components/ui-blocks'
 // import { SubmitFlowDialog } from './SubmitFlowDialog'
 
 // const MessagePreview = ({

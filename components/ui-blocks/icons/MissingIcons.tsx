@@ -1,0 +1,25 @@
+
+import { Globe, User, Info as InfoIconLucide, Copy, Moon, Share, Plus, MessageSquare, ArrowUp, Github as GithubIcon, Send, Circle, AlertTriangle } from 'lucide-react'
+import { styled } from '../theme'
+
+
+export const Discord = styled(Circle, {})
+export const Github = styled(GithubIcon, {})
+export const Telegram = styled(Send, {})
+export const Twitter = styled(MessageSquare, {})
+export const ConnectIcon = styled(Globe, {})
+
+export const ArrowUpIcon = styled(ArrowUp, {})
+export const WalletIcon = styled(User, {})
+export const RejectIcon = styled(AlertTriangle, {})
+export const InfoIcon = styled(InfoIconLucide, {})
+export const CopyIcon = styled(Copy, {})
+export const FeedbackIcon = styled(MessageSquare, {})
+export const MoonIcon = styled(Moon, {})
+export const SharesIcon = styled(Share, {})
+export const PlusIcon = styled(Plus, {})
+export const Info = styled(InfoIconLucide, {})
+export const Connect = styled(Globe, {})
+export const Logout = styled(User, {})
+export const CopyTextTooltip = styled('div', {})
+// Column removed

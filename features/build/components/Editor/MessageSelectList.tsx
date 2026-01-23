@@ -1,4 +1,4 @@
-import { ButtonForWrapper, styled, Text } from 'junoblocks'
+import { ButtonForWrapper, styled, Text } from 'components/ui-blocks'
 import { ComponentPropsWithoutRef } from 'react'
 
 import { getPropsForInteractiveElement } from '../../../../util/getPropsForInteractiveElement'

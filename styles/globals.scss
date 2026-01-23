@@ -1,6 +1,6 @@
-@import './inter.font.scss';
-@import './jetbrains.font.scss';
-@import './oceanwide.font.scss';
+@use './inter.font';
+@use './jetbrains.font';
+@use './oceanwide.font';
 
 html,
 body {
@@ -51,6 +51,7 @@ input::-webkit-inner-spin-button {
 /* Firefox */
 input[type='number'] {
   -moz-appearance: textfield;
+  appearance: textfield;
 }
 
 p {
@@ -60,6 +61,7 @@ p {
 button {
   text-transform: none;
   -webkit-appearance: button;
+  appearance: button;
   padding: 0;
   border: none;
   outline: none;

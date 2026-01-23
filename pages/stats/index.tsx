@@ -5,7 +5,7 @@ import {
     ChevronIcon,
     useMedia,
 
-} from 'junoblocks'
+} from 'components/ui-blocks'
 import Link from 'next/link'
 
 import React from 'react'

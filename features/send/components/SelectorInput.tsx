@@ -3,7 +3,7 @@ import {
   styled,
   Text,
   useAmountChangeController,
-} from 'junoblocks'
+} from 'components/ui-blocks'
 import React, { HTMLProps, Ref } from 'react'
 
 type SelectorInputProps = {

@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
-import { styled, Text, Inline } from 'junoblocks';
+import { styled, Text, Inline } from 'components/ui-blocks';
 import JsonViewer from './JsonViewer';
-import { Dialog } from 'junoblocks';
+import { Dialog } from 'components/ui-blocks';
 
 // Styled components to match Conditions and Configuration
 const ActionCard = styled('div', {

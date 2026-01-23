@@ -2,7 +2,7 @@ import {
   Text,
   Column,
   Inline,
-} from 'junoblocks'
+} from 'components/ui-blocks'
 import React from 'react'
 import { ExecutionConditions, ExecutionConfiguration, Comparison, FeedbackLoop } from 'intentojs/dist/codegen/intento/intent/v1/flow'
 import { convertMicroDenomToDenom, resolveDenomSync } from '../../../../util/conversion'
@@ -142,12 +142,12 @@ export const ConditionsSummary: React.FC<ConditionsSummaryProps> = ({ conditions
           ))}
           {conditions.useAndForComparisons && (
             <Inline css={{ paddingLeft: '$4' }}>
-             {conditions.useAndForComparisons ? <Text variant="body" color="tertiary" css={{ fontWeight: 'medium', fontSize: '12px' }}>  • Use AND for comparisons </Text> : <Text variant="body" color="tertiary" css={{ fontWeight: 'medium', fontSize: '12px' }}>  • Use OR for comparisons </Text>}
+              {conditions.useAndForComparisons ? <Text variant="body" color="tertiary" css={{ fontWeight: 'medium', fontSize: '12px' }}>  • Use AND for comparisons </Text> : <Text variant="body" color="tertiary" css={{ fontWeight: 'medium', fontSize: '12px' }}>  • Use OR for comparisons </Text>}
             </Inline>
           )}
           {conditions.comparisons?.find((comp) => comp.differenceMode) && (
             <Inline css={{ paddingLeft: '$4' }}>
-             {conditions.comparisons?.find((comp) => comp.differenceMode) ? <Text variant="body" color="tertiary" css={{ fontWeight: 'medium', fontSize: '12px' }}>  • Use difference mode </Text> : <Text variant="body" color="tertiary" css={{ fontWeight: 'medium', fontSize: '12px' }}>  • Use static mode </Text>}
+              {conditions.comparisons?.find((comp) => comp.differenceMode) ? <Text variant="body" color="tertiary" css={{ fontWeight: 'medium', fontSize: '12px' }}>  • Use difference mode </Text> : <Text variant="body" color="tertiary" css={{ fontWeight: 'medium', fontSize: '12px' }}>  • Use static mode </Text>}
             </Inline>
           )}
         </Column>

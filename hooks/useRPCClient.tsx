@@ -1,33 +1,33 @@
 import { intento, cosmos, tendermint } from 'intentojs'
 
-import { useQuery } from 'react-query'
+import { useQuery } from '@tanstack/react-query'
 
 import { StargateClient } from '@cosmjs/stargate'
 
 export const useIntentoRpcClient = () => {
-  const { data } = useQuery(
-    '@intento-querier',
-    async () => {
+  const { data } = useQuery({
+    queryKey: ['@intento-querier'],
+    queryFn: async () => {
       return intento.ClientFactory.createRPCQueryClient({
         rpcEndpoint: process.env.NEXT_PUBLIC_INTO_RPC,
       })
     },
-    { enabled: true}
-  )
+    enabled: true
+  })
 
   return data
 }
 
 export const useCosmosRpcClient = () => {
-  const { data } = useQuery(
-    '@cosmos-querier',
-    () => {
+  const { data } = useQuery({
+    queryKey: ['@cosmos-querier'],
+    queryFn: () => {
       return cosmos.ClientFactory.createRPCQueryClient({
-       rpcEndpoint: process.env.NEXT_PUBLIC_INTO_RPC,
+        rpcEndpoint: process.env.NEXT_PUBLIC_INTO_RPC,
       })
     },
-    { enabled: cosmos != undefined}
-  )
+    enabled: cosmos != undefined
+  })
 
   return data
 }
@@ -35,15 +35,15 @@ export const useCosmosRpcClient = () => {
 
 
 export const useTendermintRpcClient = () => {
-  const { data } = useQuery(
-    '@client-querier',
-    () => {
+  const { data } = useQuery({
+    queryKey: ['@client-querier'],
+    queryFn: () => {
       return StargateClient.connect(
-       process.env.NEXT_PUBLIC_INTO_RPC,
+        process.env.NEXT_PUBLIC_INTO_RPC,
       )
     },
-    { enabled: tendermint != undefined}
-  )
+    enabled: tendermint != undefined
+  })
 
   return data
 }

@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback, useMemo, useRef } from 'react';
 import * as yup from 'yup';
-import { styled, Text, IconWrapper } from 'junoblocks';
+import { styled, Text, IconWrapper } from 'components/ui-blocks';
 import { ErrorStack } from './Validation';
 import get from "lodash/get";
 import set from "lodash/set";
@@ -100,7 +100,7 @@ const JsonFormEditor = ({ jsonValue, schema, validationErrors, onChange, onValid
     // Local state for display - this is what the user sees and types into
     const [localValues, setLocalValues] = useState(() => parseJsonValue(jsonValue));
     const [errors, setErrors] = useState({}); // State for validation errors
-    
+
     // Refs to track state without causing re-renders
     const localValuesRef = useRef(localValues);
     const isDirtyRef = useRef(false);
@@ -115,7 +115,7 @@ const JsonFormEditor = ({ jsonValue, schema, validationErrors, onChange, onValid
     useEffect(() => {
         const parsed = parseJsonValue(jsonValue);
         const currentLocal = localValuesRef.current;
-        
+
         // Only update if this is an external change (not from our own commit)
         // and the values are actually different
         if (!isDirtyRef.current && JSON.stringify(parsed) !== JSON.stringify(currentLocal)) {
@@ -154,24 +154,24 @@ const JsonFormEditor = ({ jsonValue, schema, validationErrors, onChange, onValid
 
         const currentValues = localValuesRef.current;
         let currentJson: Record<string, any>;
-        
+
         try {
             currentJson = jsonValue ? JSON.parse(jsonValue) : { value: {} };
         } catch {
             currentJson = { value: {} };
         }
-        
+
         const updatedJSON = {
             ...currentJson,
             value: currentValues,
         };
-        
+
         const updatedJsonString = JSON.stringify(updatedJSON, null, 2);
-        
+
         // Validate and propagate
         validateValues(currentValues);
         onChange?.(updatedJsonString);
-        
+
         // Mark as clean
         isDirtyRef.current = false;
     }, [jsonValue, onChange, validateValues]);
@@ -183,7 +183,7 @@ const JsonFormEditor = ({ jsonValue, schema, validationErrors, onChange, onValid
             set(updated, fieldPath, newValue);
             return updated;
         });
-        
+
         // Mark as dirty
         isDirtyRef.current = true;
     }, []);
@@ -259,7 +259,7 @@ const JsonFormEditor = ({ jsonValue, schema, validationErrors, onChange, onValid
             return (
                 <StyledField key={fieldPath}>
                     <StyledObjectLabel>{formatMainTitle(key)}</StyledObjectLabel>
-                    {Object.keys(value).map((subKey) => 
+                    {Object.keys(value).map((subKey) =>
                         renderField(subKey, `${fieldPath}.${subKey}`)
                     )}
                 </StyledField>
@@ -270,7 +270,7 @@ const JsonFormEditor = ({ jsonValue, schema, validationErrors, onChange, onValid
                     <StyledObjectLabel>{formatMainTitle(key)}</StyledObjectLabel>
                     {value.map((item, index) => (
                         <StyledField key={`${fieldPath}[${index}]`}>
-                            {Object.keys(item).map((subKey) => 
+                            {Object.keys(item).map((subKey) =>
                                 renderField(subKey, `${fieldPath}[${index}].${subKey}`)
                             )}
                         </StyledField>
@@ -292,7 +292,7 @@ const JsonFormEditor = ({ jsonValue, schema, validationErrors, onChange, onValid
                             style={isAddressField ? { paddingRight: '40px' } : {}}
                         />
                         {isAddressField && (
-                            <PasteButton 
+                            <PasteButton
                                 id={`paste-button-${fieldPath}`}
                                 onClick={() => handlePaste(fieldPath)}
                                 title="Paste from clipboard"

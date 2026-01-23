@@ -1,8 +1,7 @@
 import { chains } from 'chain-registry'
 
 import { useEffect, useState } from 'react'
-import { useQuery } from 'react-query'
-import { useChains } from '@cosmos-kit/react-lite'
+import { useQuery } from '@tanstack/react-query'
 
 export type IBCAssetInfo = {
   id: string
@@ -21,12 +20,13 @@ export type IBCAssetInfo = {
   deposit_gas_fee?: number
   external_deposit_uri?: string
   prefix: string
+  union?: boolean
 }
 
 export const useIBCAssetList = () => {
-  const { data, isLoading, isError, error } = useQuery<IBCAssetInfo[]>(
-    ['@ibc-asset-list'],
-    async () => {
+  const { data, isPending, isError, error } = useQuery<IBCAssetInfo[]>({
+    queryKey: ['@ibc-asset-list'],
+    queryFn: async () => {
       const url = process.env.NEXT_PUBLIC_IBC_ASSETS_URL
 
       if (!url) {
@@ -57,59 +57,46 @@ export const useIBCAssetList = () => {
         throw new Error('Failed to parse IBC Asset List JSON')
       }
     },
-    {
-      enabled: Boolean(process.env.NEXT_PUBLIC_IBC_ASSETS_URL),
-      onError: (e) => {
-        console.error('Error loading IBC Asset List:', e)
-      },
-      refetchOnMount: 'always',
-      refetchOnWindowFocus: false,
-      retry: 3, // Retry failed queries up to 3 times
-      staleTime: 1000 * 60 * 5, // 5 minutes
-    }
-  )
+    enabled: Boolean(process.env.NEXT_PUBLIC_IBC_ASSETS_URL),
+    refetchOnMount: 'always',
+    refetchOnWindowFocus: false,
+    retry: 3, // Retry failed queries up to 3 times
+    staleTime: 1000 * 60 * 5, // 5 minutes
+  })
 
   if (isError) {
     console.warn('Failed to load IBC Asset List:', error)
   }
 
   // Return a consistent and safe output
-  return [data ?? [], isLoading] as const
-}
-
-//connect to all chains at once, requires chains to come from registry (can only be used in production/public testnet)
-export const useConnectChains = (chains: IBCAssetInfo[]) => {
-  const chainList = chains[0]
-    ? chains.map((chain) => chain.registry_name)
-    : ['intentodevnet']
-  useChains(chainList)
+  return [data ?? [], isPending] as const
 }
 
 //useIBCAssetInfoBySymbol
 export const useChainInfoByChainID = (chainId: string) => {
   // First try to get chain info from local ibc_assets.json
   const [ibcAssets] = useIBCAssetList()
-  
+
   if (ibcAssets && ibcAssets.length > 0) {
     const localChain = ibcAssets.find(asset => asset.chain_id === chainId)
     if (localChain) {
       return localChain
     }
   }
-  
+
   // Fallback to chain registry if not found in local assets
-  const chainRegistyChain = chains.find((chain) => chain.chain_id === chainId)
+  const chainRegistyChain = chains.find((chain) => chain.chainId === chainId)
   if (chainRegistyChain) {
     return transformChain(chainRegistyChain)
   }
-  
+
   // As a last resort, try to find by chain name (for backward compatibility)
-  const fallbackChain = chains.find((chain) => chain.chain_name.toLowerCase().includes('intento'))
+  const fallbackChain = chains.find((chain) => chain.chainName.toLowerCase().includes('intento'))
   if (fallbackChain) {
     console.warn(`Chain with ID ${chainId} not found, falling back to intento`)
     return transformChain(fallbackChain)
   }
-  
+
   console.error(`No chain found for ID: ${chainId} and no fallback available`)
   return null
 }
@@ -134,8 +121,8 @@ function transformChain(chain: any) {
     return null
   }
   const symbol =
-    chain.fees && chain.fees.fee_tokens[0]
-      ? chain.fees.fee_tokens[0].denom.slice(1).toUpperCase()
+    chain.fees && chain.fees.feeTokens[0]
+      ? chain.fees.feeTokens[0].denom.slice(1).toUpperCase()
       : ''
 
   return {
@@ -149,8 +136,8 @@ function transformChain(chain: any) {
         ? chain.apis.rpc[0].address
         : '',
     denom:
-      chain.fees && chain.fees.fee_tokens[0]
-        ? chain.fees.fee_tokens[0].denom
+      chain.fees && chain.fees.feeTokens[0]
+        ? chain.fees.feeTokens[0].denom
         : '',
     decimals: 6, // Standard, TODO: Adjust as needed
     denom_local: '', // TODO: Find in ibc assets
@@ -159,8 +146,8 @@ function transformChain(chain: any) {
     logo_uri: chain.logo_URIs
       ? chain.logo_URIs.png || chain.logo_URIs.svg || chain.logo_URIs.jpeg
       : chain.images
-      ? chain.images.png || chain.images.svg || chain.images.jpeg
-      : '',
+        ? chain.images.png || chain.images.svg || chain.images.jpeg
+        : '',
     connection_id: '',
     prefix: chain.bech32_prefix,
     status: chain.status,

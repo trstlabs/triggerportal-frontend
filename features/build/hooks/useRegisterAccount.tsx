@@ -6,10 +6,10 @@ import {
   Toast,
   UpRightArrow,
   Valid,
-} from 'junoblocks'
+} from 'components/ui-blocks'
 import { toast } from 'react-hot-toast'
-import { useMutation } from 'react-query'
-import { useRecoilState, useRecoilValue, useSetRecoilState } from 'recoil'
+import { useMutation } from '@tanstack/react-query'
+import { useAtom, useAtomValue, useSetAtom } from 'jotai'
 import { executeRegisterAccount, getICA } from '../../../services/build'
 import {
   TransactionStatus,
@@ -31,17 +31,17 @@ export const useRegisterAccount = ({
   hostConnectionId,
 }: UseRegisterAccountParams) => {
   const rpcClient = useIntentoRpcClient()
-  const { client, address, status } = useRecoilValue(walletState)
-  const setTransactionState = useSetRecoilState(transactionStatusState)
-  const [_, popConfetti] = useRecoilState(particleState)
+  const { client, address, status } = useAtomValue(walletState)
+  const setTransactionState = useSetAtom(transactionStatusState)
+  const [_, popConfetti] = useAtom(particleState)
 
   const refetchQueries = useRefetchQueries([
     'tokenBalance',
   ])
 
-  return useMutation(
-    'registerICA',
-    async () => {
+  return useMutation({
+    mutationKey: ['registerICA'],
+    mutationFn: async () => {
       if (status !== WalletStatusType.connected) {
         throw new Error('Please connect your wallet.')
       }
@@ -91,44 +91,42 @@ export const useRegisterAccount = ({
       }
       return undefined
     },
-    {
-      onSuccess(data) {
-        console.log(data)
-        toast.success('Succesfully registered account on destination chain')
-        if (data) {
-          popConfetti(true)
-        }
+    onSuccess(data) {
+      console.log(data)
+      toast.success('Succesfully registered account on destination chain')
+      if (data) {
+        popConfetti(true)
+      }
 
-        refetchQueries()
-      },
-      onError(e) {
-        const errorMessage = formatSdkErrorMessage(e)
+      refetchQueries()
+    },
+    onError(e) {
+      const errorMessage = formatSdkErrorMessage(e)
 
-        toast.custom((t) => (
-          <Toast
-            icon={<ErrorIcon color="error" />}
-            title="Oops registering account error!"
-            body={errorMessage}
-            buttons={
-              <Button
-                as="a"
-                variant="ghost"
-                href={process.env.NEXT_PUBLIC_FEEDBACK_LINK}
-                target="__blank"
-                iconRight={<UpRightArrow />}
-              >
-                Provide feedback
-              </Button>
-            }
-            onClose={() => toast.dismiss(t.id)}
-          />
-        ))
-      },
-      onSettled() {
-        setTransactionState(TransactionStatus.IDLE)
-      },
-    }
-  )
+      toast.custom((t) => (
+        <Toast
+          icon={<ErrorIcon color="error" />}
+          title="Oops registering account error!"
+          body={errorMessage}
+          buttons={
+            <Button
+              as="a"
+              variant="ghost"
+              href={process.env.NEXT_PUBLIC_FEEDBACK_LINK}
+              target="__blank"
+              iconRight={<UpRightArrow />}
+            >
+              Provide feedback
+            </Button>
+          }
+          onClose={() => toast.dismiss(t.id)}
+        />
+      ))
+    },
+    onSettled() {
+      setTransactionState(TransactionStatus.IDLE)
+    },
+  })
 }
 
 async function sleep(ms: number) {

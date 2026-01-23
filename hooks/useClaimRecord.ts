@@ -1,17 +1,17 @@
-import { useQuery } from 'react-query'
+import { useQuery } from '@tanstack/react-query'
 
 
 import { useIntentoRpcClient } from './useRPCClient'
-import { useRecoilValue } from 'recoil'
+import { useAtomValue } from 'jotai'
 import { walletState } from '../state/atoms/walletAtoms'
 
 
 export const useClaimRecord = () => {
   const client = useIntentoRpcClient()
-  const { address } = useRecoilValue(walletState)
-  const { data, isLoading } = useQuery(
-    `claimRecord/${address}`,
-    async () => {
+  const { address } = useAtomValue(walletState)
+  const { data, isPending: isLoading } = useQuery({
+    queryKey: [`claimRecord/${address}`],
+    queryFn: async () => {
       if (!address || !client || !client.intento) {
         throw new Error('Invalid address or wallet not connected')
       }
@@ -26,24 +26,22 @@ export const useClaimRecord = () => {
         return '' // Return empty string in case of error
       }
     },
-    {
-      enabled: !!address && !!client?.intento,
-      refetchOnMount: false,
-      refetchInterval: false,
-      staleTime: 60000, // Cache data for 60 seconds
-      cacheTime: 300000, // Cache data for 5 minutes
-    }
-  )
+    enabled: !!address && !!client?.intento,
+    refetchOnMount: false,
+    refetchInterval: false,
+    staleTime: 60000, // Cache data for 60 seconds
+    gcTime: 300000, // Cache data for 5 minutes
+  })
 
   return [data, isLoading] as const
 }
 
 export const useTotalClaimable = () => {
   const client = useIntentoRpcClient()
-  const { address } = useRecoilValue(walletState)
-  const { data, isLoading } = useQuery(
-    ['claim_total', address],
-    async () => {
+  const { address } = useAtomValue(walletState)
+  const { data, isPending: isLoading } = useQuery({
+    queryKey: ['claim_total', address],
+    queryFn: async () => {
       if (!address || !client || !client.intento) {
         throw new Error('Invalid address or wallet not connected')
       }
@@ -53,14 +51,12 @@ export const useTotalClaimable = () => {
 
       return total
     },
-    {
-      enabled: !!address && !!client?.intento,
-      refetchOnMount: false,
-      refetchInterval: false,
-      staleTime: 120000, // Cache data for 120 seconds
-      cacheTime: 300000, // Cache data for 5 minutes
-    }
-  )
+    enabled: !!address && !!client?.intento,
+    refetchOnMount: false,
+    refetchInterval: false,
+    staleTime: 120000, // Cache data for 120 seconds
+    gcTime: 300000, // Cache data for 5 minutes
+  })
 
   return [data, isLoading] as const
 }

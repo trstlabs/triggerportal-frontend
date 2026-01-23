@@ -1,5 +1,5 @@
 import React from 'react'
-import { Text, Tooltip } from 'junoblocks'
+import { Text, Tooltip } from 'components/ui-blocks'
 
 // Define props for Dropdown
 type DropdownProps<T extends string | number> = {

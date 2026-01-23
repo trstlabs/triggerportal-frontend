@@ -1,4 +1,4 @@
-import { Text, Tooltip } from "junoblocks"
+import { Text, Tooltip } from "components/ui-blocks"
 import { StyledInput } from "../BuildComponent"
 import { useEffect, useRef, useState } from "react"
 import toast from "react-hot-toast"
@@ -120,7 +120,7 @@ export const Field = ({ label, tooltip, value, onChange, disabled, type = 'text'
 
   return (
     <div>
-       {tooltip ? (
+      {tooltip ? (
         <Tooltip placement="left" label={tooltip}>
           <Text css={{ padding: '$2', margin: '$2' }} variant="caption" color="secondary" align="left">
             {label}
@@ -133,7 +133,7 @@ export const Field = ({ label, tooltip, value, onChange, disabled, type = 'text'
       )}
       <div style={{ position: 'relative', display: 'inline-block', width: '100%' }}>
         <Text variant="body">
-          <StyledInput 
+          <StyledInput
             ref={inputRef} // Attach ref to StyledInput
             type={type}
             value={value}
@@ -158,7 +158,7 @@ export const Field = ({ label, tooltip, value, onChange, disabled, type = 'text'
               e.target.style.borderBottom = '1px solid #ccc'; // Revert on blur
             }}
           />
-          <span 
+          <span
             ref={spanRef}
             style={{
               position: 'absolute',

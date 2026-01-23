@@ -19,7 +19,7 @@ import {
   Card,
   ToggleSwitch,
   Info,
-} from 'junoblocks'
+} from 'components/ui-blocks'
 import { toast } from 'react-hot-toast'
 import { useState, useEffect } from 'react'
 import { useGetExpectedFlowFees } from '../../../hooks/useChainInfo'

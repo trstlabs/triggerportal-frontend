@@ -6,7 +6,7 @@ import {
   Union,
   useOnClickOutside,
 
-} from 'junoblocks'
+} from 'components/ui-blocks'
 import React, { useRef, useState } from 'react'
 
 import { QueryInput } from 'components//Input/QueryInput'

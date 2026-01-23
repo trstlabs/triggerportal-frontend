@@ -9,9 +9,9 @@ import {
   media,
   InfoIcon,
   formatTokenBalance,
-} from 'junoblocks'
+} from 'components/ui-blocks'
 import React, { useEffect, useState } from 'react'
-import { useRecoilValue } from 'recoil'
+import { useAtomValue } from 'jotai'
 import { intentModuleParamsAtom } from '../../../state/atoms/moduleParamsAtoms'
 import { walletState } from '../../../state/atoms/walletAtoms'
 import { convertMicroDenomToDenom, resolveDenomSync } from '../../../util/conversion'
@@ -49,7 +49,7 @@ type TokenomicsCardProps = {
 export const TokenomicsCard = ({ shouldShowAutoCompound }: TokenomicsCardProps) => {
   const [params, _] = useSetModuleParams()
   const [requestedSubmitFlow, setRequestedSubmitFlow] = useState(false)
-  const intentParams = useRecoilValue(intentModuleParamsAtom)
+  const intentParams = useAtomValue(intentModuleParamsAtom)
   let data = new FlowInput()
   data.msgs = ['']
   const initConfig = {
@@ -93,7 +93,7 @@ export const TokenomicsCard = ({ shouldShowAutoCompound }: TokenomicsCardProps) 
   const [ibcAssetList] = useIBCAssetList()
   const { totalFlows, flowIncrease, isLoading: isFlowStatsLoading } = useFlowStats()
   const { price, isLoading: isPriceLoading } = useINTOPrice()
-  const wallet = useRecoilValue(walletState)
+  const wallet = useAtomValue(walletState)
   const { mutate: handleSubmitFlow, isLoading: isExecutingSchedule } =
     useSubmitFlow({ flowInput })
 
@@ -929,21 +929,21 @@ export const TokenomicsCard = ({ shouldShowAutoCompound }: TokenomicsCardProps) 
                 borderColor: 'rgba(245, 158, 11, 0.4)',
               }
             }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '1rem' }}>
-                  <div style={{
-                    width: '40px',
-                    height: '40px',
-                    borderRadius: '12px',
-                    background: 'linear-gradient(135deg, #f59e0b, #fbbf24)',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    boxShadow: '0 4px 12px rgba(245, 158, 11, 0.3)'
-                  }}>
-                    <Clock size={20} color="white" />
-                  </div>
-                  <Text variant="legend" css={{ fontWeight: '600', color: '#f59e0b' }}>Airdrop Clawback</Text>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '1rem' }}>
+                <div style={{
+                  width: '40px',
+                  height: '40px',
+                  borderRadius: '12px',
+                  background: 'linear-gradient(135deg, #f59e0b, #fbbf24)',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  boxShadow: '0 4px 12px rgba(245, 158, 11, 0.3)'
+                }}>
+                  <Clock size={20} color="white" />
                 </div>
+                <Text variant="legend" css={{ fontWeight: '600', color: '#f59e0b' }}>Airdrop Clawback</Text>
+              </div>
               {!isAirdropClawbackLoading && airdropClawback ? (
                 <>
                   <div style={{

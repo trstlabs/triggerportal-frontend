@@ -1,5 +1,5 @@
 import { ChainInfo } from '@keplr-wallet/types'
-import { useQuery } from 'react-query'
+import { useQuery } from '@tanstack/react-query'
 import { queryClient } from '../services/queryClient'
 
 import {
@@ -21,7 +21,7 @@ import {
   useCosmosRpcClient,
   useTendermintRpcClient,
 } from './useRPCClient'
-import { useRecoilState, useRecoilValue } from 'recoil'
+import { useAtom, useAtomValue } from 'jotai'
 import { walletState, WalletStatusType } from '../state/atoms/walletAtoms'
 
 import {
@@ -34,23 +34,18 @@ import { FlowInput } from '../types/trstTypes'
 const chainInfoQueryKey = '@chain-info'
 
 export const unsafelyReadChainInfoCache = () =>
-  queryClient.getQueryCache().find(chainInfoQueryKey)?.state?.data as
-    | ChainInfo
-    | undefined
+  queryClient.getQueryCache().find({ queryKey: [chainInfoQueryKey] })?.state?.data as
+  | ChainInfo
+  | undefined
 
 export const useIBCChainInfo = (chainId: string) => {
-  const { data, isLoading } = useQuery<ChainInfo>(
-    '@chain-info',
-    async () => {
+  const { data, isPending: isLoading } = useQuery<ChainInfo>({
+    queryKey: ['@chain-info'],
+    queryFn: async () => {
       const response = await fetch('/chain_info.local' + chainId + '.json')
       return await response.json()
     },
-    {
-      onError(e) {
-        console.error('Error loading chain info:', e)
-      },
-    }
-  )
+  })
   return [data, isLoading] as const
 }
 
@@ -60,7 +55,7 @@ export const useGetExpectedFlowFees = (
   intervalSeconds?: number,
   trustlessAgent?: any
 ) => {
-  const [intentModuleParams, setTriggerModuleData] = useRecoilState(
+  const [intentModuleParams, setTriggerModuleData] = useAtom(
     intentModuleParamsAtom
   )
   const client = useIntentoRpcClient()
@@ -83,7 +78,7 @@ export const useGetExpectedFlowFees = (
       flowInput.msgs?.length || 0,
       trustlessAgent?.address ?? null,
       intentModuleParams?.gasFeeCoins?.map((coin) => coin.denom).join(',') ||
-        '',
+      '',
     ],
     [
       recurrences,
@@ -93,9 +88,9 @@ export const useGetExpectedFlowFees = (
     ]
   )
 
-  const { data, isLoading, error } = useQuery(
-    stableQueryKey,
-    async () => {
+  const { data, isPending: isLoading, error } = useQuery({
+    queryKey: stableQueryKey,
+    queryFn: async () => {
       console.log(intentModuleParams)
       if (!intentModuleParams) {
         try {
@@ -145,13 +140,11 @@ export const useGetExpectedFlowFees = (
 
       return fees
     },
-    {
-      enabled: Boolean(client?.intento && flowInput?.msgs?.length > 0),
-      refetchOnWindowFocus: false,
-      staleTime: 30000, // 30 seconds
-      cacheTime: 60000, // 1 minute
-    }
-  )
+    enabled: Boolean(client?.intento && flowInput?.msgs?.length > 0),
+    refetchOnWindowFocus: false,
+    staleTime: 30000, // 30 seconds
+    gcTime: 60000, // 1 minute
+  })
 
   return {
     fees: data || [],
@@ -168,7 +161,7 @@ export const useGetExpectedFlowFee = (
   intervalSeconds?: number,
   trustlessAgent?: any // Add trustlessAgent parameter
 ) => {
-  let [intentModuleParams, setTriggerModuleData] = useRecoilState(
+  let [intentModuleParams, setTriggerModuleData] = useAtom(
     intentModuleParamsAtom
   )
   // Calculate recurrences based on interval and duration
@@ -194,9 +187,9 @@ export const useGetExpectedFlowFee = (
     [recurrences, denom, flowInput.msgs, trustlessAgent?.address]
   )
 
-  const { data, isLoading } = useQuery(
-    stableQueryKey,
-    async () => {
+  const { data, isPending: isLoading } = useQuery({
+    queryKey: stableQueryKey,
+    queryFn: async () => {
       // Make sure client exists and has the intento property before proceeding
       if (!client || !client.intento) {
         console.warn('RPC client not ready or missing intento property')
@@ -280,32 +273,27 @@ export const useGetExpectedFlowFee = (
         return { fee: 0, symbol: denom }
       }
     },
-    {
-      enabled: Boolean(
-        durationSeconds &&
-          flowInput.msgs &&
-          flowInput.msgs.length > 0 &&
-          denom &&
-          client
-      ),
-      refetchOnMount: true,
-      staleTime: 10000, // Consider data stale after 10 seconds
-      cacheTime: 30000, // Keep in cache for 30 seconds
-      retry: 1, // Limit retries to avoid excessive error messages
-      onError: (error) => {
-        console.error('Error calculating expected fee:', error)
-      },
-    }
-  )
+    enabled: Boolean(
+      durationSeconds &&
+      flowInput.msgs &&
+      flowInput.msgs.length > 0 &&
+      denom &&
+      client
+    ),
+    refetchOnMount: true,
+    staleTime: 10000, // Consider data stale after 10 seconds
+    gcTime: 30000, // Keep in cache for 30 seconds
+    retry: 1, // Limit retries to avoid excessive error messages
+  })
 
   return [data?.fee || 0, isLoading, data?.symbol || denom] as const
 }
 
 export const useGetTotalBurned = () => {
   const client = useIntentoRpcClient()
-  const { data, isLoading } = useQuery(
-    'useGetTotalBurned',
-    async () => {
+  const { data, isPending: isLoading } = useQuery({
+    queryKey: ['useGetTotalBurned'],
+    queryFn: async () => {
       //base value is approximate from total flow message executions pre block 3455000
       if (!client) return 200000000 // Default base value
 
@@ -320,21 +308,19 @@ export const useGetTotalBurned = () => {
         return 200000000 // Fallback to base value if there's an error
       }
     },
-    {
-      enabled: Boolean(client?.intento?.intent?.v1?.totalBurnt),
-      refetchInterval: DEFAULT_LONG_REFETCH_INTERVAL,
-      refetchOnMount: 'always',
-    }
-  )
+    enabled: Boolean(client?.intento?.intent?.v1?.totalBurnt),
+    refetchInterval: DEFAULT_LONG_REFETCH_INTERVAL,
+    refetchOnMount: 'always',
+  })
   return [data || 1043 * 10000, isLoading] as const
 }
 
 export const useGetAllValidators = () => {
   const client = useCosmosRpcClient()
 
-  const { data, isLoading } = useQuery(
-    'getAllValidators',
-    async () => {
+  const { data, isPending: isLoading } = useQuery({
+    queryKey: ['getAllValidators'],
+    queryFn: async () => {
       return client.cosmos.staking.v1beta1.validators({
         status: cosmos.staking.v1beta1.bondStatusToJSON(
           cosmos.staking.v1beta1.BondStatus.BOND_STATUS_BONDED
@@ -342,23 +328,21 @@ export const useGetAllValidators = () => {
         pagination: undefined,
       })
     },
-    {
-      enabled: Boolean(client),
-      refetchOnMount: 'always',
-      refetchInterval: DEFAULT_LONG_REFETCH_INTERVAL,
-      refetchIntervalInBackground: true,
-    }
-  )
+    enabled: Boolean(client),
+    refetchOnMount: 'always',
+    refetchInterval: DEFAULT_LONG_REFETCH_INTERVAL,
+    refetchIntervalInBackground: true,
+  })
 
   return [data, isLoading] as const
 }
 
 export const useGetStakeBalanceForAcc = () => {
-  const { address, status } = useRecoilValue(walletState)
+  const { address, status } = useAtomValue(walletState)
   const client = useIntentoRpcClient()
-  const { data, isLoading } = useQuery(
-    'getStakeBalanceForAcc',
-    async () => {
+  const { data, isPending: isLoading } = useQuery({
+    queryKey: ['getStakeBalanceForAcc'],
+    queryFn: async () => {
       const resp = await getStakeBalanceForAcc({ address, client })
       resp.stakingBalanceAmount = convertMicroDenomToDenom(
         resp.stakingBalanceAmount,
@@ -367,15 +351,13 @@ export const useGetStakeBalanceForAcc = () => {
 
       return resp
     },
-    {
-      enabled: Boolean(
-        client && address && status === WalletStatusType.connected
-      ),
-      refetchOnMount: 'always',
-      refetchInterval: DEFAULT_REFETCH_INTERVAL,
-      refetchIntervalInBackground: true,
-    }
-  )
+    enabled: Boolean(
+      client && address && status === WalletStatusType.connected
+    ),
+    refetchOnMount: 'always',
+    refetchInterval: DEFAULT_REFETCH_INTERVAL,
+    refetchIntervalInBackground: true,
+  })
 
   return [data, isLoading] as const
 }
@@ -383,21 +365,19 @@ export const useGetStakeBalanceForAcc = () => {
 export const useGetAPR = () => {
   const cosmosClient = useCosmosRpcClient()
   const client = useTendermintRpcClient()
-  const paramsState = useRecoilValue(paramsStateAtom)
+  const paramsState = useAtomValue(paramsStateAtom)
 
-  const { data, isLoading } = useQuery(
-    'getAPR',
-    async () => {
+  const { data, isPending: isLoading } = useQuery({
+    queryKey: ['getAPR'],
+    queryFn: async () => {
       const resp = await getAPR(cosmosClient, client, paramsState)
       return resp
     },
-    {
-      enabled: Boolean(client && paramsState),
-      refetchOnMount: false,
-      staleTime: 60000, // Cache data for 60 seconds
-      cacheTime: 300000, // Cache data for 5 minutes
-    }
-  )
+    enabled: Boolean(client && paramsState),
+    refetchOnMount: false,
+    staleTime: 60000, // Cache data for 60 seconds
+    gcTime: 300000, // Cache data for 5 minutes
+  })
 
   return [data, isLoading] as const
 }
@@ -405,20 +385,18 @@ export const useGetAPR = () => {
 export const useSetModuleParams = () => {
   const trstClient = useIntentoRpcClient()
   const cosmosClient = useCosmosRpcClient()
-  const [paramsState, setParamsState] = useRecoilState(paramsStateAtom)
+  const [paramsState, setParamsState] = useAtom(paramsStateAtom)
 
-  const { data, isLoading } = useQuery(
-    'getModuleParams',
-    async () => {
+  const { data, isPending: isLoading } = useQuery({
+    queryKey: ['getModuleParams'],
+    queryFn: async () => {
       const resp = await getModuleParams(cosmosClient, trstClient)
       setParamsState(resp)
       return resp
     },
-    {
-      enabled: Boolean(cosmosClient && trstClient),
-      refetchOnMount: 'always',
-    }
-  )
+    enabled: Boolean(cosmosClient && trstClient),
+    refetchOnMount: 'always',
+  })
   useEffect(() => {
     if (paramsState) {
     }
@@ -433,20 +411,20 @@ export const useGetAPYWithFees = (
   stakingBalance: number,
   nrMessages: number
 ) => {
-  const [intentModuleParams, setTriggerModuleData] = useRecoilState(
+  const [intentModuleParams, setTriggerModuleData] = useAtom(
     intentModuleParamsAtom
   )
-  const paramsState = useRecoilValue(paramsStateAtom)
+  const paramsState = useAtomValue(paramsStateAtom)
 
   const trstClient = useIntentoRpcClient()
-  const { client } = useRecoilValue(walletState)
+  const { client } = useAtomValue(walletState)
 
   // Use useAPR instead of getAPR
   const [APR, isLoadingAPR] = useGetAPR()
 
-  const { data, isLoading } = useQuery(
-    'useGetAPYWithFees',
-    async () => {
+  const { data, isPending: isLoading } = useQuery({
+    queryKey: ['useGetAPYWithFees'],
+    queryFn: async () => {
       const intentModuleParams = await getFlowParams(trstClient)
       setTriggerModuleData(intentModuleParams)
       const recurrences =
@@ -478,13 +456,11 @@ export const useGetAPYWithFees = (
       // Reduce the APY by the fee percentage
       return Math.max(0, baseAPY - feesAsPercentageOfStakingBalance)
     },
-    {
-      enabled: Boolean(client && APR && paramsState && stakingBalance > 0), // Ensure apr is available before executing
-      refetchOnMount: false,
-      staleTime: 60000, // Cache data for 60 seconds
-      cacheTime: 300000, // Cache data for 5 minutes
-    }
-  )
+    enabled: Boolean(client && APR && paramsState && stakingBalance > 0), // Ensure apr is available before executing
+    refetchOnMount: false,
+    staleTime: 60000, // Cache data for 60 seconds
+    gcTime: 300000, // Cache data for 5 minutes
+  })
   useEffect(() => {
     if (intentModuleParams && intentModuleParams.flowFlexFeeMul) {
     }
@@ -494,15 +470,15 @@ export const useGetAPYWithFees = (
 }
 
 export const useGetAPY = (intervalSeconds: number) => {
-  const { client } = useRecoilValue(walletState)
-  const paramsState = useRecoilValue(paramsStateAtom)
+  const { client } = useAtomValue(walletState)
+  const paramsState = useAtomValue(paramsStateAtom)
 
   // Use useAPR instead of getAPR
   const [APR, isLoadingAPR] = useGetAPR()
 
-  const { data, isLoading } = useQuery(
-    'useGetAPY',
-    async () => {
+  const { data, isPending: isLoading } = useQuery({
+    queryKey: ['useGetAPY'],
+    queryFn: async () => {
       const periodsPerYear = (60 * 60 * 24 * 365) / intervalSeconds
 
       return (
@@ -510,13 +486,11 @@ export const useGetAPY = (intervalSeconds: number) => {
         100
       )
     },
-    {
-      enabled: Boolean(client && intervalSeconds > 0 && APR && paramsState),
-      refetchOnMount: 'always',
-      refetchInterval: DEFAULT_LONG_REFETCH_INTERVAL,
-      refetchIntervalInBackground: true,
-    }
-  )
+    enabled: Boolean(client && intervalSeconds > 0 && APR && paramsState),
+    refetchOnMount: 'always',
+    refetchInterval: DEFAULT_LONG_REFETCH_INTERVAL,
+    refetchIntervalInBackground: true,
+  })
 
   return [data, isLoading || isLoadingAPR] as const
 }
@@ -524,19 +498,17 @@ export const useGetAPY = (intervalSeconds: number) => {
 export const useGetTotalSupply = () => {
   const client = useIntentoRpcClient()
 
-  const { data, isLoading } = useQuery(
-    'getTotalSupply',
-    async () => {
+  const { data, isPending: isLoading } = useQuery({
+    queryKey: ['getTotalSupply'],
+    queryFn: async () => {
       const { getTotalSupply } = await import('../services/chain-info')
       return getTotalSupply({ client })
     },
-    {
-      enabled: Boolean(client),
-      refetchOnMount: 'always',
-      refetchInterval: DEFAULT_LONG_REFETCH_INTERVAL,
-      refetchIntervalInBackground: true,
-    }
-  )
+    enabled: Boolean(client),
+    refetchOnMount: 'always',
+    refetchInterval: DEFAULT_LONG_REFETCH_INTERVAL,
+    refetchIntervalInBackground: true,
+  })
 
   return [data, isLoading] as const
 }
@@ -544,19 +516,17 @@ export const useGetTotalSupply = () => {
 export const useGetCommunityPool = () => {
   const client = useIntentoRpcClient()
 
-  const { data, isLoading } = useQuery(
-    'getCommunityPool',
-    async () => {
+  const { data, isPending: isLoading } = useQuery({
+    queryKey: ['getCommunityPool'],
+    queryFn: async () => {
       const { getCommunityPool } = await import('../services/chain-info')
       return getCommunityPool({ client })
     },
-    {
-      enabled: Boolean(client),
-      refetchOnMount: 'always',
-      refetchInterval: DEFAULT_LONG_REFETCH_INTERVAL,
-      refetchIntervalInBackground: true,
-    }
-  )
+    enabled: Boolean(client),
+    refetchOnMount: 'always',
+    refetchInterval: DEFAULT_LONG_REFETCH_INTERVAL,
+    refetchIntervalInBackground: true,
+  })
 
   return [data, isLoading] as const
 }
@@ -564,21 +534,19 @@ export const useGetCommunityPool = () => {
 export const useGetChainAndTeamWalletsBalance = () => {
   const client = useIntentoRpcClient()
 
-  const { data, isLoading } = useQuery(
-    'getChainAndTeamWalletsBalance',
-    async () => {
+  const { data, isPending: isLoading } = useQuery({
+    queryKey: ['getChainAndTeamWalletsBalance'],
+    queryFn: async () => {
       const { getChainAndTeamWalletsBalance } = await import(
         '../services/chain-info'
       )
       return getChainAndTeamWalletsBalance({ client })
     },
-    {
-      enabled: Boolean(client),
-      refetchOnMount: 'always',
-      refetchInterval: DEFAULT_LONG_REFETCH_INTERVAL,
-      refetchIntervalInBackground: true,
-    }
-  )
+    enabled: Boolean(client),
+    refetchOnMount: 'always',
+    refetchInterval: DEFAULT_LONG_REFETCH_INTERVAL,
+    refetchIntervalInBackground: true,
+  })
 
   return [data, isLoading] as const
 }
@@ -613,9 +581,9 @@ export const useGetCirculatingSupply = () => {
 export const useGetAirdropClawback = () => {
   const client = useIntentoRpcClient()
 
-  const { data, isLoading } = useQuery(
-    'getAirdropClawback',
-    async () => {
+  const { data, isPending: isLoading } = useQuery({
+    queryKey: ['getAirdropClawback'],
+    queryFn: async () => {
       if (!client) return { percentage: 0, amount: 0 }
 
       try {
@@ -641,13 +609,11 @@ export const useGetAirdropClawback = () => {
         return { percentage: 0, amount: 0 }
       }
     },
-    {
-      enabled: Boolean(client),
-      refetchOnMount: 'always',
-      refetchInterval: DEFAULT_LONG_REFETCH_INTERVAL,
-      refetchIntervalInBackground: true,
-    }
-  )
+    enabled: Boolean(client),
+    refetchOnMount: 'always',
+    refetchInterval: DEFAULT_LONG_REFETCH_INTERVAL,
+    refetchIntervalInBackground: true,
+  })
 
   return [data, isLoading] as const
 }

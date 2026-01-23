@@ -1,4 +1,4 @@
-import { ErrorIcon, Toast } from 'junoblocks'
+import { ErrorIcon, Toast } from 'components/ui-blocks'
 import React from 'react'
 import { toast } from 'react-hot-toast'
 

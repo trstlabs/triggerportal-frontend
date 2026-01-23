@@ -12,7 +12,7 @@ import {
   styled,
   Text,
   Union,
-} from 'junoblocks'
+} from 'components/ui-blocks'
 import { useState } from 'react'
 
 import { TokenOptionsList } from './TokenOptionsList'

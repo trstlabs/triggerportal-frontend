@@ -1,7 +1,7 @@
-import { useMutation } from 'react-query'
-import { useRecoilState, useRecoilValue, useSetRecoilState } from 'recoil'
+import { useMutation } from '@tanstack/react-query'
+import { useAtom, useAtomValue, useSetAtom } from 'jotai'
 import { toast } from 'react-hot-toast'
-import { Button, IconWrapper, Toast, UpRightArrow, Valid } from 'junoblocks'
+import { Button, IconWrapper, Toast, UpRightArrow, Valid } from 'components/ui-blocks'
 import { MsgTransferEncodeObject } from '@cosmjs/stargate'
 import { EncodeObject } from '@cosmjs/proto-signing'
 import { GrantResponse } from '../../../services/build'
@@ -47,11 +47,11 @@ export const useSubmitFlowOnHost = ({
   grantee: propGrantee,
   fee: propFee,
 }: UseSubmitFlowOnHostArgs) => {
-  const { address = '', client, status } = useRecoilValue(ibcWalletState) || {}
-  const intoWallet = useRecoilValue(walletState)
+  const { address = '', client, status } = useAtomValue(ibcWalletState) || {}
+  const intoWallet = useAtomValue(walletState)
 
-  const setTransactionState = useSetRecoilState(transactionStatusState)
-  const [_, popConfetti] = useRecoilState(particleState)
+  const setTransactionState = useSetAtom(transactionStatusState)
+  const [_, popConfetti] = useAtom(particleState)
   const refetchQueries = useRefetchQueries([`ibcTokenBalance/${ibcAssetInfo?.chain_id}/${address}`])
 
   // Helper function to process values and replace placeholders
@@ -85,9 +85,9 @@ export const useSubmitFlowOnHost = ({
     return value;
   };
 
-  return useMutation(
-    'submitFlowOnHost',
-    async () => {
+  return useMutation({
+    mutationKey: ['submitFlowOnHost'],
+    mutationFn: async () => {
       if (status !== WalletStatusType.connected) {
         throw new Error('Please connect your IBC wallet.')
       }
@@ -272,42 +272,40 @@ export const useSubmitFlowOnHost = ({
       // const result = await executeSubmitTx({ client, allMessages })
       return result
     },
-    {
-      onSuccess(data) {
-        console.log(data)
+    onSuccess(data) {
+      console.log(data)
 
-        toast.custom((t) => (
-          <Toast
-            icon={<IconWrapper icon={<Valid />} color="primary" />}
-            title="Flow submitted on host chain!"
-            body={`Successfully transferred tokens to host chain with transaction hash: ${data.transactionHash}${requiredGrants.length > 0 ? ' and created required authz grants' : ''}`}
-            buttons={
-              <Button
-                as="a"
-                variant="ghost"
-                href={`#`}
-                target="__blank"
-                iconRight={<UpRightArrow />}
-              >
-                View on explorer
-              </Button>
-            }
-            onClose={() => toast.dismiss(t.id)}
-          />
-        ))
+      toast.custom((t) => (
+        <Toast
+          icon={<IconWrapper icon={<Valid />} color="primary" />}
+          title="Flow submitted on host chain!"
+          body={`Successfully transferred tokens to host chain with transaction hash: ${data.transactionHash}${requiredGrants.length > 0 ? ' and created required authz grants' : ''}`}
+          buttons={
+            <Button
+              as="a"
+              variant="ghost"
+              href={`#`}
+              target="__blank"
+              iconRight={<UpRightArrow />}
+            >
+              View on explorer
+            </Button>
+          }
+          onClose={() => toast.dismiss(t.id)}
+        />
+      ))
 
-        popConfetti(true)
-        setTransactionState(TransactionStatus.IDLE)
-        refetchQueries()
-      },
-      onError(e) {
-        const errorMessage = formatSdkErrorMessage(e)
-        toast.error(errorMessage)
-        setTransactionState(TransactionStatus.IDLE)
-      },
-      onSettled() {
-        setTransactionState(TransactionStatus.IDLE)
-      },
-    }
-  )
+      popConfetti(true)
+      setTransactionState(TransactionStatus.IDLE)
+      refetchQueries()
+    },
+    onError(e) {
+      const errorMessage = formatSdkErrorMessage(e)
+      toast.error(errorMessage)
+      setTransactionState(TransactionStatus.IDLE)
+    },
+    onSettled() {
+      setTransactionState(TransactionStatus.IDLE)
+    },
+  })
 }

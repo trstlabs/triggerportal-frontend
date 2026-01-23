@@ -6,7 +6,7 @@ import {
   Divider,
   Text,
   ValidIcon,
-} from 'junoblocks'
+} from 'components/ui-blocks'
 
 import { SortDirections, SortParameters } from '../hooks/useSortFlows'
 type Props = {
@@ -54,7 +54,7 @@ export const ButtonWithDropdownForSorting = ({
                 <ValidIcon visible={sortParameter === 'id'} />
               }
             >
-            TxID
+              TxID
             </Button>
             <Button
               variant="ghost"
@@ -64,7 +64,7 @@ export const ButtonWithDropdownForSorting = ({
                 <ValidIcon visible={sortParameter === 'label'} />
               }
             >
-             Label
+              Label
             </Button>
             <Button
               variant="ghost"

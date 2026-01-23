@@ -1,4 +1,4 @@
-import { useQuery } from 'react-query'
+import { useQuery } from '@tanstack/react-query'
 
 // Osmosis LCD endpoint
 const LCD = "https://lcd.osmosis.zone"
@@ -15,14 +15,14 @@ async function fetchINTOPrice(): Promise<number> {
     const data = await res.json()
 
     const pool = data.pool
-  
+
     if (!pool?.current_sqrt_price) throw new Error("Invalid CL pool data");
-  
+
     const sqrtPrice = parseFloat(pool.current_sqrt_price);
-  
+
     // token0 = INTO, token1 = USDC
     const priceToken1PerToken0 = sqrtPrice ** 2; // price of 1 INTO in USDC
-  
+
     return priceToken1PerToken0;
 
   } catch (error) {
@@ -35,17 +35,15 @@ async function fetchINTOPrice(): Promise<number> {
  * Hook to fetch INTO price from Osmosis pool 3138
  */
 export const useINTOPrice = () => {
-  const { data: price, isLoading, error } = useQuery(
-    'intoPrice',
-    fetchINTOPrice,
-    {
-      refetchInterval: 60000,    // Refetch every minute
-      staleTime: 30000,          // Cache for 30 seconds
-      cacheTime: 300000,         // Cache for 5 minutes
-      retry: 3,
-      retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 30000),
-    }
-  )
+  const { data: price, isPending: isLoading, error } = useQuery({
+    queryKey: ['intoPrice'],
+    queryFn: fetchINTOPrice,
+    refetchInterval: 60000,    // Refetch every minute
+    staleTime: 30000,          // Cache for 30 seconds
+    gcTime: 300000,         // Cache for 5 minutes
+    retry: 3,
+    retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 30000),
+  })
 
   return {
     price: price || 0,

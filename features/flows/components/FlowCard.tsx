@@ -6,7 +6,7 @@ import {
   ImageForTokenLogo,
   styled,
   Text,
-} from 'junoblocks'
+} from 'components/ui-blocks'
 import Link from 'next/link'
 
 
@@ -55,8 +55,8 @@ export const FlowCard = ({ flow }: flowWithDetails) => {
     )
   }
   //const flowAmino = Flow.toAmino(flow)
-   const [trustlessAgentICA, _isTrustlessAgentICALoading] = useGetTrustlessAgentICAByTrustlessAgentAddress(flow?.trustlessAgent?.agentAddress)
- 
+  const [trustlessAgentICA, _isTrustlessAgentICALoading] = useGetTrustlessAgentICAByTrustlessAgentAddress(flow?.trustlessAgent?.agentAddress)
+
   const connectionId = flow ? (
     flow.selfHostedIca?.connectionId && flow.selfHostedIca.connectionId !== ''
       ? flow.selfHostedIca.connectionId
@@ -136,9 +136,9 @@ export const FlowCard = ({ flow }: flowWithDetails) => {
                       {flow.trustlessAgent?.agentAddress ? 'Trustless Agent' :
                         flow.selfHostedIca?.connectionId ? 'Self-Hosted | ' + flow.msgs[0]?.typeUrl?.split('.')
                           .find((msgSection) => msgSection.includes('Msg'))?.split(',')[0] || 'Unknown'
-                        : 'Local | ' + flow.msgs[0]?.typeUrl?.split('.')
-                          .find((msgSection) => msgSection.includes('Msg'))?.split(',')[0] || 'Unknown'
-                      } 
+                          : 'Local | ' + flow.msgs[0]?.typeUrl?.split('.')
+                            .find((msgSection) => msgSection.includes('Msg'))?.split(',')[0] || 'Unknown'
+                      }
                     </>
                   </StyledText>
                 </Column>

@@ -5,7 +5,7 @@ import {
   RejectIcon,
   styled,
   Text,
-} from 'junoblocks'
+} from 'components/ui-blocks'
 import { ComponentPropsWithoutRef, useMemo, useState } from 'react'
 
 import { SelectChainInfo } from '../../../../types/trstTypes'
@@ -26,6 +26,8 @@ export class ChainInfo {
   denom: string
   trstDenom: string
   symbol: string
+  union?: boolean
+  universalId?: string
 }
 
 export type ChainSelectorListProps = {
@@ -43,6 +45,8 @@ export type ChainSelectorListProps = {
       | 'denom'
       | 'denom_local'
       | 'id'
+      | 'union'
+      | 'universal_id'
     >
   >
   chainList: Array<
@@ -58,6 +62,8 @@ export type ChainSelectorListProps = {
       | 'denom'
       | 'denom_local'
       | 'id'
+      | 'union'
+      | 'universal_id'
     >
   >
   onSelect: (connectionInfo: ChainInfo) => void
@@ -89,6 +95,8 @@ export const ChainSelectorList = ({
     selectedChain.symbol = selectedInfo.symbol
     selectedChain.prefix = selectedInfo.prefix
     selectedChain.trstDenom = selectedInfo.denom_local
+    selectedChain.union = selectedInfo.union
+    selectedChain.universalId = selectedInfo.universal_id
     return selectedChain
   }
 
@@ -169,36 +177,73 @@ export const ChainSelectorList = ({
           ...(props.css ? props.css : {}),
         }}
       >
-        <Text variant="legend">
-          Connected Chains
+        <Text variant="legend" color="primary">
+          Union Chains (ZKGM)
         </Text>{' '}
-        {filteredIcaChainList.map((chainInfo) => {
-          return (
-            <StyledButtonForRow
-              role="listitem"
-              variant="ghost"
-              key={'icaChainList' + chainInfo.connection_id}
-              selected={chainInfo.name === activeChain}
-              {...getPropsForInteractiveElement({
-                onClick() {
-                  onSelect(passChainInfo(chainInfo))
-                },
-              })}
-            >
-              <StyledDivForColumn>
-                <ImageForTokenLogo
-                  logoURI={chainInfo.logo_uri}
-                  size="large"
-                  alt={chainInfo.denom}
-                  loading="lazy"
-                />
-                <div data-chain-info="">
-                  <Text variant="body">{chainInfo.name}</Text>
-                </div>
-              </StyledDivForColumn>
-            </StyledButtonForRow>
-          )
-        })}
+        {filteredIcaChainList
+          .filter((chainInfo) => chainInfo.union)
+          .map((chainInfo) => {
+            return (
+              <StyledButtonForRow
+                role="listitem"
+                variant="ghost"
+                key={'unionChainList' + (chainInfo.connection_id || chainInfo.chain_id)}
+                selected={chainInfo.name === activeChain}
+                {...getPropsForInteractiveElement({
+                  onClick() {
+                    onSelect(passChainInfo(chainInfo))
+                  },
+                })}
+              >
+                <StyledDivForColumn>
+                  <ImageForTokenLogo
+                    logoURI={chainInfo.logo_uri}
+                    size="large"
+                    alt={chainInfo.denom}
+                    loading="lazy"
+                  />
+                  <div data-chain-info="">
+                    <Text variant="body">{chainInfo.name}</Text>
+                  </div>
+                </StyledDivForColumn>
+              </StyledButtonForRow>
+            )
+          })}
+
+        <div style={{ marginTop: '16px' }}>
+          <Text variant="legend" color="primary">
+            IBC Chains
+          </Text>
+        </div>{' '}
+        {filteredIcaChainList
+          .filter((chainInfo) => !chainInfo.union)
+          .map((chainInfo) => {
+            return (
+              <StyledButtonForRow
+                role="listitem"
+                variant="ghost"
+                key={'icaChainList' + chainInfo.connection_id}
+                selected={chainInfo.name === activeChain}
+                {...getPropsForInteractiveElement({
+                  onClick() {
+                    onSelect(passChainInfo(chainInfo))
+                  },
+                })}
+              >
+                <StyledDivForColumn>
+                  <ImageForTokenLogo
+                    logoURI={chainInfo.logo_uri}
+                    size="large"
+                    alt={chainInfo.denom}
+                    loading="lazy"
+                  />
+                  <div data-chain-info="">
+                    <Text variant="body">{chainInfo.name}</Text>
+                  </div>
+                </StyledDivForColumn>
+              </StyledButtonForRow>
+            )
+          })}
         {/* <Text variant="legend">
           Other chains - send messages directly only
         </Text>{' '}

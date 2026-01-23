@@ -2,7 +2,7 @@ import { useMemo } from 'react'
 import {
     Text,
     Tooltip,
-} from 'junoblocks'
+} from 'components/ui-blocks'
 import React from 'react'
 
 import { ICQConfig } from 'intentojs/dist/codegen/intento/intent/v1/flow'

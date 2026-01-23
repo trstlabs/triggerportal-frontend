@@ -1,4 +1,4 @@
-import { Button, Dialog, DialogContent, DialogHeader, Text } from 'junoblocks'
+import { Button, Dialog, DialogContent, DialogHeader, Text } from 'components/ui-blocks'
 import { useEffect, useState } from 'react'
 import { APP_NAME } from '../util/constants'
 
@@ -19,13 +19,11 @@ export const TestnetDialog = () => {
 
   return (
     <Dialog isShowing={isShowing} onRequestClose={requestClose}>
-      <DialogHeader paddingBottom="$10">
+      <DialogHeader>
         <Text variant="header">Demo mode</Text>
       </DialogHeader>
       <DialogContent>
-      </DialogContent>
-      <DialogContent css={{ paddingBottom: '$12' }}>
-        <Text css={{ paddingBottom: '$12' }} variant="body">
+        <Text variant="body">
           This app is currently operating in demo mode. The app serves only the
           presentation and testing purposes. You will not be able to interact with mainnet chains.
         </Text>

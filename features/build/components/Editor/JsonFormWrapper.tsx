@@ -9,17 +9,19 @@ import {
   ToggleSwitch,
   Card,
   CardContent,
-} from 'junoblocks';
+} from 'components/ui-blocks';
 import React, { useEffect, useState } from 'react';
 import JsonFormEditor from './DynamicForm';
 import { JsonCodeMirrorEditor } from './CodeMirror';
 import { findFileBySuffix } from './Validation';
 import { ExampleChips, ExampleFlowChips } from './ExampleChips';
 import { MessageSelector } from './MessageSelector';
+import { UnionCallEditor } from './UnionCallEditor';
 
 export const JsonFormWrapper = ({
   index,
   chainSymbol,
+  universalId,
   msg,
   setExample,
   setAllMessages,
@@ -30,6 +32,7 @@ export const JsonFormWrapper = ({
 }: {
   index: number
   chainSymbol: string
+  universalId?: string
   msg: string
   setExample?: (index: number, msg: any) => void
   setAllMessages?: (msgs: any[]) => void
@@ -39,6 +42,7 @@ export const JsonFormWrapper = ({
   selectedTemplateLabel?: string | null
 }): JSX.Element => {
   const [showJsonForm, setShowJsonForm] = useState(true)
+  const [showUnionCallEditor, setShowUnionCallEditor] = useState(false)
   const extractedMsgTypeUrl =
     msg && msg.length > 32 && msg.split('.').find((name) => name.includes('Msg'));
   const extractedMsgPrefix =
@@ -85,8 +89,16 @@ export const JsonFormWrapper = ({
           setAllMessages={setAllMessages}
           index={index}
           onCustom={() => setShowCustom(!showCustom)}
+          onUnionCall={() => setShowUnionCallEditor(!showUnionCallEditor)}
           selectedTemplateLabel={selectedTemplateLabel}
         />}
+        {showUnionCallEditor && (
+          <UnionCallEditor
+            destinationChainId={universalId}
+            onChange={handleChangeMsg(index)}
+            onClose={() => setShowUnionCallEditor(false)}
+          />
+        )}
         {showCustom && setExample && (
           <Inline css={{ justifyContent: 'space-between' }}>
             {(
@@ -114,7 +126,7 @@ export const JsonFormWrapper = ({
             setExample={setExample}
             messageIndex={index}
           />}
-          { setExample && <Divider offsetY="$6" />}
+          {setExample && <Divider offsetY="$6" />}
           <div style={{ margin: '$4', padding: '$4' }}>
             <Inline css={{ justifyContent: 'space-between' }}>
               <Button

@@ -7,10 +7,10 @@ import {
     Toast,
     UpRightArrow,
     Valid,
-} from 'junoblocks'
+} from 'components/ui-blocks'
 import { toast } from 'react-hot-toast'
-import { useMutation } from 'react-query'
-import { useRecoilValue, useSetRecoilState } from 'recoil'
+import { useMutation } from '@tanstack/react-query'
+import { useAtomValue, useSetAtom } from 'jotai'
 import { executeDirectSend, RecipientInfo } from '../../../services/send'
 import {
     TransactionStatus,
@@ -31,8 +31,8 @@ export const useTokenSend = ({
     ibcAsset,
     recipientInfos,
 }: UseTokenSendArgs) => {
-    const { client, address, status } = useRecoilValue(walletState)
-    const setTransactionState = useSetRecoilState(transactionStatusState)
+    const { client, address, status } = useAtomValue(walletState)
+    const setTransactionState = useSetAtom(transactionStatusState)
 
     const refetchQueries = useRefetchQueries([`tokenBalance/INTO/${address}`])
 

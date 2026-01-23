@@ -5,7 +5,7 @@ import {
   ImageForTokenLogo,
   styled,
   Text,
-} from 'junoblocks'
+} from 'components/ui-blocks'
 import React from 'react'
 import { getPropsForInteractiveElement } from 'util/getPropsForInteractiveElement'
 

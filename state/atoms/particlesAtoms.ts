@@ -1,7 +1,4 @@
-import { atom } from 'recoil'
+import { atom } from 'jotai'
 
 
-export const particleState = atom<Boolean>({
-  key: 'confetti',
-  default: false,
-})
+export const particleState = atom<boolean>(false)

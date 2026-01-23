@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react'
 import { useRouter } from 'next/router'
-import { Column, styled, Text, useControlTheme } from 'junoblocks'
-import { useChain } from '@cosmos-kit/react'
-import { useRecoilState } from 'recoil'
+import { Column, styled, Text, useControlTheme } from 'components/ui-blocks'
+import { useChain } from '@interchain-kit/react'
+import { useAtom } from 'jotai'
 import { walletState, WalletStatusType } from 'state/atoms/walletAtoms'
 import { WalletButton } from '../../components/Wallet/WalletButton'
 import { useAfterConnectWallet } from '../../hooks/useAfterConnectWallet'
@@ -91,10 +91,11 @@ export default function Submit() {
   }, [])
 
   // Wallet connection state and functions
-  const [{ status }, setWalletState] = useRecoilState(walletState)
+  const [{ status }, setWalletState] = useAtom(walletState)
 
   let {
-    isWalletConnected,
+    // isWalletConnected, // Removed as it does not exist
+    status: chainStatus, // Renamed to avoid partial conflict if any
     connect,
     disconnect,
     username,
@@ -111,7 +112,7 @@ export default function Submit() {
     }
   }, [address, afterConnectWallet])
 
-  const walletStatusesConnected = isWalletConnected && (status === WalletStatusType.connected || status === WalletStatusType.restored)
+  const walletStatusesConnected = (chainStatus === 'Connected') && (status === WalletStatusType.connected || status === WalletStatusType.restored)
   const isClientConnected = true // Simplified for this implementation
 
   function resetWalletConnection() {

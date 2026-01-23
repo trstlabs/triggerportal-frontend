@@ -14,7 +14,7 @@ import {
   Text,
   Tooltip,
   Valid, Connect,
-} from 'junoblocks'
+} from 'components/ui-blocks'
 import React from 'react'
 
 
@@ -77,7 +77,7 @@ export const WalletButton = ({
           {baseToken?.symbol}
         </Text>
         {!loadingBalances && ibcBalances?.map((balance, i) =>
-          <Text key={"bal"+i}
+          <Text key={"bal" + i}
             variant="legend"
             css={{
               '-webkit-background-clip': 'text',

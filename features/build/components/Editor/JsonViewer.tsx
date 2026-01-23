@@ -1,5 +1,5 @@
 import React from 'react';
-import { styled, Text } from 'junoblocks';
+import { styled, Text } from 'components/ui-blocks';
 
 // Styled components
 const StyledField = styled('div', {
@@ -33,7 +33,7 @@ const JsonViewer = ({ jsonValue }) => {
 
     const renderField = (key, value, baseName = '') => {
         const fieldName = baseName ? `${baseName}.${key}` : key;
-        
+
         if (typeof value === 'object' && !Array.isArray(value)) {
             return (
                 <StyledField key={fieldName}>

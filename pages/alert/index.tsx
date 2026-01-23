@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react"
-import { Button, Column, styled, Text, useControlTheme } from 'junoblocks'
+import { Button, Column, styled, Text, useControlTheme } from 'components/ui-blocks'
 import Image from 'next/image'
 
 const FlowAlert = () => {

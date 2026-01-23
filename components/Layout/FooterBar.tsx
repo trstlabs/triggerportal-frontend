@@ -1,4 +1,4 @@
-import { Button, IconWrapper, styled, Text, UpRightArrow } from 'junoblocks'
+import { Button, IconWrapper, styled, Text, UpRightArrow } from 'components/ui-blocks'
 import { APP_NAME } from 'util/constants'
 
 export const FooterBar = () => {

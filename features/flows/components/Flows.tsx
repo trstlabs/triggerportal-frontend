@@ -5,7 +5,7 @@ import {
   styled,
   Union,
   useOnClickOutside,
-} from 'junoblocks'
+} from 'components/ui-blocks'
 import React, { useRef, useState } from 'react'
 
 import { QueryInput } from 'components//Input/QueryInput'
@@ -14,7 +14,7 @@ type FlowsProps = {
   readOnly?: boolean
   disabled?: boolean
   // codeId: number
-  onChange: (token: { codeId;  }) => void
+  onChange: (token: { codeId; }) => void
   size?: 'small' | 'large'
 }
 
@@ -64,7 +64,7 @@ export const Flows = ({
             />
           </Inline>
         )}
-       
+
       </StyledDivForContainer>
     )
   }
@@ -88,7 +88,7 @@ export const Flows = ({
               }}
             />
           )}
-         
+
         </StyledDivForSelector>
         <StyledDivForAmountWrapper>
           {isFlowListShowing && (
@@ -100,7 +100,7 @@ export const Flows = ({
             />
           )}
 
-         
+
         </StyledDivForAmountWrapper>
         <StyledDivForOverlay
           interactive={readOnly ? false : !isInputForAmountFocused}
@@ -115,7 +115,7 @@ export const Flows = ({
           }}
         />
       </StyledDivForWrapper>
-   
+
     </StyledDivForContainer>
   )
 }

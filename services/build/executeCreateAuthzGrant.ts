@@ -1,5 +1,5 @@
-import { SigningStargateClient } from '@cosmjs/stargate'
 import { Coin } from '@cosmjs/stargate'
+import { SigningClient } from '@interchain-kit/react'
 // import { MsgGrant } from 'cosmjs-types/cosmos/authz/v1beta1/tx'
 import { MsgSend } from 'cosmjs-types/cosmos/bank/v1beta1/tx'
 // import { GenericAuthorization } from 'cosmjs-types/cosmos/authz/v1beta1/authz'
@@ -10,7 +10,7 @@ type ExecuteCreateAuthzGrantArgs = {
   grantee: string
   typeUrls: string[]
   expirationDurationMs?: number
-  client: SigningStargateClient
+  client: SigningClient
   coin?: Coin
 }
 

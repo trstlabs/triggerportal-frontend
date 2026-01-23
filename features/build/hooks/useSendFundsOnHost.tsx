@@ -1,9 +1,9 @@
 import {
     formatSdkErrorMessage,
-} from 'junoblocks'
+} from 'components/ui-blocks'
 import { toast } from 'react-hot-toast'
-import { useMutation } from 'react-query'
-import { useRecoilValue, useSetRecoilState } from 'recoil'
+import { useMutation } from '@tanstack/react-query'
+import { useAtomValue, useSetAtom } from 'jotai'
 import { executeSendFunds } from '../../../services/build'
 import {
     TransactionStatus,
@@ -29,15 +29,15 @@ export const useSendFundsOnHost = ({
 }: UseSendFundsParams
 ) => {
     const { address, client, status } =
-        useRecoilValue(ibcWalletState)
+        useAtomValue(ibcWalletState)
 
-    const setTransactionState = useSetRecoilState(transactionStatusState)
+    const setTransactionState = useSetAtom(transactionStatusState)
 
     const refetchQueries = useRefetchQueries([`ibcTokenBalance/${coin.denom}/${address}`])
 
-    return useMutation(
-        'SendFunds',
-        async () => {
+    return useMutation({
+        mutationKey: ['SendFunds'],
+        mutationFn: async () => {
             if (status !== WalletStatusType.connected || client == null) {
                 throw new Error('Please retry or connect your wallet.')
             }
@@ -54,22 +54,20 @@ export const useSendFundsOnHost = ({
             }))
 
         },
-        {
-            onSuccess(data) {
-                console.log(data)
-                //popConfetti(true)
-                //
-                toast.success("Succesfully sent")
-                refetchQueries()
-            },
-            onError(e) {
-                const errorMessage = formatSdkErrorMessage(e)
+        onSuccess(data) {
+            console.log(data)
+            //popConfetti(true)
+            //
+            toast.success("Succesfully sent")
+            refetchQueries()
+        },
+        onError(e) {
+            const errorMessage = formatSdkErrorMessage(e)
 
-                toast.error("Oops, error sending funds to Interchain Account! " + errorMessage)
-            },
-            onSettled() {
-                setTransactionState(TransactionStatus.IDLE)
-            },
-        }
-    )
+            toast.error("Oops, error sending funds to Interchain Account! " + errorMessage)
+        },
+        onSettled() {
+            setTransactionState(TransactionStatus.IDLE)
+        },
+    })
 }

@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { Inline, useControlTheme } from 'junoblocks'
+import { Inline, useControlTheme } from 'components/ui-blocks'
 import { ChevronDown, Clock } from 'lucide-react'
 
 export function IntentTemplateChip({

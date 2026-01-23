@@ -1,4 +1,4 @@
-import { media, styled, useControlTheme, useMedia } from 'junoblocks'
+import { media, styled, useControlTheme, useMedia } from 'components/ui-blocks'
 import { MAIN_PANE_MAX_WIDTH } from 'util/constants'
 
 import { FooterBar } from './FooterBar'
@@ -8,7 +8,7 @@ import { useEffect, useState } from 'react'
 import type { Container } from '@tsparticles/engine'
 import Particles, { initParticlesEngine } from '@tsparticles/react'
 import { loadSlim } from '@tsparticles/slim'
-import { useRecoilState } from 'recoil'
+import { useAtom } from 'jotai'
 import { particleState } from '../../state/atoms/particlesAtoms'
 
 export const AppLayout = ({
@@ -19,7 +19,7 @@ export const AppLayout = ({
   const isSmallScreen = useMedia('sm')
   const themeController = useControlTheme()
 
-  const [isConfetti, popConfetti] = useRecoilState(particleState)
+  const [isConfetti, popConfetti] = useAtom(particleState)
   const [init, setInit] = useState(false);
 
   useEffect(() => {

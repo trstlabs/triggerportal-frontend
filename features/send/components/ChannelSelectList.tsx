@@ -4,7 +4,7 @@ import {
 
   styled,
   Text,
-} from 'junoblocks'
+} from 'components/ui-blocks'
 import { ComponentPropsWithoutRef } from 'react'
 
 
@@ -29,7 +29,7 @@ export class ChannelInfo {
 
 export type ChannelSelectListProps = {
   activeChannel?: string
-  channelList: Array<Pick<SelectChainInfo, 'channel' | 'chain_id' | 'prefix' | 'denom'|  'denom_local' | 'logo_uri' | 'name' | 'symbol'| 'connection_id'>>
+  channelList: Array<Pick<SelectChainInfo, 'channel' | 'chain_id' | 'prefix' | 'denom' | 'denom_local' | 'logo_uri' | 'name' | 'symbol' | 'connection_id'>>
   onSelect: (channelInfo: ChannelInfo) => void
   fetchingBalanceMode: 'native' | 'ibc'
   visibleNumberOfTokensInViewport?: number

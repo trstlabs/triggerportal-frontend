@@ -16,7 +16,7 @@ import {
   Toast,
   UpRightArrow,
   Valid,
-} from 'junoblocks'
+} from 'components/ui-blocks'
 import React, { useState } from 'react'
 import { toast } from 'react-hot-toast'
 
@@ -52,7 +52,7 @@ export const TransferDialog = ({
   const [tokenAmount, setTokenAmount] = useState(0)
   const refetchQueries = useRefetchQueries([`tokenBalance/INTO`, 'ibcTokenBalance'])
 
-  const { isLoading, mutate: mutateTransferAsset } = useTransferAssetMutation({
+  const { isPending: isLoading, mutate: mutateTransferAsset } = useTransferAssetMutation({
     transactionKind,
     tokenAmount,
     ibcAssetInfo,
@@ -64,9 +64,8 @@ export const TransferDialog = ({
       toast.custom((t) => (
         <Toast
           icon={<IconWrapper icon={<Valid />} color="valid" />}
-          title={`${tokenSymbol} ${
-            transactionKind === 'deposit' ? 'deposit' : 'withdrawal'
-          } successfully initiated`}
+          title={`${tokenSymbol} ${transactionKind === 'deposit' ? 'deposit' : 'withdrawal'
+            } successfully initiated`}
           onClose={() => toast.dismiss(t.id)}
         />
       ))
@@ -78,9 +77,8 @@ export const TransferDialog = ({
       toast.custom((t) => (
         <Toast
           icon={<IconWrapper icon={<Error />} color="error" />}
-          title={`Couldn't ${
-            transactionKind === 'deposit' ? 'Deposit' : 'Withdraw'
-          } the asset`}
+          title={`Couldn't ${transactionKind === 'deposit' ? 'Deposit' : 'Withdraw'
+            } the asset`}
           body={(error as any)?.message ?? error?.toString()}
           buttons={
             <Button

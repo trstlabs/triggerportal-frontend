@@ -1,4 +1,4 @@
-import { Dialog, Inline, useOnClickOutside } from 'junoblocks'
+import { Dialog, Inline, useOnClickOutside } from 'components/ui-blocks'
 import React, {
   Dispatch,
   SetStateAction,
@@ -28,7 +28,7 @@ export const MessageSelector = ({
 
   // Helper function to dynamically load schemas by name
   const loadSchemas = async () => {
-   
+
     const loadedSchemas: any = {}
     for (const schemaName of schemaNames) {
       try {

@@ -6,7 +6,7 @@ import {
   ImageForTokenLogo,
   styled,
   Text,
-} from 'junoblocks'
+} from 'components/ui-blocks'
 import React from 'react'
 import { getPropsForInteractiveElement } from 'util/getPropsForInteractiveElement'
 import { useIBCAssetInfo } from '../../../hooks/useIBCAssetInfo'
@@ -32,7 +32,7 @@ export const TokenSelectorToggle = ({
 
   const hasTokenSelected = Boolean(tokenSymbol)
 
-  return (<><Text  css={{ marginRight: '$4' }}>Token</Text>
+  return (<><Text css={{ marginRight: '$4' }}>Token</Text>
     <StyledDivForSelector
       state={isSelecting || !tokenSymbol ? 'selecting' : 'selected'}
       {...getPropsForInteractiveElement({ onClick: onToggle })}

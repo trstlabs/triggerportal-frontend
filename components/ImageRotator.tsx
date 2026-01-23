@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { styled } from 'junoblocks'
+import { styled } from 'components/ui-blocks'
 
 
 const StyledPNGBottom = styled('img', {

@@ -1,6 +1,7 @@
-import { SigningStargateClient } from '@cosmjs/stargate'
 import { AssetList } from '@chain-registry/types'
-import { atom } from 'recoil'
+import { atomWithStorage, RESET } from 'jotai/utils'
+import { WritableAtom } from 'jotai'
+import { SigningClient } from '@interchain-kit/react'
 
 export enum WalletStatusType {
   /* nothing happens to the wallet */
@@ -34,56 +35,68 @@ function createWalletState<TClient = any, TState = {}>({
   key,
   default: defaultState,
 }: CreateWalletStateArgs<TState>) {
-  return atom<GeneratedWalletState<TClient, TState>>({
-    key,
-    default: {
+  const CACHE_KEY = `@triggerportal/wallet-state/type-${key}`
+
+  const storage = {
+    getItem: (key: string, initialValue: GeneratedWalletState<TClient, TState>) => {
+      if (typeof window === 'undefined') return initialValue
+      try {
+        const savedValue = localStorage.getItem(key)
+        if (savedValue) {
+          const parsedSavedState = JSON.parse(savedValue)
+          if (parsedSavedState?.address) {
+            return {
+              ...parsedSavedState,
+              client: null,
+              status: WalletStatusType.restored,
+            }
+          }
+        }
+      } catch (e) { }
+      return initialValue
+    },
+    setItem: (key: string, newValue: GeneratedWalletState<TClient, TState>) => {
+      const isReset = !newValue.address
+      if (isReset) {
+        localStorage.removeItem(key)
+      } else {
+        localStorage.setItem(
+          key,
+          /* let's not store the client in the cache */
+          JSON.stringify({ ...newValue, client: null, status: null })
+        )
+      }
+    },
+    removeItem: (key: string) => localStorage.removeItem(key),
+  }
+
+  return atomWithStorage<GeneratedWalletState<TClient, TState>>(
+    CACHE_KEY,
+    {
       status: WalletStatusType.idle,
       client: null,
       address: '',
       assets: undefined,
       ...defaultState,
     },
-    dangerouslyAllowMutability: true,
-    effects_UNSTABLE: [
-      ({ onSet, setSelf }) => {
-        const CACHE_KEY = `@triggerportal/wallet-state/type-${key}`
-
-        const savedValue = localStorage.getItem(CACHE_KEY)
-
-        if (savedValue) {
-          try {
-            const parsedSavedState = JSON.parse(savedValue)
-            if (parsedSavedState?.address) {
-              setSelf({
-                ...parsedSavedState,
-                client: null,
-                status: WalletStatusType.restored,
-              })
-            }
-          } catch (e) {}
-        }
-
-        onSet((newValue, oldValue) => {
-          const isReset = !newValue.address && (oldValue as any)?.address
-
-          if (isReset) {
-            localStorage.removeItem(CACHE_KEY)
-          } else {
-            localStorage.setItem(
-              CACHE_KEY,
-              /* let's not store the client in the cache */
-              JSON.stringify({ ...newValue, client: null, status: null })
-            )
-          }
-        })
-      },
-    ],
-  })
+    storage as any
+  ) as WritableAtom<
+    GeneratedWalletState<TClient, TState>,
+    [GeneratedWalletState<TClient, TState> | typeof RESET | ((prev: GeneratedWalletState<TClient, TState>) => GeneratedWalletState<TClient, TState>)],
+    void
+  >
 }
 
-export const walletState = createWalletState<
-  SigningStargateClient,
-  { key?: string }
+type LocalWalletState = GeneratedWalletState<SigningClient, { key?: string | null }>;
+type IbcWalletState = GeneratedWalletState<SigningClient, { chainId?: string | null }>;
+
+export const walletState: WritableAtom<
+  LocalWalletState,
+  [LocalWalletState | ((prev: LocalWalletState) => LocalWalletState) | typeof RESET],
+  void
+> = createWalletState<
+  SigningClient,
+  { key?: string | null }
 >({
   key: 'internal-wallet',
   default: {
@@ -91,11 +104,15 @@ export const walletState = createWalletState<
   },
 })
 
-export const ibcWalletState = createWalletState<
-  SigningStargateClient,
+export const ibcWalletState: WritableAtom<
+  IbcWalletState,
+  [IbcWalletState | ((prev: IbcWalletState) => IbcWalletState) | typeof RESET],
+  void
+> = createWalletState<
+  SigningClient,
   {
     /* ibc wallet is connected */
-    chainId?: string
+    chainId?: string | null
   }
 >({
   key: 'ibc-wallet',

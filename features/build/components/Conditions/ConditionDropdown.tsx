@@ -1,6 +1,6 @@
 
 import React from 'react'
-import { Text } from 'junoblocks'
+import { Text } from 'components/ui-blocks'
 
 
 // Define props for ConditionDropdown

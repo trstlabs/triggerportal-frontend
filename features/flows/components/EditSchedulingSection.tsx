@@ -1,4 +1,4 @@
-import { Inline, Text, Button, styled, useControlTheme } from 'junoblocks'
+import { Inline, Text, Button, styled, useControlTheme } from 'components/ui-blocks'
 import DatePicker from 'react-datepicker'
 import 'react-datepicker/dist/react-datepicker.css'
 import { useState, useEffect } from 'react'
@@ -188,9 +188,9 @@ export function EditSchedulingSection({
   return (
     <StyledDiv>
       <StyledGrid>
-         {!disableRecurring && <Inline gap={2} align="center" style={{ marginBottom: '$4' }}>
+        {!disableRecurring && <Inline gap={2} align="center" style={{ marginBottom: '$4' }}>
           <Text variant="caption" style={{ minWidth: '45px' }}>Start</Text>
-         <Inline gap={1}>
+          <Inline gap={1}>
             <StyledDatePicker
               selected={startAt}
               onChange={(date: Date) => {
@@ -249,7 +249,7 @@ export function EditSchedulingSection({
               backgroundColor: themeController?.theme.name === 'dark' ? '#1f1f1f' : '#ffffff',
             }}
           >
-            {!disableRecurring  && intervalOptions.map(option => (
+            {!disableRecurring && intervalOptions.map(option => (
               <option
                 key={option.value}
                 value={option.value}

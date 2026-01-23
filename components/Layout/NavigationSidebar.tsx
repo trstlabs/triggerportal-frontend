@@ -22,15 +22,15 @@ import {
   UpRightArrow,
   useControlTheme,
   useMedia,
-} from 'junoblocks'
+} from 'components/ui-blocks'
 import Link from 'next/link'
 import { useRouter } from 'next/router'
 import { Globe, File, LineChart } from 'lucide-react'
 import React, { ReactNode, useEffect, useState } from 'react'
-import { useChain } from '@cosmos-kit/react'
+import { useChain } from '@interchain-kit/react'
 import { __TEST_MODE__ } from 'util/constants'
 import { WalletButton } from '../Wallet/WalletButton'
-import { useRecoilState } from 'recoil'
+import { useAtom } from 'jotai'
 import { walletState, WalletStatusType } from 'state/atoms/walletAtoms'
 import { useAfterConnectWallet } from '../../hooks/useAfterConnectWallet'
 import { Alert } from '../../icons/Alert'
@@ -43,7 +43,7 @@ type NavigationSidebarProps = {
 }
 
 export function NavigationSidebar(_: NavigationSidebarProps) {
-  const [{ status, client }, setWalletState] = useRecoilState(walletState)
+  const [{ status, client }, setWalletState] = useAtom(walletState)
   const themeController = useControlTheme()
 
   const isMobile = useMedia('sm')
@@ -51,7 +51,6 @@ export function NavigationSidebar(_: NavigationSidebarProps) {
 
 
   const {
-    isWalletConnected,
     status: walletStatus,
     connect,
     disconnect,
@@ -70,11 +69,12 @@ export function NavigationSidebar(_: NavigationSidebarProps) {
 
     }
   }, [address, afterConnectWallet]);
-  const walletStatusesConnected = isWalletConnected && (status === WalletStatusType.connected || status === WalletStatusType.restored)
+  const walletStatusesConnected = Boolean(address) && (status === WalletStatusType.connected || status === WalletStatusType.restored)
   const isClientConnected = client != null && client != undefined
 
 
   function resetWalletConnection() {
+    console.log("resetWalletConnection")
     disconnect()
     setWalletState({
       status: WalletStatusType.idle,

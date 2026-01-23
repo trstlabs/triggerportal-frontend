@@ -18,12 +18,12 @@ import {
   CardContent,
   useMedia,
   useControlTheme,
-} from 'junoblocks'
+} from 'components/ui-blocks'
 import { useCallback, useMemo, useState } from 'react'
 import { useUpdateEffect } from 'react-use'
 import { useFlows, useFlowsByOwner } from 'hooks/useFlow'
 import { FlowCard } from '../features/flows/components/FlowCard'
-import { useChain } from '@cosmos-kit/react'
+import { useChain } from '@interchain-kit/react'
 import { ChevronLeft, ChevronRight } from 'lucide-react'
 import { APP_NAME } from '../util/constants'
 import Head from 'next/head'
@@ -183,9 +183,9 @@ export default function Home() {
             </title>
           </Head>
         )}
-        <Text variant="header" css={{ 
-          marginBottom: '$8', 
-          marginTop: '$8', 
+        <Text variant="header" css={{
+          marginBottom: '$8',
+          marginTop: '$8',
           fontSize: 24,
           fontFamily: '"Oceanwide", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif',
           fontWeight: 700,
@@ -299,7 +299,7 @@ export default function Home() {
             </Inline>
           )
           }
-          {!Boolean(allFlows?.flows.length) &&  allFlows?.flows?.length === 0 && !isMyFlowsLoading && !isLoading && !isRefreshing && !isSorting  && (
+          {!Boolean(allFlows?.flows.length) && allFlows?.flows?.length === 0 && !isMyFlowsLoading && !isLoading && !isRefreshing && !isSorting && (
             <Text variant="caption" css={{ padding: '$4' }}>
               {' '}
               No Flows found
@@ -393,7 +393,7 @@ export default function Home() {
               />
             ))
           ) : (
-            allFlows?.flows?.length === 0 && !isMyFlowsLoading && !isLoading && !isRefreshing && !isSorting  && (
+            allFlows?.flows?.length === 0 && !isMyFlowsLoading && !isLoading && !isRefreshing && !isSorting && (
               // Show message when no flows found (only after loading is complete)
               <Column css={{ gridColumn: '1 / -1', textAlign: 'center', padding: '$12 $6' }}>
                 <Text variant="secondary">No flows found</Text>

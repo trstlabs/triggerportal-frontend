@@ -106,7 +106,7 @@ export const TEMPLATES: IntentTemplate[] = [
     availability: { state: 'available' },
     assets: ['OSMO'],
     ui: {
-      label: 'DCA into ATOM when avg. < $2.10 (beta)',
+      label: 'DCA into ATOM when avg. < $2.10',
       description:
         'Periodically swaps USDC into ATOM on Osmosis only when the TWAP is below your configured threshold in the comparison operand, so buys are executed on TWAP dips instead of every interval.',
       gradient:
@@ -168,7 +168,7 @@ export const TEMPLATES: IntentTemplate[] = [
     availability: { state: 'available' },
     assets: ['OSMO'],
     ui: {
-      label: 'DCA into INTO when avg. < $0.0009 (beta)',
+      label: 'DCA into INTO when avg. < $0.0009',
       description:
         'Periodically swaps USDC into INTO on Osmosis only when the TWAP is below your configured threshold in the comparison operand, so buys are executed on TWAP dips instead of every interval.',
       gradient:
@@ -467,7 +467,7 @@ export const TEMPLATES: IntentTemplate[] = [
     availability: { state: 'available' },
     assets: ['OSMO'],
     ui: {
-      label: 'BTC Positive trend detection (beta)',
+      label: 'BTC Positive trend detection',
       description: 'Swaps when the BTC/OSMO TWAP is above a configured threshold of 0 indicating a positive trend.',
       gradient:
         'linear-gradient(90deg,rgb(67, 142, 233) 50%,rgba(240, 190, 97, 0.6) 100%)',
@@ -528,7 +528,7 @@ export const TEMPLATES: IntentTemplate[] = [
     availability: { state: 'available' },
     assets: ['OSMO'],
     ui: {
-      label: 'Spot vs TWAP arbitrage BTC Buy (beta)',
+      label: 'Spot vs TWAP arbitrage BTC Buy',
       description:
         'Swaps 1 USDC into BTC every time when the spot price is lower than the time-weighted average price.',
       gradient:
@@ -585,7 +585,7 @@ export const TEMPLATES: IntentTemplate[] = [
     availability: { state: 'available' },
     assets: ['OSMO'],
     ui: {
-      label: 'Spot vs TWAP arbitrage ATOM Buy (beta)',
+      label: 'Spot vs TWAP arbitrage ATOM Buy',
       description:
         'Swaps 1 USDC into ATOM every time when the spot price is lower than the time-weighted average price.',
       gradient:
@@ -642,7 +642,7 @@ export const TEMPLATES: IntentTemplate[] = [
     availability: { state: 'available' },
     assets: ['OSMO'],
     ui: {
-      label: 'Spot vs TWAP arbitrage BTC Sell (beta)',
+      label: 'Spot vs TWAP arbitrage BTC Sell',
       description:
         'Swaps 1 BTC into USDC every time when the spot price is higher than the time-weighted average price.',
       gradient:
@@ -703,7 +703,7 @@ export const TEMPLATES: IntentTemplate[] = [
     availability: { state: 'available' },
     assets: ['OSMO'],
     ui: {
-      label: 'Spot vs TWAP arbitrage INTO Buy (beta)',
+      label: 'Spot vs TWAP arbitrage INTO Buy',
       description:
         'Swaps 1 USDC into INTO every time when the spot price is lower than the time-weighted average price.',
       gradient:
@@ -764,7 +764,7 @@ export const TEMPLATES: IntentTemplate[] = [
     availability: { state: 'available' },
     assets: ['OSMO'],
     ui: {
-      label: 'Spot vs TWAP arbitrage INTO Sell (beta)',
+      label: 'Spot vs TWAP arbitrage INTO Sell',
       description:
         'Swaps 1 INTO into USDC every time when the spot price is higher than the time-weighted average price.',
       gradient:
@@ -829,7 +829,7 @@ export const TEMPLATES: IntentTemplate[] = [
     availability: { state: 'available' },
     assets: ['OSMO'],
     ui: {
-      label: 'Spot vs TWAP arbitrage ATOM Sell (beta)',
+      label: 'Spot vs TWAP arbitrage ATOM Sell',
       description:
         'Swaps 1 ATOM into USDC every time when the spot price is higher than the time-weighted average price.',
       gradient:

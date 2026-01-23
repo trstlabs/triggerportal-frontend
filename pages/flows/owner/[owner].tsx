@@ -1,5 +1,5 @@
 import { AppLayout, PageHeader } from 'components'
-import { Button, Column, IconWrapper, Inline, media, Spinner, styled, Text } from 'junoblocks'
+import { Button, Column, IconWrapper, Inline, media, Spinner, styled, Text } from 'components/ui-blocks'
 import { useRouter } from 'next/router'
 import { useCallback, useState } from 'react'
 import { useFlowsByOwner } from 'hooks/useFlow'

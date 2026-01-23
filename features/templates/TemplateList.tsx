@@ -1,6 +1,6 @@
 import React from 'react'
 import { Sparkles } from 'lucide-react'
-import { useControlTheme } from 'junoblocks'
+import { useControlTheme } from 'components/ui-blocks'
 import { TEMPLATES } from './registry.v2'
 import { IntentTemplateChip } from '../ui/chips/IntentTemplateChip'
 import { ASSETS, AssetSymbol } from '../assets/registry'
