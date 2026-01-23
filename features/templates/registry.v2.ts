@@ -528,7 +528,7 @@ export const TEMPLATES: IntentTemplate[] = [
     availability: { state: 'available' },
     assets: ['OSMO'],
     ui: {
-      label: 'Spot vs TWAP arbitrage BTC (beta)',
+      label: 'Spot vs TWAP arbitrage BTC Buy (beta)',
       description:
         'Swaps 1 USDC into BTC every time when the spot price is lower than the time-weighted average price.',
       gradient:
@@ -585,7 +585,7 @@ export const TEMPLATES: IntentTemplate[] = [
     availability: { state: 'available' },
     assets: ['OSMO'],
     ui: {
-      label: 'Spot vs TWAP arbitrage ATOM (beta)',
+      label: 'Spot vs TWAP arbitrage ATOM Buy (beta)',
       description:
         'Swaps 1 USDC into ATOM every time when the spot price is lower than the time-weighted average price.',
       gradient:
@@ -635,5 +635,259 @@ export const TEMPLATES: IntentTemplate[] = [
         feedbackLoops: [],
       },
     }),
+  },
+  {
+    id: 'arbitrage-btc-spot-vs-twap-sell',
+    category: 'dca',
+    availability: { state: 'available' },
+    assets: ['OSMO'],
+    ui: {
+      label: 'Spot vs TWAP arbitrage BTC Sell (beta)',
+      description:
+        'Swaps 1 BTC into USDC every time when the spot price is higher than the time-weighted average price.',
+      gradient:
+        'linear-gradient(90deg,rgb(67, 142, 233) 50%,rgba(240, 190, 97, 0.6) 100%)',
+      autoParse: true,
+    },
+    build: () => ({
+      messages: [
+        {
+          typeUrl: '/osmosis.gamm.v1beta1.MsgSwapExactAmountIn',
+          value: {
+            sender: '{address:connected}',
+            tokenIn: {
+              denom:
+                'factory/osmo1z6r6qdknhgsc0zeracktgpcxf43j6sekq07nw8sxduc9lg0qjjlqfu25e3/alloyed/allBTC',
+              amount: '1',
+            },
+            tokenOutMinAmount: '1',
+            routes: [
+              {
+                poolId: '1943',
+                tokenOutDenom:
+                  'ibc/498A0751C798A0D9A389AA3691123DADA57DAA4FE165D5C75894505B876BA6E4',
+              },
+            ],
+          },
+        },
+      ],
+      conditions: {
+        comparisons: [
+          {
+            flowId: BigInt(0),
+            responseIndex: 0,
+            responseKey: 'P0LastSpotPrice',
+            operand: 'osmosistwapv1beta1.TwapRecord.GeometricTwapAccumulator',
+            operator: ComparisonOperator.LARGER_THAN,
+            differenceMode: false,
+            valueType: 'osmosistwapv1beta1.TwapRecord',
+            icqConfig: {
+              connectionId: 'connection-1',
+              chainId: 'osmosis-1',
+              timeoutPolicy: 2,
+              timeoutDuration: { seconds: BigInt(120), nanos: 0 },
+              response: undefined,
+              queryType: 'store/twap/key',
+              queryKey:
+                'cmVjZW50X3R3YXB8MDAwMDAwMDAwMDAwMDAwMDE5NDN8ZmFjdG9yeS9vc21vMXo2cjZxZGtuaGdzYzB6ZXJhY2t0Z3BjeGY0M2o2c2VrcTA3bnc4c3hkdWM5bGcwcWpqbHFmdTI1ZTMvYWxsb3llZC9hbGxCVEN8aWJjLzQ5OEEwNzUxQzc5OEEwRDlBMzg5QUEzNjkxMTIzREFEQTU3REFBNEZFMTY1RDVDNzU4OTQ1MDVCODc2QkE2RTQ=',
+            },
+          },
+        ],
+        feedbackLoops: [],
+      },
+    }),
+  },
+  {
+    id: 'arbitrage-into-spot-vs-twap-buy',
+    category: 'dca',
+    availability: { state: 'available' },
+    assets: ['OSMO'],
+    ui: {
+      label: 'Spot vs TWAP arbitrage INTO Buy (beta)',
+      description:
+        'Swaps 1 USDC into INTO every time when the spot price is lower than the time-weighted average price.',
+      gradient:
+        'linear-gradient(90deg,rgb(67, 142, 233) 50%,rgba(240, 190, 97, 0.6) 100%)',
+      autoParse: true,
+    },
+    build: () => {
+      const twap = TWAP_KEYS['INTO/USDC@osmosis-1']
+      return {
+        messages: [
+          {
+            typeUrl: '/osmosis.gamm.v1beta1.MsgSwapExactAmountIn',
+            value: {
+              sender: '{address:connected}',
+              tokenIn: { denom: 'USDC (transfer/channel-750)', amount: '1' },
+              tokenOutMinAmount: '1',
+              routes: [
+                {
+                  poolId: '3138',
+                  tokenOutDenom: 'INTO (transfer/channel-106076)',
+                },
+              ],
+            },
+          },
+        ],
+        conditions: {
+          comparisons: [
+            {
+              flowId: BigInt(0),
+              responseIndex: 0,
+              responseKey: 'P0LastSpotPrice',
+              operand: 'osmosistwapv1beta1.TwapRecord.GeometricTwapAccumulator',
+              operator: ComparisonOperator.SMALLER_THAN,
+              differenceMode: false,
+              valueType: 'osmosistwapv1beta1.TwapRecord',
+              icqConfig: {
+                connectionId: twap.connectionId,
+                chainId: twap.chainId,
+                timeoutPolicy: 2,
+                timeoutDuration: {
+                  seconds: BigInt(twap.timeoutSeconds),
+                  nanos: 0,
+                },
+                queryType: 'store/twap/key',
+                queryKey: twap.queryKeyBase64,
+                response: undefined,
+              },
+            },
+          ],
+          feedbackLoops: [],
+        },
+      }
+    },
+  },
+  {
+    id: 'arbitrage-into-spot-vs-twap-sell',
+    category: 'dca',
+    availability: { state: 'available' },
+    assets: ['OSMO'],
+    ui: {
+      label: 'Spot vs TWAP arbitrage INTO Sell (beta)',
+      description:
+        'Swaps 1 INTO into USDC every time when the spot price is higher than the time-weighted average price.',
+      gradient:
+        'linear-gradient(90deg,rgb(67, 142, 233) 50%,rgba(240, 190, 97, 0.6) 100%)',
+      autoParse: true,
+    },
+    build: () => {
+      const twap = TWAP_KEYS['INTO/USDC@osmosis-1']
+      return {
+        messages: [
+          {
+            typeUrl: '/osmosis.gamm.v1beta1.MsgSwapExactAmountIn',
+            value: {
+              sender: '{address:connected}',
+              tokenIn: {
+                denom: 'INTO (transfer/channel-106076)',
+                amount: '1',
+              },
+              tokenOutMinAmount: '1',
+              routes: [
+                {
+                  poolId: '3138',
+                  tokenOutDenom:
+                    'ibc/498A0751C798A0D9A389AA3691123DADA57DAA4FE165D5C75894505B876BA6E4',
+                },
+              ],
+            },
+          },
+        ],
+        conditions: {
+          comparisons: [
+            {
+              flowId: BigInt(0),
+              responseIndex: 0,
+              responseKey: 'P0LastSpotPrice',
+              operand: 'osmosistwapv1beta1.TwapRecord.GeometricTwapAccumulator',
+              operator: ComparisonOperator.LARGER_THAN,
+              differenceMode: false,
+              valueType: 'osmosistwapv1beta1.TwapRecord',
+              icqConfig: {
+                connectionId: twap.connectionId,
+                chainId: twap.chainId,
+                timeoutPolicy: 2,
+                timeoutDuration: {
+                  seconds: BigInt(twap.timeoutSeconds),
+                  nanos: 0,
+                },
+                queryType: 'store/twap/key',
+                queryKey: twap.queryKeyBase64,
+                response: undefined,
+              },
+            },
+          ],
+          feedbackLoops: [],
+        },
+      }
+    },
+  },
+  {
+    id: 'arbitrage-atom-spot-vs-twap-sell',
+    category: 'dca',
+    availability: { state: 'available' },
+    assets: ['OSMO'],
+    ui: {
+      label: 'Spot vs TWAP arbitrage ATOM Sell (beta)',
+      description:
+        'Swaps 1 ATOM into USDC every time when the spot price is higher than the time-weighted average price.',
+      gradient:
+        'linear-gradient(90deg,rgb(67, 142, 233) 50%,rgba(240, 190, 97, 0.6) 100%)',
+      autoParse: true,
+    },
+    build: () => {
+      const twap = TWAP_KEYS['ATOM/USDC@osmosis-1']
+      return {
+        messages: [
+          {
+            typeUrl: '/osmosis.gamm.v1beta1.MsgSwapExactAmountIn',
+            value: {
+              sender: '{address:connected}',
+              tokenIn: { denom: 'ATOM (transfer/channel-0)', amount: '1' },
+              tokenOutMinAmount: '1',
+              routes: [
+                { poolId: '1265', tokenOutDenom: 'uosmo' },
+                {
+                  poolId: '1464',
+                  tokenOutDenom:
+                    'ibc/498A0751C798A0D9A389AA3691123DADA57DAA4FE165D5C75894505B876BA6E4',
+                },
+              ],
+            },
+          },
+        ],
+        conditions: {
+          comparisons: [
+            {
+              flowId: BigInt(0),
+              responseIndex: 0,
+              responseKey: 'P0LastSpotPrice',
+              operand: 'osmosistwapv1beta1.TwapRecord.GeometricTwapAccumulator',
+              operator: ComparisonOperator.LARGER_THAN,
+              differenceMode: false,
+              valueType: 'osmosistwapv1beta1.TwapRecord',
+              icqConfig: {
+                connectionId: twap.connectionId,
+                chainId: twap.chainId,
+                timeoutPolicy: 2,
+                timeoutDuration: {
+                  seconds: BigInt(twap.timeoutSeconds),
+                  nanos: 0,
+                },
+                queryType: 'store/twap/key',
+                queryKey: createOsmosisTwapQueryKey(
+                  1251,
+                  'ibc/27394FB092D2ECCD56123C74F36E4C1F926001CEADA9CA97EA622B25F41E5EB2',
+                  'ibc/498A0751C798A0D9A389AA3691123DADA57DAA4FE165D5C75894505B876BA6E4'
+                ),
+                response: undefined,
+              },
+            },
+          ],
+          feedbackLoops: [],
+        },
+      }
+    },
   },
 ]
