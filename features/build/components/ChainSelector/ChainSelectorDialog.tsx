@@ -23,7 +23,7 @@ export const ChainSelectorDialog = ({
   //useConnectChains(chainList)
 
   return (
-    <Dialog isShowing={true} onRequestClose={undefined}>
+    <Dialog title="Select Chain" isShowing={true} onRequestClose={undefined}>
 
       <ChainSelectorList
         {...props}

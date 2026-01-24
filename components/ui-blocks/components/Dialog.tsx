@@ -7,16 +7,17 @@ type DialogProps = {
     isShowing: boolean
     onRequestClose: () => void
     children: ReactNode
+    title?: string
 }
 
 const overlayClass = css({
     backgroundColor: 'rgba(0, 0, 0, 0.4)'
 })
 
-export const Dialog = ({ isShowing, onRequestClose, children }: DialogProps) => {
+export const Dialog = ({ isShowing, onRequestClose, children, title }: DialogProps) => {
     return (
         <BasicModal
-            title="sfg"
+            title={title || ""}
             isOpen={isShowing}
             onClose={onRequestClose}
             renderTrigger={(_) => null} // No trigger needed as we control state

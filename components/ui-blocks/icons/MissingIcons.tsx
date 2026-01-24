@@ -1,5 +1,5 @@
 
-import { Globe, User, Info as InfoIconLucide, Copy, Moon, Share, Plus, MessageSquare, ArrowUp, Github as GithubIcon, Send, Circle, AlertTriangle } from 'lucide-react'
+import { Globe, User, Info as InfoIconLucide, Copy, Moon, Plus, MessageSquare, ArrowUp, Github as GithubIcon, Send, Circle, AlertTriangle, PieChart } from 'lucide-react'
 import { styled } from '../theme'
 
 
@@ -16,7 +16,7 @@ export const InfoIcon = styled(InfoIconLucide, {})
 export const CopyIcon = styled(Copy, {})
 export const FeedbackIcon = styled(MessageSquare, {})
 export const MoonIcon = styled(Moon, {})
-export const SharesIcon = styled(Share, {})
+export const SharesIcon = styled(PieChart, {})
 export const PlusIcon = styled(Plus, {})
 export const Info = styled(InfoIconLucide, {})
 export const Connect = styled(Globe, {})

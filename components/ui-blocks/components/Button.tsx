@@ -340,14 +340,14 @@ function ButtonComponent<T extends RenderAsType = 'button'>(
         >
             {icon ? (
                 cloneElement(Children.only(icon) as ReactElement<any>, {
-                    color: 'inherit',
+                    color: 'currentColor',
                     size: iconSize
                 })
             ) : (
                 <>
                     {iconLeft &&
                         cloneElement(Children.only(iconLeft) as ReactElement<any>, {
-                            color: 'inherit',
+                            color: 'currentColor',
                             size: iconSize
                         })}
                     {typeof children === 'string' ? (
@@ -357,7 +357,7 @@ function ButtonComponent<T extends RenderAsType = 'button'>(
                     )}
                     {iconRight &&
                         cloneElement(Children.only(iconRight) as ReactElement<any>, {
-                            color: 'inherit',
+                            color: 'currentColor',
                             size: iconSize
                         })}
                 </>

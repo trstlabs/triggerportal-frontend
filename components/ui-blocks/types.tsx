@@ -1,4 +1,4 @@
-import { ComponentPropsWithRef, ElementType, HTMLProps } from 'react'
+import { ComponentPropsWithRef, ElementType, HTMLProps, JSX } from 'react'
 
 export type RenderAsType = JSX.IntrinsicElements | ElementType
 
