@@ -4,7 +4,6 @@ import { useBaseTokenInfo } from 'hooks/useTokenInfo'
 import {
   Button,
   Column,
-  Copy,
   CopyTextTooltip,
   formatTokenBalance,
   IconWrapper,
@@ -14,11 +13,14 @@ import {
   Text,
   Tooltip,
   Valid, Connect,
+  CopyIcon,
 } from 'components/ui-blocks'
 import React from 'react'
 
-
 import { useGetIBCAssetsBalances } from '../../features/assets/hooks/useGetSupportedAssetsBalances'
+
+
+
 
 type WalletButtonProps = { css?: CSS } & {
   walletName?: string
@@ -103,7 +105,7 @@ export const WalletButton = ({
               <Button
                 variant="ghost"
                 size="small"
-                icon={<IconWrapper icon={copied ? <Valid /> : <Copy />} />}
+                icon={<IconWrapper icon={copied ? <Valid /> : <CopyIcon />} />}
                 {...bind}
               />
             )}

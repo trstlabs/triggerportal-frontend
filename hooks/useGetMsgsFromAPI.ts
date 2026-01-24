@@ -39,7 +39,7 @@ const toCamelCaseWithValues = (obj: any): any => {
 // import { useAtom, useAtomValue } from 'jotai'
 // import { intento, osmosis } from 'intentojs'
 // import { walletState } from '../state/atoms/walletAtoms'
-// import { getIntentoSigningClientOptions } from 'intentojs'
+// import { getIntentoSigningStargateClientOptions } from 'intentojs'
 // import { defaultRegistryTypes } from '@cosmjs/stargate'
 // import { Registry } from '@cosmjs/proto-signing';
 // export const useGetRegistry = () => {

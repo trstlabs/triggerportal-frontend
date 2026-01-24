@@ -38,7 +38,7 @@ export const useCreateAuthzGrant = ({
 }: UseCreateAuthzGrantParams) => {
   const { address, status, chainId } = useAtomValue(ibcWalletState)
   const chainInfo = useChainInfoByChainID(chainId)
-  const { getSigningClient } = useChain(chainInfo?.registry_name)
+  const { getSigningStargateClient } = useChain(chainInfo?.registry_name)
 
 
   const setTransactionState = useSetAtom(transactionStatusState)
@@ -56,7 +56,7 @@ export const useCreateAuthzGrant = ({
       if (status !== WalletStatusType.connected) {
         throw new Error('Please connect your wallet.')
       }
-      const client = await getSigningClient()
+      const client = await getSigningStargateClient()
       console.log(client)
       return await executeCreateAuthzGrant({
         client,

@@ -27,7 +27,7 @@ type UseSubmitFlowArgs = {
 }
 
 export const useSubmitFlow = ({ flowInput }: UseSubmitFlowArgs) => {
-  const { client, address, status } = useAtomValue(walletState)
+  const { address, status, client } = useAtomValue(walletState)
   const { address: ibcWalletAddress } = useAtomValue(ibcWalletState)
 
   const setTransactionState = useSetAtom(transactionStatusState)
@@ -62,6 +62,8 @@ export const useSubmitFlow = ({ flowInput }: UseSubmitFlowArgs) => {
       if (flowInput.configuration.walletFallback == false && flowInput.feeFunds?.amount == "0") {
         throw new Error('No funds attached and no fallback to owner balance, can not submit flow.')
       }
+
+
       const response: DeliverTxResponse = await executeSubmitFlow({
         owner: address,
         flowInput,

@@ -1,7 +1,7 @@
 import { SigningStargateClient } from '@cosmjs/stargate'
 // import { MsgUpdateFlow } from "intentojs/dist/codegen/intento/intent/v1/tx"
 import { validateTransactionSuccess } from '../../util/validateTx'
-import { intento } from 'intentojs'
+import { getIntentoSigningClientOptions, intento } from 'intentojs'
 import { MsgUpdateFlowParams } from '../../types/trstTypes'
 import { transformAndEncodeMsgs } from './executeSubmitFlow'
 import { removeEmptyProperties } from '../../util/conversion'
@@ -22,16 +22,16 @@ export const executeUpdateFlow = async ({
   if (flowParams.msgs) {
     // IBC wallet address is passed as a parameter
     const inputMsgs = Array.isArray(flowParams.msgs) ? flowParams.msgs : [flowParams.msgs];
-    
+    const { registry } = getIntentoSigningClientOptions()
     // Process and encode messages, replacing placeholders
     msgs = transformAndEncodeMsgs({
       flowInputMsgs: inputMsgs,
-      client,
+      registry,
       msgs: [],
       ownerAddress: flowParams.owner,
       ibcWalletAddress: ibcWalletAddress || undefined
     });
-    
+
     console.log('Encoded messages:', msgs);
   }
 
@@ -42,12 +42,12 @@ export const executeUpdateFlow = async ({
       connectionId: flowParams.connectionId ? flowParams.connectionId : '',
       msgs: msgs,
       endTime: flowParams.endTime
-        ? BigInt(Number(flowParams.endTime/ 1000).toFixed(0))
+        ? BigInt(Number(flowParams.endTime / 1000).toFixed(0))
         : BigInt(0),
       label: flowParams.label ? flowParams.label : '',
       interval: flowParams.interval ? flowParams.interval.toString() + 'ms' : '',
       startAt: flowParams.startAt
-        ? BigInt(Number(flowParams.startAt/ 1000).toFixed(0) )
+        ? BigInt(Number(flowParams.startAt / 1000).toFixed(0))
         : BigInt(0),
       configuration: flowParams.configuration
         ? flowParams.configuration

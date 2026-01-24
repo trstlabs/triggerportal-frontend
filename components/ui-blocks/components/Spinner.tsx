@@ -1,110 +1,53 @@
+import { Spinner as InterchainSpinner } from '@interchain-ui/react'
+import { styled } from '../theme'
+import { ComponentProps } from 'react'
 
-import { styled, keyframes } from '../theme'
-
-
-const spin = keyframes({
-    '0%': { transform: 'rotate(0deg)' },
-    '100%': { transform: 'rotate(360deg)' }
-})
-
-const StyledSvgForSpinner = styled('svg', {
-    animation: `${spin} 1s linear infinite, opacity 0.15s ease-out`,
-    willChange: 'transform',
-    margin: 'auto',
-    background: 'rgba(0, 0, 0, 0) none repeat scroll 0% 0%',
-    display: 'block',
-    shapeRendering: 'auto',
-
-    $$iconColor: 'white',
-    color: '$$iconColor',
-
+const SpinnerContainer = styled('div', {
+    display: 'inline-flex',
+    alignItems: 'center',
+    justifyContent: 'center',
     variants: {
-        color: {
-            primary: {
-                $$iconColor: '$colors$primary'
-            },
-            secondary: {
-                $$iconColor: '$colors$secondary'
-            },
-            success: {
-                $$iconColor: '$colors$success'
-            },
-            error: {
-                $$iconColor: '$colors$error'
-            },
-            warning: {
-                $$iconColor: '$colors$warning'
-            },
-            info: {
-                $$iconColor: '$colors$info'
-            },
-            light: {
-                $$iconColor: '$colors$light'
-            },
-            dark: {
-                $$iconColor: '$colors$dark'
-            },
-            white: {
-                $$iconColor: '$colors$white'
-            },
-            black: {
-                $$iconColor: '$colors$black'
-            }
-        },
-
         visible: {
-            true: {
-                opacity: 1
-            },
-            false: {
-                opacity: 0
-            }
+            true: { opacity: 1 },
+            false: { opacity: 0, pointerEvents: 'none' }
         }
     }
 })
 
-type SpinnerProps = {
+type SpinnerProps = ComponentProps<typeof SpinnerContainer> & {
     isLoading?: boolean
-    size?: number
+    size?: number | string
     instant?: boolean
+    color?: string
 }
+
 
 export const Spinner = ({
     size = 24,
     instant = false,
     isLoading = true,
+    color,
     ...props
 }: SpinnerProps) => {
-    const isVisible = (!isLoading)
+    // Note: The previous implementation had logic where isLoading=true meant HIDDEN unless instant=true.
+    // This seems counter-intuitive and likely a legacy quirk or bug.
+    // However, looking at usages, the component is conditionally rendered when needed.
+    // So we will assume if this component is rendered, it should be visible.
+    // valid usage: <Spinner /> -> shows spinner.
+
+    // Map legacy 'small'/'medium'/'large' to numbers or pass through if supported?
+    // Interchain UI usually handles numbers well.
+    let finalSize = size;
+    if (size === 'small') finalSize = 16;
+    if (size === 'medium') finalSize = 24;
+    if (size === 'large') finalSize = 32;
+
     return (
-        <StyledSvgForSpinner
-            {...props}
-            visible={instant || isVisible}
-            width={size}
-            height={size}
-            xmlns='http://www.w3.org/2000/svg'
-            xmlnsXlink='http://www.w3.org/1999/xlink'
-            viewBox='0 0 100 100'
-            preserveAspectRatio='xMidYMid'
-        >
-            <circle
-                cx='50'
-                cy='50'
-                fill='none'
-                stroke='currentColor'
-                strokeWidth='5'
-                r='23'
-                strokeDasharray='108.38494654884786 38.12831551628262'
-            >
-                <animateTransform
-                    attributeName='transform'
-                    type='rotate'
-                    repeatCount='indefinite'
-                    dur='1.0526315789473684s'
-                    values='0 50 50;360 50 50'
-                    keyTimes='0;1'
-                />
-            </circle>
-        </StyledSvgForSpinner>
+        <SpinnerContainer visible={true} {...props}>
+            <InterchainSpinner
+                size={finalSize as any}
+                color={color as any}
+            />
+        </SpinnerContainer>
     )
 }

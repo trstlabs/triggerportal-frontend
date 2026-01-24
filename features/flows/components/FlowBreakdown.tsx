@@ -48,6 +48,7 @@ import { ICQConfigView } from './icqConfig'
 import { useUpdateFlow } from '../../build/hooks'
 
 
+
 type FlowBreakdownProps = {
   flow: Flow
   ibcInfo: IBCAssetInfo
@@ -153,8 +154,8 @@ export const FlowBreakdown = ({
     setEditMsgs([])
   }
   const [requestedUpdateFlow, setRequestedUpdateFlow] = useState(false)
-  const { mutate: handleUpdateFlow, isLoading: isExecutingUpdateFlow } =
-    useUpdateFlow({ flowParams: updatedFlowParams }) || {};
+  const { mutate: handleUpdateFlow, isPending: isExecutingUpdateFlow } =
+    useUpdateFlow({ flowParams: updatedFlowParams });
   useEffect(() => {
     const shouldflowUpdateFlow =
       !isExecutingUpdateFlow && requestedUpdateFlow
@@ -273,7 +274,7 @@ export const FlowBreakdown = ({
   const shouldDisableUpdateFlowButton = false // !updatedFlowParams || !updatedFlowParams.id
 
   // Debounce timer reference
-  const debounceTimerRef = React.useRef<NodeJS.Timeout>();
+  const debounceTimerRef = React.useRef<NodeJS.Timeout | null>(null);
 
   // Handle message changes in the editor with debouncing
   const handleChangeMsg = (index: number) => {
@@ -479,7 +480,6 @@ export const FlowBreakdown = ({
           </Button>}
           <FlowTransformButton flow={flow} initialChainID={chainId} />
         </Inline>
-
 
         <FlowBreakdownSection expandable onClick={() => toggleFlowSectionExpansion('trustlessAgent')} isExpanded={expandedFlowSections.has('trustlessAgent')}>
           <Column

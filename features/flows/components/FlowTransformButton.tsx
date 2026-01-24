@@ -50,7 +50,7 @@ export const FlowTransformButton = ({ flow, initialChainID }: FlowTransformButto
         }
     };
 
-    return <Button variant="secondary" iconLeft={<CopyIcon color="white" />} onClick={handleClick}>Copy and Create</Button>;
+    return <Button variant="secondary" iconRight={<CopyIcon color="white" />} onClick={handleClick}>Copy and Create</Button>;
 };
 const cleanMessageObject = (
     obj: any,

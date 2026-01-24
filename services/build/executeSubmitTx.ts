@@ -45,7 +45,7 @@ export const executeSubmitTx = async ({
   }
 
   return validateTransactionSuccess(
-    await client.signAndBroadcast(owner, msgs,{
+    await client.signAndBroadcast(owner, msgs, {
       amount: [],
       gas: '300000',
     })

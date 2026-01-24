@@ -4,10 +4,15 @@ import { useAtom } from 'jotai'
 import { walletState, WalletStatusType } from '../state/atoms/walletAtoms'
 import { useChain } from '@interchain-kit/react'
 import { addLocalChainToKeplr } from './useConnectIBCWallet'
+import { SigningStargateClient } from '@cosmjs/stargate'
+import { OfflineSigner } from "@cosmjs/proto-signing";
+import { getIntentoSigningClientOptions } from 'intentojs'
+import { EthereumWallet } from '@interchain-kit/core'
+
 export const useAfterConnectWallet = (
   mutationOptions?: UseMutationOptions<void, unknown, void, unknown>,
 ) => {
-  let { connect, getSigningClient, address, username, status: walletStatus } =
+  let { connect, wallet, address, username, status: walletStatus } =
     useChain(process.env.NEXT_PUBLIC_INTO_REGISTRY_NAME)
 
   const [{ status }, setWalletState] = useAtom(walletState)
@@ -22,16 +27,20 @@ export const useAfterConnectWallet = (
 
       try {
         if (address) {
+          const evmWallet = wallet.getWalletOfType(EthereumWallet)
+          const evmAddress = (await evmWallet?.getAccount("ethereum")).address
+          console.log(evmAddress)
+          const signer = await wallet?.getOfflineSigner()
+          const client = await SigningStargateClient.connectWithSigner(process.env.NEXT_PUBLIC_INTO_RPC, signer as OfflineSigner, getIntentoSigningClientOptions())
 
-
-          const chainClient = await getSigningClient()
-          if (chainClient) {
+          if (client) {
             setWalletState({
               key: username,
               address,
-              client: chainClient,
+              client,
               status: WalletStatusType.connected,
               assets: undefined,
+              evmAddress,
             })
           } else {
             // Handle the case where the client could not be obtained

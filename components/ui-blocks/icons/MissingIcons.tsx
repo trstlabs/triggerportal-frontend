@@ -21,5 +21,5 @@ export const PlusIcon = styled(Plus, {})
 export const Info = styled(InfoIconLucide, {})
 export const Connect = styled(Globe, {})
 export const Logout = styled(User, {})
-export const CopyTextTooltip = styled('div', {})
+// CopyTextTooltip removed (moved to components/Tooltip)
 // Column removed

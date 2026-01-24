@@ -2,6 +2,7 @@ import 'normalize.css'
 import 'styles/globals.scss'
 import 'focus-visible'
 import '@interchain-ui/react/styles'
+import { ThemeProvider } from '@interchain-ui/react'
 import '../features/build/components/Editor/rjsfform.css'
 import { ErrorBoundary } from 'components/ErrorBoundary'
 import { TestnetDialog } from 'components/TestnetDialog'
@@ -203,22 +204,8 @@ function IntentoPortalApp({ Component, pageProps }: AppProps) {
   }, [dataPushed])
 
   const signerOptions: SignerOptions = {
-    // signing:{
-    //   return getIntentoSigningClientOptions({ defaultTypes })
-    //   } else {
-    //     return getSigningCosmosClientOptions()
-    //   }
-    // },
-    // signing: (chain: any) => {
-    //   return {
-    //     broadcast: {
-    //       checkTx: true,
-    //       deliverTx: true,
-    //     },
-    //   };
-    // },
     preferredSignType: (_chain: any) => {
-      // `preferredSignType` determines which signer is preferred for `getOfflineSigner` method. By default `amino`. It might affect the `OfflineSigner` used in `signingStargateClient` and `signingCosmwasmClient`. But if only one signer is provided, `getOfflineSigner` will always return this signer, `preferredSignType` won't affect anything.
+      // `preferredSignType` determines which signer is preferred for `getOfflineSigner` method. By default `amino`. It might affect the `OfflineSigner` used in `SigningStargateClient` and `signingCosmwasmClient`. But if only one signer is provided, `getOfflineSigner` will always return this signer, `preferredSignType` won't affect anything.
       return process.env.NEXT_PUBLIC_PREFERRED_SIGN_AMINO ? 'amino' : 'direct'
     },
   }
@@ -252,64 +239,66 @@ function IntentoPortalApp({ Component, pageProps }: AppProps) {
         <link rel="dns-prefetch" href="//fonts.gstatic.com" />
       </Head>
       <QueryClientProvider client={queryClient}>
-        <Suspense fallback={<div>Loading...</div>}>
-          {dataPushed && <ChainProvider
-            // throwErrors="connect_only"
-            // logLevel="DEBUG"
-            chains={[...chainList]}
-            assetLists={[...assetLists]}
-            wallets={wallets}
-            signerOptions={signerOptions}
-            // walletConnectOptions={{
-            //   signClient: {
-            //     projectId: 'fa03e8566efb5455b17a0e1f888f0e14',
-            //   },
-            // }}
+        <ThemeProvider>
+          <Suspense fallback={<div>Loading...</div>}>
+            {dataPushed && <ChainProvider
+              // throwErrors="connect_only"
+              // logLevel="DEBUG"
+              chains={[...chainList]}
+              assetLists={[...assetLists]}
+              wallets={wallets}
+              signerOptions={signerOptions}
+              // walletConnectOptions={{
+              //   signClient: {
+              //     projectId: 'fa03e8566efb5455b17a0e1f888f0e14',
+              //   },
+              // }}
 
-            //isLazy = true, no validation because these are not part of the chain registry
-            endpointOptions={{
-              endpoints: {
-                [process.env.NEXT_PUBLIC_INTO_REGISTRY_NAME]: {
-                  // isLazy: true,
-                  rpc: [process.env.NEXT_PUBLIC_INTO_RPC],
-                  rest: [process.env.NEXT_PUBLIC_INTO_API],
+              //isLazy = true, no validation because these are not part of the chain registry
+              endpointOptions={{
+                endpoints: {
+                  [process.env.NEXT_PUBLIC_INTO_REGISTRY_NAME]: {
+                    // isLazy: true,
+                    rpc: [process.env.NEXT_PUBLIC_INTO_RPC],
+                    rest: [process.env.NEXT_PUBLIC_INTO_API],
+                  },
+                  cosmosdev: {
+                    // isLazy: true,
+                    rpc: [process.env.NEXT_PUBLIC_ATOM_RPC],
+                    rest: [process.env.NEXT_PUBLIC_ATOM_API],
+                  },
+                  osmosisdev: {
+                    // isLazy: true,
+                    rpc: [process.env.NEXT_PUBLIC_OSMO_RPC],
+                    rest: [process.env.NEXT_PUBLIC_OSMO_API],
+                  }
                 },
-                cosmosdev: {
-                  // isLazy: true,
-                  rpc: [process.env.NEXT_PUBLIC_ATOM_RPC],
-                  rest: [process.env.NEXT_PUBLIC_ATOM_API],
-                },
-                osmosisdev: {
-                  // isLazy: true,
-                  rpc: [process.env.NEXT_PUBLIC_OSMO_RPC],
-                  rest: [process.env.NEXT_PUBLIC_OSMO_API],
-                }
-              },
-            }}
-          >  <InterchainWalletModal />
-            <NextJsAppRoot>
-              <ErrorBoundary>
-                <Component {...pageProps} />
-                <Toaster
-                  position="bottom-center"
-                  toastOptions={{
-                    className: toasterClassName,
-                    style: {
-                      borderRadius: '8px',
-                      background: '#2C2C2E',
-                      color: '#fff',
-                      padding: '16px',
-                      fontSize: '14px',
-                      maxWidth: '500px',
-                      width: '100%',
-                    },
-                  }}
-                />
-                {__TEST_MODE__ ? <TestnetDialog /> : <InfoDialog />}
-              </ErrorBoundary>
-            </NextJsAppRoot>
-          </ChainProvider>}
-        </Suspense>
+              }}
+            >  <InterchainWalletModal />
+              <NextJsAppRoot>
+                <ErrorBoundary>
+                  <Component {...pageProps} />
+                  <Toaster
+                    position="bottom-center"
+                    toastOptions={{
+                      className: toasterClassName,
+                      style: {
+                        borderRadius: '8px',
+                        background: '#2C2C2E',
+                        color: '#fff',
+                        padding: '16px',
+                        fontSize: '14px',
+                        maxWidth: '500px',
+                        width: '100%',
+                      },
+                    }}
+                  />
+                  {__TEST_MODE__ ? <TestnetDialog /> : <InfoDialog />}
+                </ErrorBoundary>
+              </NextJsAppRoot>
+            </ChainProvider>}
+          </Suspense>
+        </ThemeProvider>
       </QueryClientProvider>
     </>
   );

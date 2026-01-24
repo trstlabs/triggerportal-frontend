@@ -6,10 +6,6 @@ import {
   Toast,
   IconWrapper,
   Error,
-  DialogButtons,
-  DialogContent,
-
-  DialogHeader,
   Spinner,
   styled,
   Text,
@@ -132,7 +128,6 @@ export const SubmitFlowDialog = ({
     trustlessAgent
   );
 
-  const canSchedule = duration > 0 && interval > 0
 
   // Use executionParams for handleData
   const handleData = (icaAddressForAuthZ: string) => {
@@ -193,19 +188,16 @@ export const SubmitFlowDialog = ({
     recurrences++
   }
   return (
-    <Dialog isShowing={isDialogShowing} onRequestClose={onRequestClose}>
-      <DialogHeader paddingBottom={canSchedule ? '$4' : '6'}>
-        <Text variant="header" color="secondary" css={{ fontFamily: 'Oceanwide, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif', fontWeight: 700, fontSize: 24 }}>Submit Flow</Text>
-      </DialogHeader>
+    <Dialog isShowing={isDialogShowing} title="Submit Flow" onRequestClose={onRequestClose}>
 
-      <DialogContent>
-        <StyledDivForInputs>
-          <Column
-            justifyContent="space-between"
-            css={{ width: '100%', gap: '$8', background: '$colors$dark5', borderRadius: '8px', padding: '$4' }}
 
-          >
-            {/* {(
+
+      <Column
+        justifyContent="space-between"
+        css={{ width: '100%', gap: '$8', background: '$backgroundColors$base', borderRadius: '8px', padding: '$4' }}
+
+      >
+        {/* {(
               <FlowSummary
                 flowInput={{
                   ...flowInput,
@@ -227,189 +219,180 @@ export const SubmitFlowDialog = ({
             )} */}
 
 
-            {/* Conditions Summary */}
-            {(flowInput.conditions || flowInput.configuration) && (
-              <ConditionsSummary
-                conditions={flowInput.conditions}
-                configuration={flowInput.configuration}
-              />
-            )}
+        {/* Conditions Summary */}
+        {(flowInput.conditions || flowInput.configuration) && (
+          <ConditionsSummary
+            conditions={flowInput.conditions}
+            configuration={flowInput.configuration}
+          />
+        )}
 
-            <Card variant="secondary" disabled>
-              <EditSchedulingSection
-                updatedFlowParams={executionParams}
-                setUpdateFlow={setUpdateExecutionParams}
-                disableRecurring={disableRecurring}
-              />
+        <Card variant="secondary" disabled>
+          <EditSchedulingSection
+            updatedFlowParams={executionParams}
+            setUpdateFlow={setUpdateExecutionParams}
+            disableRecurring={disableRecurring}
+          />
 
-            </Card>
-            <>
-              {/* Authorization Check - Always render but show error state if needed */}
-              {chainId != process.env.NEXT_PUBLIC_INTO_CHAIN_ID && (
+        </Card>
+        <>
+          {/* Authorization Check - Always render but show error state if needed */}
+          {chainId != process.env.NEXT_PUBLIC_INTO_CHAIN_ID && (
 
-                <AuthzGrantCheck
-                  flowInput={{
-                    ...flowInput,
-                    duration,
-                  }}
-                  chainId={chainId}
-                  grantee={icaAddress}
-                  chainName={chainName}
-                  authzGrants={authzGrants}
-                  isAuthzGrantsLoading={isAuthzGrantsLoading}
-                  authzError={authzError}
-                />
-              )}
-              <Column css={{ gap: '$4', background: '$colors$dark5', borderRadius: '8px', padding: '$4' }} >
-                <Column css={{ padding: '$2', gap: '$4' }}>
-                  <Inline justifyContent="space-between">
-                    <Tooltip
-                      label="Fee for execution of the flow by the Intent Engine + Trustless Agent if all succeeds."
-                      aria-label="Fee for execution of the flow."
-                    >
-                      <Text variant="body">Total Fees</Text>
-                    </Tooltip>
-                    <Tooltip
-                      label={fees.map((fee, index) => fee.denom != 'uinto' && <> {fee.amount} {resolveDenomSync(fee.denom, ibcAssetList)}{index < fees.length - 2 && ', '} </> || '')}
-                      aria-label="Fee for execution of the flow."
-                    >
-
-                      <Inline>
-                        <Text variant="body" color="tertiary" css={{ fontSize: '12px' }}>
-                          ~ {fees.find((fee) => fee.denom === "uinto")?.amount}  {feeFundsSymbol}
-                        </Text>
-                        <IconWrapper icon={<Info />} color="tertiary" />
-                      </Inline>
-                    </Tooltip>
-                  </Inline>
-                  <Inline justifyContent="space-between" >
-                    <Tooltip
-                      label="If no wallet fallback set, attached fee funds will be returned after commission fee."
-                      aria-label="Attached fee funds are returned after commission fee."
-                    >
-                      <Text variant="body">Wallet Fallback</Text>
-                    </Tooltip>
-                    <ToggleSwitch
-                      id="deduct-fees"
-                      name="deduct-fees"
-                      checked={checkedFeeAcc}
-                      onChange={handleChangeFeeAcc}
-                      optionLabels={['Use wallet funds', 'Attach to flow']}
-                    />
-                  </Inline>
-
-                  {!checkedFeeAcc && (
-                    <>
-                      <TokenSelector
-                        tokenSymbol={feeFundsSymbol}
-                        onChange={(updateToken) => {
-                          setFeeFundsSymbol(updateToken.tokenSymbol)
-                        }}
-                        disabled={false}
-                        size={'large'}
-                      />
-                      <Inline justifyContent="space-between" >
-                        <Text variant="body">Amount to attach</Text>
-                        <Inline>
-                          <Text variant="body" color="tertiary">
-                            <StyledInput
-                              step=".01"
-                              placeholder="0.00"
-                              type="number"
-                              value={feeFunds}
-                              onChange={({ target: { value } }) =>
-                                setFeeAmount(Number(value))
-                              }
-                              css={{ textAlign: 'right', width: '100px' }}
-                            />
-
-                            {feeFundsSymbol}
-                          </Text>
-                        </Inline>
-                      </Inline>
-                    </>
-                  )}
-                </Column>
-              </Column>
-
-            </>
-
-
-            <Inline justifyContent="space-between" align="center" css={{ paddingRight: '$5', paddingLeft: '$2' }}>
-              <Tooltip
-                label="Name your flow so you can find it back later by name"
-                aria-label="Fund Flow - INTO (Optional)">
-                <Text color="disabled" wrap={false} variant="legend">
-                  Label
-                </Text>
-              </Tooltip>
-              <Text>
-                <StyledInputWithBorder
-                  placeholder="My flow"
-                  value={flowLabel}
-                  onChange={({ target: { value } }) => setLabel(value)}
-                />
-              </Text>
-            </Inline>
-            <Inline justifyContent="space-between" css={{ width: '100%' }}>
-              {executionParams.interval > 0 ? (
-                <Text
-                  variant="body"
-                  color={recurrences === 0 || recurrences > 1000 || (executionParams.startAt > 0 && executionParams.startAt - now < 0) ? 'error' : 'tertiary'}
-                  css={{
-                    fontSize: '12px',
-                    fontWeight: recurrences === 0 || recurrences > 1000 || (executionParams.startAt > 0 && executionParams.startAt - now < 0) ? 'bold' : 'normal'
-                  }}
+            <AuthzGrantCheck
+              flowInput={{
+                ...flowInput,
+                duration,
+              }}
+              chainId={chainId}
+              grantee={icaAddress}
+              chainName={chainName}
+              authzGrants={authzGrants}
+              isAuthzGrantsLoading={isAuthzGrantsLoading}
+              authzError={authzError}
+            />
+          )}
+          <Column css={{ gap: '$4', background: '$backgroundColors$base', borderRadius: '8px', padding: '$4' }} >
+            <Column css={{ padding: '$2', gap: '$4' }}>
+              <Inline justifyContent="space-between">
+                <Tooltip
+                  label="Fee for execution of the flow by the Intent Engine + Trustless Agent if all succeeds."
+                  aria-label="Fee for execution of the flow."
                 >
-                  Starting in {formatTimeDisplay(executionParams.startAt - now !== 0 && Number(executionParams.startAt) ? executionParams.startAt - now : executionParams.interval)}
-                  {" "}every {formatTimeDisplay(executionParams.interval, true)}
-                  {" "}for {formatTimeDisplay(executionParams.startAt - now > 0 ? executionParams.endTime - executionParams.startAt : executionParams.endTime - now)}
-                  {" "}(running {recurrences} time{recurrences !== 1 && "s"})
-                  {recurrences === 0 && " - No executions will occur with current settings"}
-                  {recurrences > 1000 && " - High number of executions, consider reducing duration or increasing interval"}
-                  {executionParams.startAt > 0 && executionParams.startAt - now < 0 && " - Start time is in the past"}
-                </Text>
+                  <Text variant="body">Total Fees</Text>
+                </Tooltip>
+                <Tooltip
+                  label={fees.map((fee, index) => fee.denom != 'uinto' && <> {fee.amount} {resolveDenomSync(fee.denom, ibcAssetList)}{index < fees.length - 2 && ', '} </> || '')}
+                  aria-label="Fee for execution of the flow."
+                >
 
-              ) : (
-                <Text variant="body" color="tertiary" css={{ fontSize: '12px' }}>
-                  One-time execution at {new Date(executionParams.endTime).toLocaleString()}
-                </Text>
+                  <Inline>
+                    <Text variant="body" color="tertiary" css={{ fontSize: '12px' }}>
+                      ~ {fees.find((fee) => fee.denom === "uinto")?.amount}  {feeFundsSymbol}
+                    </Text>
+                    <IconWrapper icon={<Info />} color="tertiary" />
+                  </Inline>
+                </Tooltip>
+              </Inline>
+              <Inline justifyContent="space-between" >
+                <Tooltip
+                  label="If no wallet fallback set, attached fee funds will be returned after commission fee."
+                  aria-label="Attached fee funds are returned after commission fee."
+                >
+                  <Text variant="body">Wallet Fallback</Text>
+                </Tooltip>
+                <ToggleSwitch
+                  id="deduct-fees"
+                  name="deduct-fees"
+                  checked={checkedFeeAcc}
+                  onChange={handleChangeFeeAcc}
+                  optionLabels={['Use wallet funds', 'Attach to flow']}
+                />
+              </Inline>
 
+              {!checkedFeeAcc && (
+                <>
+                  <TokenSelector
+                    tokenSymbol={feeFundsSymbol}
+                    onChange={(updateToken) => {
+                      setFeeFundsSymbol(updateToken.tokenSymbol)
+                    }}
+                    disabled={false}
+                    size={'large'}
+                  />
+                  <Inline justifyContent="space-between" >
+                    <Text variant="body">Amount to attach</Text>
+                    <Inline>
+                      <Text variant="body" color="tertiary">
+                        <StyledInput
+                          step=".01"
+                          placeholder="0.00"
+                          type="number"
+                          value={feeFunds}
+                          onChange={({ target: { value } }) =>
+                            setFeeAmount(Number(value))
+                          }
+                          css={{ textAlign: 'right', width: '100px' }}
+                        />
+
+                        {feeFundsSymbol}
+                      </Text>
+                    </Inline>
+                  </Inline>
+                </>
               )}
-
-
-            </Inline>
+            </Column>
           </Column>
-        </StyledDivForInputs>
-      </DialogContent>
+
+        </>
 
 
-      <DialogButtons
-        cancellationButton={
-          <Button variant="ghost" onClick={onRequestClose}>
-            Cancel
-          </Button>
-        }
-        confirmationButton={
-          <Button
-            disabled={isLoading}
-            variant="secondary"
-            onClick={() => (isLoading ? undefined : handleData(needsToBeWrappedInMsgExec ? icaAddress : ''))}
-          >
-            {isLoading ? <Spinner instant={true} size={16} /> : <>Submit</>}
-          </Button>
-        }
-      />
+        <Inline justifyContent="space-between" align="center" css={{ paddingRight: '$5', paddingLeft: '$2' }}>
+          <Tooltip
+            label="Name your flow so you can find it back later by name"
+            aria-label="Fund Flow - INTO (Optional)">
+            <Text color="disabled" wrap={false} variant="legend">
+              Label
+            </Text>
+          </Tooltip>
+          <Text>
+            <StyledInputWithBorder
+              placeholder="My flow"
+              value={flowLabel}
+              onChange={({ target: { value } }) => setLabel(value)}
+            />
+          </Text>
+        </Inline>
+        <Inline justifyContent="space-between" css={{ width: '100%' }}>
+          {executionParams.interval > 0 ? (
+            <Text
+              variant="body"
+              color={recurrences === 0 || recurrences > 1000 || (executionParams.startAt > 0 && executionParams.startAt - now < 0) ? 'error' : 'tertiary'}
+              css={{
+                fontSize: '12px',
+                fontWeight: recurrences === 0 || recurrences > 1000 || (executionParams.startAt > 0 && executionParams.startAt - now < 0) ? 'bold' : 'normal'
+              }}
+            >
+              Starting in {formatTimeDisplay(executionParams.startAt - now !== 0 && Number(executionParams.startAt) ? executionParams.startAt - now : executionParams.interval)}
+              {" "}every {formatTimeDisplay(executionParams.interval, true)}
+              {" "}for {formatTimeDisplay(executionParams.startAt - now > 0 ? executionParams.endTime - executionParams.startAt : executionParams.endTime - now)}
+              {" "}(running {recurrences} time{recurrences !== 1 && "s"})
+              {recurrences === 0 && " - No executions will occur with current settings"}
+              {recurrences > 1000 && " - High number of executions, consider reducing duration or increasing interval"}
+              {executionParams.startAt > 0 && executionParams.startAt - now < 0 && " - Start time is in the past"}
+            </Text>
+
+          ) : (
+            <Text variant="body" color="tertiary" css={{ fontSize: '12px' }}>
+              One-time execution at {new Date(executionParams.endTime).toLocaleString()}
+            </Text>
+
+          )}
+
+
+        </Inline>
+      </Column>
+
+
+
+      <Inline justifyContent="space-between" align="center" css={{ padding: '$2' }}>
+        <Button variant="ghost" onClick={onRequestClose}>
+          Cancel
+        </Button>
+
+        <Button
+          disabled={isLoading}
+          variant="secondary"
+          onClick={() => (isLoading ? undefined : handleData(needsToBeWrappedInMsgExec ? icaAddress : ''))}
+        >
+          {isLoading ? <Spinner instant={true} size={16} /> : <>Submit</>}
+        </Button>
+      </Inline>
+
     </Dialog >
   )
 }
 
-
-const StyledDivForInputs = styled('div', {
-  display: 'flex',
-  flexWrap: 'wrap',
-  rowGap: 8,
-})
 const StyledInput = styled('input', {
   color: 'inherit',
   padding: '$1',
@@ -421,7 +404,7 @@ const StyledInputWithBorder = styled('input', {
   color: 'inherit',
   padding: '$5',
   margin: '$2',
-  background: '$colors$dark5',
+  background: '$backgroundColors$primary',
   borderRadius: '5px',
   minWidth: '240px',
 })

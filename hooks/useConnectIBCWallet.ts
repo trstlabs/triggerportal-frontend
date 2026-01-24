@@ -61,7 +61,7 @@ export const useConnectIBCWallet = (
   const finalAssetInfo = fromRegistry ? registryInfo : assetInfo
   const chainRegistryName = finalAssetInfo?.registry_name || 'cosmoshub'
 
-  const { getSigningClient, connect, address } = useChain(chainRegistryName)
+  const { getSigningStargateClient, connect, address } = useChain(chainRegistryName)
 
 
   const mutation = useMutation({
@@ -164,7 +164,7 @@ export const useConnectIBCWallet = (
 
         // console.log('Getting signing client...');
         // Now get the signing client
-        const ibcChainClient = await getSigningClient();
+        const ibcChainClient = await getSigningStargateClient();
 
         if (!ibcChainClient) {
           const error = new Error('Failed to obtain the signing client. Please try again.');

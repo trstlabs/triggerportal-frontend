@@ -1,8 +1,7 @@
 import { AssetList } from '@chain-registry/types'
 import { atomWithStorage, RESET } from 'jotai/utils'
 import { WritableAtom } from 'jotai'
-import { SigningClient } from '@interchain-kit/react'
-
+import { SigningStargateClient } from '@cosmjs/stargate'
 export enum WalletStatusType {
   /* nothing happens to the wallet */
   idle = '@wallet-state/idle',
@@ -24,6 +23,7 @@ type GeneratedWalletState<
   status: WalletStatusType
   address: string
   assets?: AssetList | undefined
+  evmAddress?: string
 }
 
 type CreateWalletStateArgs<TState = {}> = {
@@ -87,15 +87,15 @@ function createWalletState<TClient = any, TState = {}>({
   >
 }
 
-type LocalWalletState = GeneratedWalletState<SigningClient, { key?: string | null }>;
-type IbcWalletState = GeneratedWalletState<SigningClient, { chainId?: string | null }>;
+type LocalWalletState = GeneratedWalletState<SigningStargateClient, { key?: string | null }>;
+type IbcWalletState = GeneratedWalletState<SigningStargateClient, { chainId?: string | null }>;
 
 export const walletState: WritableAtom<
   LocalWalletState,
   [LocalWalletState | ((prev: LocalWalletState) => LocalWalletState) | typeof RESET],
   void
 > = createWalletState<
-  SigningClient,
+  SigningStargateClient,
   { key?: string | null }
 >({
   key: 'internal-wallet',
@@ -109,7 +109,7 @@ export const ibcWalletState: WritableAtom<
   [IbcWalletState | ((prev: IbcWalletState) => IbcWalletState) | typeof RESET],
   void
 > = createWalletState<
-  SigningClient,
+  SigningStargateClient,
   {
     /* ibc wallet is connected */
     chainId?: string | null
