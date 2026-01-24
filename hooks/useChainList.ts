@@ -21,6 +21,7 @@ export type IBCAssetInfo = {
   external_deposit_uri?: string
   prefix: string
   union?: boolean
+  universal_id?: string
 }
 
 export const useIBCAssetList = () => {
@@ -76,14 +77,18 @@ export const useIBCAssetList = () => {
 export const useChainInfoByChainID = (chainId: string) => {
   // First try to get chain info from local ibc_assets.json
   const [ibcAssets] = useIBCAssetList()
-
   if (ibcAssets && ibcAssets.length > 0) {
+    const unionChain = ibcAssets.find(asset => asset.universal_id === chainId)
+    if (unionChain) {
+      return unionChain
+    }
+
+
     const localChain = ibcAssets.find(asset => asset.chain_id === chainId)
     if (localChain) {
       return localChain
     }
   }
-
   // Fallback to chain registry if not found in local assets
   const chainRegistyChain = chains.find((chain) => chain.chainId === chainId)
   if (chainRegistyChain) {

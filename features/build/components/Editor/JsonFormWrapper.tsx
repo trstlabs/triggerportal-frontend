@@ -10,7 +10,7 @@ import {
   Card,
   CardContent,
 } from 'components/ui-blocks';
-import React, { useEffect, useState } from 'react';
+import React, { JSX, useEffect, useState } from 'react';
 import JsonFormEditor from './DynamicForm';
 import { JsonCodeMirrorEditor } from './CodeMirror';
 import { findFileBySuffix } from './Validation';

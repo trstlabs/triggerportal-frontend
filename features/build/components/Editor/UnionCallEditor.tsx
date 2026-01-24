@@ -73,6 +73,7 @@ const encodeInstruction: (
 )
 
 export const UnionCallEditor = ({ destinationChainId, onChange, onClose }: UnionCallEditorProps) => {
+    console.log("destinationChainId", destinationChainId)
     const destChainInfo = useChainInfoByChainID(destinationChainId) as any
     const { evmAddress } = useAtomValue(walletState)
     const [contractAddress, setContractAddress] = useState('')
@@ -151,19 +152,22 @@ export const UnionCallEditor = ({ destinationChainId, onChange, onClose }: Union
             // 3. Encode to Hex (mimicking script logic)
             const program = Effect.gen(function* () {
                 const salt = yield* Utils.generateSalt("cosmos")
-                const encodedInstruction = yield* encodeInstruction(call)
-                const instructionHex = yield* Schema.encode(Ucs03.Ucs03WithInstructionFromHex)(encodedInstruction)
+                const instruction = yield* pipe(
+                    encodeInstruction(call), //
+                    Effect.flatMap(Schema.encode(Ucs03.Ucs03WithInstructionFromHex)),
+                )
                 const tenHoursInNs = BigInt(10) * BigInt(60) * BigInt(60) * BigInt(1000) * BigInt(1000000);
                 const nowInNs = BigInt(Date.now()) * BigInt(1000000);
-                console.log("instructionHex", instructionHex)
+                console.log("instruction", instruction)
+                console.log("destChainInfo", destChainInfo)
                 const timeout_timestamp = (nowInNs + tenHoursInNs).toString();
                 return {
                     send: {
-                        channel_id: destChainInfo.channel_id,
+                        channel_id: destChainInfo.channel,
                         timeout_height: "0",//Date.now().toString(),
                         timeout_timestamp,
                         salt: salt as `0x${string}`,
-                        instruction: instructionHex,
+                        instruction: instruction,
                     }
                 }
             })

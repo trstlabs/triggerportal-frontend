@@ -32,7 +32,8 @@ const StyledOverlay = styled(DialogPrimitive.Overlay, {
 
 const StyledContent = styled(DialogPrimitive.Content, {
     backgroundColor: '$backgroundColors$base',
-    borderRadius: '$3',
+    borderRadius: '$2',
+    border: '1px solid $borderColors$default',
     boxShadow: 'hsl(206 22% 7% / 35%) 0px 10px 38px -10px, hsl(206 22% 7% / 20%) 0px 10px 20px -15px',
     position: 'fixed',
     top: '50%',
@@ -44,6 +45,7 @@ const StyledContent = styled(DialogPrimitive.Content, {
     overflowY: 'auto',
     padding: '$4',
     zIndex: 1001,
+    transition: 'background-color 200ms ease, border-color 200ms ease',
     '@media (prefers-reduced-motion: no-preference)': {
         animation: `${contentShow} 150ms cubic-bezier(0.16, 1, 0.3, 1)`,
     },
@@ -52,9 +54,9 @@ const StyledContent = styled(DialogPrimitive.Content, {
 
 const StyledTitle = styled(DialogPrimitive.Title, {
     margin: 0,
-    fontWeight: 500,
-    color: '$textColors$primary',
-    fontSize: 17,
+    fontFamily: 'Oceanwide, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif',
+    fontWeight: 700,
+    fontSize: 21,
 })
 
 const StyledCloseButton = styled(DialogPrimitive.Close, {
@@ -82,7 +84,7 @@ export const Dialog = ({ isShowing, onRequestClose, children, title }: DialogPro
         <DialogPrimitive.Root open={isShowing} onOpenChange={(open) => !open && onRequestClose()}>
             <DialogPrimitive.Portal>
                 <StyledOverlay />
-                <StyledContent>
+                <StyledContent onOpenAutoFocus={(e) => e.preventDefault()}>
                     {title && (
                         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: title ? 20 : 0 }}>
                             <StyledTitle>

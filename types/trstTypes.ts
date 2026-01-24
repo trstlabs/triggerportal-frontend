@@ -38,6 +38,8 @@ export type SelectChainInfo = {
   counterparty_connection_id?: string
   prefix?: string
   denom_local?: string
+  union?: boolean
+  universal_id?: string
 }
 
 
