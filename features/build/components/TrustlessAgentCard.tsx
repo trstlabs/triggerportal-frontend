@@ -36,7 +36,7 @@ export const TrustlessAgentCard = ({
     trustlessAgentICAAddress,
     flowInput
   )
-  const { mutate: handleCreateAuthzGrant, isLoading: isExecutingAuthzGrant } =
+  const { mutate: handleCreateAuthzGrant, isPending: isExecutingAuthzGrant } =
     useCreateAuthzGrant({
       grantee: trustlessAgentICAAddress,
       grantInfos: authzGrants

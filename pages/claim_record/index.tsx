@@ -16,7 +16,7 @@ import React from 'react'
 import { APP_NAME } from 'util/constants'
 
 import { useClaimRecord, useTotalClaimable } from '../../hooks/useClaimRecord'
-import ClaimAirdrop from '../../features/claim/components/claim'
+// import ClaimAirdrop from '../../features/claim/components/claim'
 
 
 export default function Claim() {
@@ -24,7 +24,7 @@ export default function Claim() {
 
     const [claimRecord, isLoading] = useClaimRecord()
 
-    const [total, isTotalLoading] = useTotalClaimable()
+    const [total] = useTotalClaimable()
     if (isLoading) {
         return (
             <AppLayout
@@ -92,7 +92,7 @@ export default function Claim() {
                 {claimRecord && total && (
                     process.env.NEXT_PUBLIC_CLAIM_ENABLED == "true" &&
 
-                    <ClaimAirdrop claimRecord={claimRecord} claimRecordLoaded={!isLoading && !isTotalLoading} total={Number(total)} />
+                    {/* <ClaimAirdrop claimRecord={claimRecord} claimRecordLoaded={!isLoading && !isTotalLoading} total={Number(total)} /> */ }
 
 
                 )}

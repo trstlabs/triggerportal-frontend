@@ -51,7 +51,7 @@ export const RecipientList = ({
   onRecipientsChange,
   onRemoveRecipient,
 }: RecipientsInputProps) => {
-  const inputRef = useRef<HTMLInputElement>()
+  const inputRef = useRef<HTMLInputElement>(null)
 
   const [prefix, setPrefix] = useState('into')
   const [requestedSend, setRequestedSend] = useState(false)
@@ -84,9 +84,9 @@ export const RecipientList = ({
   const [flowInput, setflowInput] = useState(data)
   const { address, status } = useAtomValue(walletState)
 
-  const { mutate: handleSend, isLoading: isExecutingTransaction } =
+  const { mutate: handleSend, isPending: isExecutingTransaction } =
     useTokenSend({ ibcAsset, recipientInfos: recipients })
-  const { mutate: handleSchedule, isLoading: isExecutingSchedule } =
+  const { mutate: handleSchedule, isPending: isExecutingSchedule } =
     useSubmitFlow({ flowInput })
 
   useEffect(() => {

@@ -44,7 +44,7 @@ const Dropdown = <T extends string | number>({
                 >
                     {Object.entries(options).map(([key, label]) => (
                         <option key={key} value={key}>
-                            {label}
+                            {label as React.ReactNode}
                         </option>
                     ))}
                 </select>

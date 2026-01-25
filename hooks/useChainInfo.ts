@@ -57,7 +57,7 @@ export const useGetExpectedFlowFees = (
 ) => {
   const [intentModuleParams, setTriggerModuleData] = useAtom(
     intentModuleParamsAtom
-  )
+  ) as any
   const client = useIntentoRpcClient()
 
   // Calculate recurrences based on interval and duration
@@ -150,7 +150,7 @@ export const useGetExpectedFlowFees = (
     fees: data || [],
     isLoading,
     error,
-    refetch: () => queryClient.invalidateQueries(stableQueryKey[0] as string),
+    refetch: () => queryClient.invalidateQueries({ queryKey: [stableQueryKey[0] as string] }),
   }
 }
 
@@ -163,7 +163,7 @@ export const useGetExpectedFlowFee = (
 ) => {
   let [intentModuleParams, setTriggerModuleData] = useAtom(
     intentModuleParamsAtom
-  )
+  ) as any
   // Calculate recurrences based on interval and duration
   let recurrences =
     intervalSeconds && intervalSeconds > 0 && intervalSeconds < durationSeconds
@@ -385,7 +385,7 @@ export const useGetAPR = () => {
 export const useSetModuleParams = () => {
   const trstClient = useIntentoRpcClient()
   const cosmosClient = useCosmosRpcClient()
-  const [paramsState, setParamsState] = useAtom(paramsStateAtom)
+  const [paramsState, setParamsState] = useAtom(paramsStateAtom) as any
 
   const { data, isPending: isLoading } = useQuery({
     queryKey: ['getModuleParams'],
@@ -413,7 +413,7 @@ export const useGetAPYWithFees = (
 ) => {
   const [intentModuleParams, setTriggerModuleData] = useAtom(
     intentModuleParamsAtom
-  )
+  ) as any
   const paramsState = useAtomValue(paramsStateAtom)
 
   const trstClient = useIntentoRpcClient()

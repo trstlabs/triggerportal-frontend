@@ -1,4 +1,5 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query'
+import { SigningStargateClient } from '@cosmjs/stargate'
 import { useAtom, useAtomValue } from 'jotai'
 import { ibcWalletState, walletState, WalletStatusType } from 'state/atoms/walletAtoms'
 import { useIBCAssetInfoByChainID } from './useIBCAssetInfo'
@@ -61,7 +62,7 @@ export const useConnectIBCWallet = (
   const finalAssetInfo = fromRegistry ? registryInfo : assetInfo
   const chainRegistryName = finalAssetInfo?.registry_name || 'cosmoshub'
 
-  const { getSigningStargateClient, connect, address } = useChain(chainRegistryName)
+  const { getSigningClient, connect, address } = useChain(chainRegistryName)
 
 
   const mutation = useMutation({
@@ -164,7 +165,11 @@ export const useConnectIBCWallet = (
 
         // console.log('Getting signing client...');
         // Now get the signing client
-        const ibcChainClient = await getSigningStargateClient();
+        const signer = await getSigningClient();
+        const rpc = finalAssetInfo?.rpc;
+        if (!rpc) throw new Error("RPC endpoint not found");
+        // @ts-ignore
+        const ibcChainClient = await SigningStargateClient.connectWithSigner(rpc, signer);
 
         if (!ibcChainClient) {
           const error = new Error('Failed to obtain the signing client. Please try again.');

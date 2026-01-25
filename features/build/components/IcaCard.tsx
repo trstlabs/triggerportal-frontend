@@ -69,7 +69,7 @@ export const IcaCard = ({
     icaAddress,
     flowInput
   )
-  const { mutate: handleCreateAuthzGrant, isLoading: isExecutingAuthzGrant } =
+  const { mutate: handleCreateAuthzGrant, isPending: isExecutingAuthzGrant } =
     useCreateAuthzGrant({
       grantee: icaAddress,
       grantInfos: icaAuthzGrants

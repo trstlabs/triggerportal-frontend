@@ -11,11 +11,13 @@ import { convertDenomToMicroDenom } from 'util/conversion'
 
 import { TransactionKind } from './types'
 
+import { UseMutationOptions } from '@tanstack/react-query'
+
 type UseTransferAssetMutationArgs = {
   transactionKind: TransactionKind
   tokenAmount: number
   ibcAssetInfo: IBCAssetInfo
-} & Parameters<typeof useMutation>[2]
+} & Omit<UseMutationOptions<DeliverTxResponse, Error, void, unknown>, 'mutationFn'>
 
 // const sendIbcTokens = (
 //   senderAddress: string,

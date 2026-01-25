@@ -29,8 +29,8 @@ export const TokenSelector = ({
   onChange,
   size = 'large',
 }: TokenSelectorProps) => {
-  const wrapperRef = useRef<HTMLDivElement>()
-  const inputRef = useRef<HTMLInputElement>()
+  const wrapperRef = useRef<HTMLDivElement>(null)
+  const inputRef = useRef<HTMLInputElement>(null)
 
   const [isTokenListShowing, setTokenListShowing] = useState(false)
 

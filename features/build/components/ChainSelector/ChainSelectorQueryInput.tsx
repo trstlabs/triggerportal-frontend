@@ -11,7 +11,7 @@ export const QueryInput = ({
   onQueryChange,
   ...inputProps
 }: QueryInputProps) => {
-  const inputRef = useRef<HTMLInputElement>()
+  const inputRef = useRef<HTMLInputElement>(null)
 
   useEffect(() => {
     inputRef.current.focus()

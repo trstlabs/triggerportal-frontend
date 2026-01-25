@@ -63,7 +63,7 @@ export const PreviewAndSubmit = ({
   isMobile: propIsMobile,
   bgColor,
 }: FlowsInputProps) => {
-  const inputRef = useRef<HTMLInputElement>()
+  const inputRef = useRef<HTMLInputElement>(null)
 
   const [useMsgExec, _setUseMsgExec] = useState(false)
   const [feeSymbol, setFeeSymbol] = useState('INTO')
@@ -275,7 +275,7 @@ export const PreviewAndSubmit = ({
   )
 
   const granteeAddress = trustlessAgentICA || icaAddress;
-  const { mutate: submitFlowOnHost, isLoading: isSubmittingOnHost } = useSubmitFlowOnHost({
+  const { mutate: submitFlowOnHost, isPending: isSubmittingOnHost } = useSubmitFlowOnHost({
     flowInput,
     ibcAssetInfo,
     requiredGrants: invalidGrants || [],
@@ -293,9 +293,9 @@ export const PreviewAndSubmit = ({
   const refetchTrustlessAgentICA = useRefetchQueries([
     `hostInterchainAccount/${trustlessAgent?.agentAddress || ""}/${flowInput.connectionId || ""}`,
   ])
-  const refetchAuthZForTrustlessAgentICA = useRefetchQueries(
+  const refetchAuthZForTrustlessAgentICA = useRefetchQueries([
     `userAuthZGrants / ${trustlessAgentICA}`
-  )
+  ])
   const refetchICA = useRefetchQueries([
     `ibcTokenBalance / ${denom} / ${icaAddress}`,
     `userAuthZGrants / ${icaAddress}/${icaAddress}/${flowInput?.msgs?.length}`,
@@ -304,9 +304,9 @@ export const PreviewAndSubmit = ({
 
 
 
-  const { mutate: handleSubmitFlow, isLoading: isExecutingSchedule } =
+  const { mutate: handleSubmitFlow, isPending: isExecutingSchedule } =
     useSubmitFlow({ flowInput })
-  const { mutate: handleRegisterICA, isLoading: isExecutingRegisterICA } =
+  const { mutate: handleRegisterICA, isPending: isExecutingRegisterICA } =
     useRegisterAccount({
       connectionId: flowInput.connectionId,
       hostConnectionId: flowInput.hostConnectionId,
@@ -344,7 +344,7 @@ export const PreviewAndSubmit = ({
   )
 
 
-  const { mutate: handleSubmitTx, isLoading: isExecutingSubmitTx } =
+  const { mutate: handleSubmitTx, isPending: isExecutingSubmitTx } =
     useSubmitTx({ flowInput })
 
   useEffect(
@@ -373,7 +373,7 @@ export const PreviewAndSubmit = ({
 
   const {
     mutate: handleSendFundsOnHost,
-    isLoading: isExecutingSendFundsOnHost,
+    isPending: isExecutingSendFundsOnHost,
   } = useSendFundsOnHost({
     toAddress: icaAddress,
     coin: {

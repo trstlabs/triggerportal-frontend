@@ -94,7 +94,7 @@ export const TokenomicsCard = ({ shouldShowAutoCompound }: TokenomicsCardProps) 
   const { totalFlows, flowIncrease, isLoading: isFlowStatsLoading } = useFlowStats()
   const { price, isLoading: isPriceLoading } = useINTOPrice()
   const wallet = useAtomValue(walletState)
-  const { mutate: handleSubmitFlow, isLoading: isExecutingSchedule } =
+  const { mutate: handleSubmitFlow, isPending: isExecutingSchedule } =
     useSubmitFlow({ flowInput })
 
   useEffect(() => {

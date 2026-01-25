@@ -21,8 +21,8 @@ export const MessageSelector = ({
   msgTypeName: string
   setSchema: Dispatch<SetStateAction<boolean>>
   setExample: (index: number, msg: any) => void
-}): JSX.Element => {
-  const wrapperRef = useRef<HTMLDivElement>()
+}): React.ReactElement => {
+  const wrapperRef = useRef<HTMLDivElement>(null)
   const [messageList, setMessageList] = useState<ListType[]>([])
   const [schemas, setSchemas] = useState<any>({})
 

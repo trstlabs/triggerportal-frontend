@@ -29,7 +29,7 @@ export const ChainSelector = forwardRef<HTMLDivElement, ChainSelectorProps>((
   const [isChainListShowing, setChainListShowing] = useState(false)
   const [selectedChain, setSelectedChain] = useState(new ChainInfo())
   const { mutate: connectExternalWallet } = useConnectIBCWallet(selectedChain?.chainId, {})
-  const wrapperRef = useRef()
+  const wrapperRef = useRef(null)
 
   const [icaAssetList] = useIBCAssetList() // This uses ibc_assets.json
 

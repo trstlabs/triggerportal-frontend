@@ -30,8 +30,8 @@ export const ChannelSelector = ({
   onChange,
   size = 'large',
 }: ChannelSelectorProps) => {
-  const wrapperRef = useRef<HTMLDivElement>()
-  const inputRef = useRef<HTMLInputElement>()
+  const wrapperRef = useRef<HTMLDivElement>(null)
+  const inputRef = useRef<HTMLInputElement>(null)
 
   const [isChannelListShowing, setChannelListShowing] = useState(false)
 

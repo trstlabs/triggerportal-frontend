@@ -107,7 +107,7 @@ export const TransferDialog = ({
 
   return (
     <Dialog isShowing={isShowing} onRequestClose={onRequestClose}>
-      <DialogHeader paddingBottom="$13">
+      <DialogHeader css={{ paddingBottom: '$13' }}>
         <Text variant="header">{capitalizedTransactionType}</Text>
       </DialogHeader>
       <DialogContent>
@@ -120,7 +120,7 @@ export const TransferDialog = ({
           }
         />
       </DialogContent>
-      <DialogDivider offsetY="$10" />
+      <DialogDivider css={{ margin: '$10 0' }} />
       <DialogContent>
         <Text variant="primary" css={{ paddingBottom: '$6' }}>
           Amount
@@ -135,30 +135,26 @@ export const TransferDialog = ({
           onAmountChange={setTokenAmount}
         />
       </DialogContent>
-      <DialogDivider offsetY="$10" />
+      <DialogDivider css={{ margin: '$10 0' }} />
       <DialogContent css={{ paddingBottom: '$8' }}>
         <WalletInfoPerformingFlowAgainst depositing={true} />
       </DialogContent>
-      <DialogButtons
-        cancellationButton={
-          <Button onClick={onRequestClose} variant="secondary">
-            Cancel
-          </Button>
-        }
-        confirmationButton={
-          <Button
-            disabled={
-              transactionKind === 'deposit'
-                ? externalIbcAssetBalance <= 0
-                : nativeAssetBalance <= 0
-            }
-            onClick={() => mutateTransferAsset(null)}
-            variant="primary"
-          >
-            {isLoading ? <Spinner instant={true} size={16} /> : 'Transfer'}
-          </Button>
-        }
-      />
+      <DialogButtons>
+        <Button onClick={onRequestClose} variant="secondary">
+          Cancel
+        </Button>
+        <Button
+          disabled={
+            transactionKind === 'deposit'
+              ? externalIbcAssetBalance <= 0
+              : nativeAssetBalance <= 0
+          }
+          onClick={() => mutateTransferAsset(null)}
+          variant="primary"
+        >
+          {isLoading ? <Spinner instant={true} size={16} /> : 'Transfer'}
+        </Button>
+      </DialogButtons>
     </Dialog>
   )
 }

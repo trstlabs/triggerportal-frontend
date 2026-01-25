@@ -1,9 +1,9 @@
 
-import { Globe, User, Info as InfoIconLucide, Copy, Moon, Plus, MessageSquare, ArrowUp, Github as GithubIcon, Send, Circle, AlertTriangle, PieChart } from 'lucide-react'
+import { Globe, User, Info as InfoIconLucide, Copy, Moon, Plus, MessageSquare, ArrowUp, Github as GithubIcon, Send, AlertTriangle, PieChart } from 'lucide-react'
 import { styled } from '../theme'
 
 
-export const Discord = styled(Circle, {})
+
 export const Github = styled(GithubIcon, {})
 export const Telegram = styled(Send, {})
 export const Twitter = styled(MessageSquare, {})

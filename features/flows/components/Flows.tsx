@@ -23,8 +23,8 @@ export const Flows = ({
   // codeId,
   size = 'large',
 }: FlowsProps) => {
-  const wrapperRef = useRef<HTMLDivElement>()
-  const inputRef = useRef<HTMLInputElement>()
+  const wrapperRef = useRef<HTMLDivElement>(null)
+  const inputRef = useRef<HTMLInputElement>(null)
   // const infos = useFlows(codeId)
   const [isFlowListShowing, setFlowListShowing] = useState(false)
 

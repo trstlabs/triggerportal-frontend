@@ -36,9 +36,9 @@ export const useTokenSend = ({
 
     const refetchQueries = useRefetchQueries([`tokenBalance/INTO/${address}`])
 
-    return useMutation(
-        'sendTokens',
-        async () => {
+    return useMutation({
+        mutationKey: ['sendTokens'],
+        mutationFn: async () => {
             if (status !== WalletStatusType.connected) {
                 throw new Error('Please connect your wallet.')
             }
@@ -65,46 +65,45 @@ export const useTokenSend = ({
             })
 
         },
-        {
-            onSuccess() {
-                toast.custom((t) => (
-                    <Toast
-                        icon={<IconWrapper icon={<Valid />} color="primary" />}
-                        title="Send successful"
-                        body={`Sent ${ibcAsset.symbol} !`}
-                        onClose={() => toast.dismiss(t.id)}
-                    />
-                ))
-                //  popConfetti(true)
-                //setTimeout(() => popConfetti(false), 3000)
-                refetchQueries()
-            },
-            onError(e) {
-                const errorMessage = formatSdkErrorMessage(e)
+        onSuccess() {
+            toast.custom((t) => (
+                <Toast
+                    icon={<IconWrapper icon={<Valid />} color="primary" />}
+                    title="Send successful"
+                    body={`Sent ${ibcAsset.symbol} !`}
+                    onClose={() => toast.dismiss(t.id)}
+                />
+            ))
+            //  popConfetti(true)
+            //setTimeout(() => popConfetti(false), 3000)
+            refetchQueries()
+        },
+        onError(e) {
+            const errorMessage = formatSdkErrorMessage(e)
 
-                toast.custom((t) => (
-                    <Toast
-                        icon={<ErrorIcon color="error" />}
-                        title="Oops send error!"
-                        body={errorMessage}
-                        buttons={
-                            <Button
-                                as="a"
-                                variant="ghost"
-                                href={process.env.NEXT_PUBLIC_FEEDBACK_LINK}
-                                target="__blank"
-                                iconRight={<UpRightArrow />}
-                            >
-                                Provide feedback
-                            </Button>
-                        }
-                        onClose={() => toast.dismiss(t.id)}
-                    />
-                ))
-            },
-            onSettled() {
-                setTransactionState(TransactionStatus.IDLE)
-            },
-        }
-    )
+            toast.custom((t) => (
+                <Toast
+                    icon={<ErrorIcon color="error" />}
+                    title="Oops send error!"
+                    body={errorMessage}
+                    buttons={
+                        <Button
+                            as="a"
+                            variant="ghost"
+                            href={process.env.NEXT_PUBLIC_FEEDBACK_LINK}
+                            target="__blank"
+                            iconRight={<UpRightArrow />}
+                        >
+                            Provide feedback
+                        </Button>
+                    }
+                    onClose={() => toast.dismiss(t.id)}
+                />
+            ))
+        },
+        onSettled() {
+            setTransactionState(TransactionStatus.IDLE)
+        },
+    })
+
 }

@@ -268,7 +268,7 @@ export const useAuthZMsgGrantInfoForUser = (
                 msgTypeUrl,
                 expiration: undefined,
                 hasGrant: false,
-                hasGrant: false,
+
               }
             )
           }
