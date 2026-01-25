@@ -105,7 +105,7 @@ export const WalletButton = ({
               <Button
                 variant="ghost"
                 size="small"
-                icon={<IconWrapper icon={copied ? <Valid /> : <CopyIcon />} />}
+                icon={copied ? <Valid /> : <CopyIcon />}
                 {...bind}
               />
             )}
@@ -118,8 +118,7 @@ export const WalletButton = ({
               variant="ghost"
               size="small"
               onClick={onDisconnect}
-              icon={<IconWrapper icon={<Logout />} />}
-            />
+              icon={<Logout />} />
           </Tooltip>
         </StyledDivForInlineFlows>
       </StyledDivForFlows>

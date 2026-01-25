@@ -23,5 +23,6 @@ export * from './hooks/useAmountChangeController'
 export * from './components/ButtonWithDropdown'
 export * from './components/BasicNumberInput'
 export * from './hooks/useDelayedAppearanceFlag'
+export * from './hooks/useOnClickOutside'
 
 

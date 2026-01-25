@@ -187,12 +187,15 @@ export function ExampleFlowChips({ chainSymbol, setAllMessages, index, onCustom,
       )}
       {/* Always show Custom chip (available for any index) */}
       <Inline css={{ marginBottom: '$2', flexWrap: 'wrap', gap: '$2' }}>
-        <IntentTemplateChip
-          label="Union Call"
-          gradient="linear-gradient(90deg, #6366f1 0%, #4f46e5 100%)"
-          description="Build a cross-chain contract call via Union ZKGM."
-          onClick={() => onUnionCall && onUnionCall()}
-        />
+
+        {chainSymbol === undefined && (
+          <IntentTemplateChip
+            label="Union Call"
+            gradient="linear-gradient(90deg, #6366f1 0%, #4f46e5 100%)"
+            description="Build a cross-chain contract call via Union ZKGM."
+            onClick={() => onUnionCall && onUnionCall()}
+          />
+        )}
         <IntentTemplateChip
           label="Custom"
           gradient="linear-gradient(90deg, #4a5568 0%, #2d3748 100%)"

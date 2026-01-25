@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useMemo } from 'react'
-import { styled, Text, Column, Inline, Button } from 'components/ui-blocks'
+import { styled, Text, Column, Inline, Button, Tooltip } from 'components/ui-blocks'
 import { parseAbi, encodeFunctionData, AbiFunction } from 'viem'
 import { Call, Ucs03, Ucs05, Utils, ZkgmInstruction, TokenOrder } from '@unionlabs/sdk'
 import { Effect, Schema, Match, pipe, ParseResult, Cause, Array as A } from 'effect'
@@ -7,6 +7,7 @@ import { useChain } from '@interchain-kit/react'
 import { useChainInfoByChainID } from '../../../../hooks/useChainList'
 import { useAtomValue } from 'jotai'
 import { walletState } from '../../../../state/atoms/walletAtoms'
+import { ChannelId } from '@unionlabs/sdk/schema/channel'
 
 
 const StyledContainer = styled('div', {
@@ -75,13 +76,13 @@ const encodeInstruction: (
 export const UnionCallEditor = ({ destinationChainId, onChange, onClose }: UnionCallEditorProps) => {
     console.log("destinationChainId", destinationChainId)
     const destChainInfo = useChainInfoByChainID(destinationChainId) as any
-    const { evmAddress } = useAtomValue(walletState)
+    const { address, evmAddress } = useAtomValue(walletState)
     const [contractAddress, setContractAddress] = useState('')
     const [abiString, setAbiString] = useState('function transfer(address to, uint256 amount) returns (bool)')
     const [selectedFunctionName, setSelectedFunctionName] = useState('')
     const [args, setArgs] = useState<string[]>([])
     const [encodingError, setEncodingError] = useState<string | null>(null)
-    const { connect } = useChain('ethereum')
+    const { connect } = useChain('intento')
 
 
     const functions = useMemo(() => {
@@ -140,7 +141,9 @@ export const UnionCallEditor = ({ destinationChainId, onChange, onClose }: Union
 
             // 2. Create Union Call Object
             const call = Call.make({
-                sender: Ucs05.EvmDisplay.make({ address: evmAddress as `0x${string}` }),
+                sender: Ucs05.CosmosDisplay.make({
+                    address: address as `into1${string}`,
+                }),
                 eureka: false,
                 contractAddress: Ucs05.EvmDisplay.make({
                     address: contractAddress as `0x${string}`,
@@ -158,12 +161,11 @@ export const UnionCallEditor = ({ destinationChainId, onChange, onClose }: Union
                 )
                 const tenHoursInNs = BigInt(10) * BigInt(60) * BigInt(60) * BigInt(1000) * BigInt(1000000);
                 const nowInNs = BigInt(Date.now()) * BigInt(1000000);
-                console.log("instruction", instruction)
-                console.log("destChainInfo", destChainInfo)
+
                 const timeout_timestamp = (nowInNs + tenHoursInNs).toString();
                 return {
                     send: {
-                        channel_id: destChainInfo.channel,
+                        channel_id: ChannelId.make(Number(destChainInfo.channel)),
                         timeout_height: "0",//Date.now().toString(),
                         timeout_timestamp,
                         salt: salt as `0x${string}`,
@@ -224,7 +226,9 @@ export const UnionCallEditor = ({ destinationChainId, onChange, onClose }: Union
                 </Column>
 
                 <Column css={{ gap: '$2' }}>
-                    <Text variant="caption">ABI (e.g. function transfer(address to, uint256 amount))</Text>
+                    <Tooltip content="The ABI (Application Binary Interface) defines the interface for interacting with the smart contract. It specifies the functions, their parameters, and the expected return values. This information is crucial for encoding the function calls correctly.  (e.g. function transfer(address to, uint256 amount))">
+                        <Text variant="caption">ABI</Text>
+                    </Tooltip>
                     <StyledTextArea
                         value={abiString}
                         onChange={(e) => setAbiString(e.target.value)}

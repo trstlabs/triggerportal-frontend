@@ -3,7 +3,6 @@ import {
   Button,
   ChevronIcon,
   Column,
-  WalletIcon,
   Inline,
   Text,
   ImageForTokenLogo,
@@ -38,7 +37,7 @@ import { Configuration } from '../../build/components/Conditions/Configuration'
 import { JsonFormWrapper } from '../../build/components/Editor/JsonFormWrapper'
 import JsonViewer from '../../build/components/Editor/JsonViewer'
 import { Alert } from '../../../icons/Alert'
-import { Share } from 'lucide-react'
+import { List, Share } from 'lucide-react'
 import { EditSchedulingSection } from './EditSchedulingSection'
 import { convertMicroDenomToDenom, resolveDenomSync } from '../../../util/conversion'
 import { XTwitter } from '../../../icons/XTwitter'
@@ -1470,7 +1469,7 @@ const InfoHeader = ({ id, good }: InfoHeaderProps) => (
   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '2rem 0', width: '100%' }}>
     <div style={{ display: 'flex', alignItems: 'center', gap: '1.5rem' }}>
       <Link href="/flows" passHref>
-        <Button as="a" variant="ghost" size="large" iconLeft={<WalletIcon />}>
+        <Button as="a" variant="ghost" size="large" iconLeft={<List />}>
           <span style={{ paddingLeft: '1rem' }}>All Flows</span>
         </Button>
       </Link>

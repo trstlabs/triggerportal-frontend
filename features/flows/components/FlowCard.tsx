@@ -136,8 +136,7 @@ export const FlowCard = ({ flow }: flowWithDetails) => {
                       {flow.trustlessAgent?.agentAddress ? 'Trustless Agent' :
                         flow.selfHostedIca?.connectionId ? 'Self-Hosted | ' + flow.msgs[0]?.typeUrl?.split('.')
                           .find((msgSection) => msgSection.includes('Msg'))?.split(',')[0] || 'Unknown'
-                          : 'Local | ' + flow.msgs[0]?.typeUrl?.split('.')
-                            .find((msgSection) => msgSection.includes('Msg'))?.split(',')[0] || 'Unknown'
+                          : ''
                       }
                     </>
                   </StyledText>

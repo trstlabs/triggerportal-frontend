@@ -81,7 +81,7 @@ const StyledCloseButton = styled(DialogPrimitive.Close, {
 
 export const Dialog = ({ isShowing, onRequestClose, children, title }: DialogProps) => {
     return (
-        <DialogPrimitive.Root open={isShowing} onOpenChange={(open) => !open && onRequestClose()}>
+        <DialogPrimitive.Root open={isShowing} onOpenChange={(open) => !open && onRequestClose?.()}>
             <DialogPrimitive.Portal>
                 <StyledOverlay />
                 <StyledContent onOpenAutoFocus={(e) => e.preventDefault()}>
