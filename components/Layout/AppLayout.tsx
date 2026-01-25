@@ -285,8 +285,6 @@ const StyledContainer = styled('div', {
   position: 'relative',
   display: 'flex',
   flexDirection: 'column',
-
-  padding: '0 $24 $24 $24',
   '& main': {
     margin: '0 auto',
     width: '100%',

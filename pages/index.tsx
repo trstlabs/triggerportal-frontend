@@ -209,7 +209,7 @@ export default function Home() {
             <span>🛡️</span> Self-Custodial
           </FeatureBadge>
           {!isMobile && <FeatureBadge variant="primary" style={getBadgeStyles('primary')}>
-            <span>🦾</span> AI-Ready
+            <span>🦾</span> Trustless Agents
           </FeatureBadge>}
         </Inline>
 
@@ -255,7 +255,7 @@ export default function Home() {
               <Text variant="caption" css={{ padding: '$4' }}>
                 {' '}
                 {myFlows.length > 1 ? (
-                  <span> Your Flows({flows.total.toString()})</span>
+                  <span> Your Flows ({flows.total.toString()})</span>
                 ) : (
                   <span> Your Flow (1)</span>
                 )}
@@ -288,8 +288,8 @@ export default function Home() {
             <Inline
               gap={4}
               css={{
-                paddingTop: '$19',
-                paddingBottom: '$11',
+                paddingTop: '$8',
+                paddingBottom: '$6',
               }}
             >
               <Text variant="primary">

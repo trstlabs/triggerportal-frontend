@@ -30,6 +30,7 @@ import { useConnectIBCWallet } from '../../../hooks/useConnectIBCWallet'
 import { useRefetchQueries } from '../../../hooks/useRefetchQueries'
 import { IcaCard } from './IcaCard'
 import { JsonFormWrapper } from './Editor/JsonFormWrapper'
+import { UnionCallEditor } from './Editor/UnionCallEditor'
 import { FlowInput } from '../../../types/trstTypes'
 import { ExecutionConditions, ExecutionConfiguration } from 'intentojs/dist/codegen/intento/intent/v1/flow'
 import { GearIcon } from '../../../icons'
@@ -52,7 +53,7 @@ export const BuildComponent = ({
   flowInput,
   onFlowChange,
 }: FlowsInputProps) => {
-  const inputRef = useRef<HTMLInputElement>()
+  const inputRef = useRef<HTMLInputElement>(null)
 
   const [prefix, setPrefix] = useState('into')
   const [denom, setDenom] = useState('uinto')
@@ -67,6 +68,7 @@ export const BuildComponent = ({
   const [requestedSubmitTx, setRequestedSubmitTx] = useState(false)
   const [requestedRegisterICA, setRequestedRegisterICA] = useState(false)
 
+
   const [icaAddress, isIcaLoading] = useGetICA(flowInput.connectionId, '')
 
   const [icaBalance, isIcaBalanceLoading] = useICATokenBalance(
@@ -80,9 +82,9 @@ export const BuildComponent = ({
   const refetchTrustlessAgentICA = useRefetchQueries([
     `hostInterchainAccount/${trustlessAgent?.agentAddress || ""}/${flowInput.connectionId}`,
   ])
-  const refetchAuthZForTrustlessAgentICA = useRefetchQueries(
+  const refetchAuthZForTrustlessAgentICA = useRefetchQueries([
     `userAuthZGrants / ${trustlessAgentICA}`
-  )
+  ])
   const refetchICA = useRefetchQueries([
     `ibcTokenBalance / ${denom} / ${icaAddress}`,
     `userAuthZGrants / ${icaAddress}/${icaAddress}/${flowInput?.msgs?.length}`,
@@ -559,18 +561,26 @@ export const BuildComponent = ({
       </Inline>
       {flowInput.msgs?.map((msg, index) => (
         <div key={index}>
-          <JsonFormWrapper
-            index={index}
-            chainSymbol={chainSymbol}
-            universalId={universalId}
-            msg={msg}
-            setExample={setExample}
-            setAllMessages={setAllMessages}
-            handleRemoveMsg={handleRemoveMsg}
-            handleChangeMsg={handleChangeMsg}
-            setIsJsonValid={setIsJsonValid}
-            selectedTemplateLabel={flowInput?.label}
-          />
+          {universalId ? (
+            <UnionCallEditor
+              destinationChainId={universalId}
+              onChange={handleChangeMsg(index)}
+              onDiscard={() => handleRemoveMsg(index)}
+            />
+          ) : (
+            <JsonFormWrapper
+              index={index}
+              chainSymbol={chainSymbol}
+
+              msg={msg}
+              setExample={setExample}
+              setAllMessages={setAllMessages}
+              handleRemoveMsg={handleRemoveMsg}
+              handleChangeMsg={handleChangeMsg}
+              setIsJsonValid={setIsJsonValid}
+              selectedTemplateLabel={flowInput?.label}
+            />
+          )}
         </div>
       ))}{' '}
       <Card variant="secondary" disabled css={{ margin: '$6' }}>

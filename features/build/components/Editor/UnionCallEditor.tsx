@@ -41,11 +41,7 @@ const StyledInput = styled('input', {
 
 const ZKGM_CONTRACT = "into1sq2ze6rq64jg8fkcedpxukfzw0apkxk8t7x7uhava8w9xfz69uyqcypvhk"
 
-interface UnionCallEditorProps {
-    destinationChainId: string
-    onChange: (msg: string) => void
-    onClose: () => void
-}
+
 
 const encodeInstruction: (
     u: ZkgmInstruction.ZkgmInstruction,
@@ -73,7 +69,8 @@ const encodeInstruction: (
     }),
 )
 
-export const UnionCallEditor = ({ destinationChainId, onChange, onClose }: UnionCallEditorProps) => {
+
+export const UnionCallEditor = ({ destinationChainId, onChange, onDiscard }: { destinationChainId: string, onChange: (msg: string) => void, onDiscard: () => void }) => {
     console.log("destinationChainId", destinationChainId)
     const destChainInfo = useChainInfoByChainID(destinationChainId) as any
     const { address, evmAddress } = useAtomValue(walletState)
@@ -187,7 +184,6 @@ export const UnionCallEditor = ({ destinationChainId, onChange, onClose }: Union
             }
 
             onChange(JSON.stringify(finalMsg, null, 2))
-            onClose()
         } catch (e: any) {
             setEncodingError(e.message || "Failed to encode message")
         }
@@ -200,7 +196,7 @@ export const UnionCallEditor = ({ destinationChainId, onChange, onClose }: Union
             <Column css={{ gap: '$4' }}>
                 <Inline css={{ justifyContent: 'space-between' }}>
                     <Text variant="body" css={{ fontWeight: 'bold' }}>Union Cross-Chain Call</Text>
-                    <Button variant="ghost" size="small" onClick={onClose}>Cancel</Button>
+                    <Button variant="ghost" size="small" onClick={onDiscard}>Discard</Button>
                 </Inline>
 
                 <Column css={{ gap: '$2' }}>
@@ -274,3 +270,4 @@ export const UnionCallEditor = ({ destinationChainId, onChange, onClose }: Union
         </StyledContainer>
     )
 }
+
