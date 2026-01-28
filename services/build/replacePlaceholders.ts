@@ -1,7 +1,8 @@
 // Utility to recursively replace placeholders in message values
 // Used by transformAndEncodeMsgs and can be reused elsewhere
 import { fromBech32, toBech32 } from '@cosmjs/encoding'
-import { createHash } from "crypto";
+import { sha256 } from '@cosmjs/crypto'
+import { toHex } from '@cosmjs/encoding'
 
 export interface ReplacePlaceholdersParams {
   value: any
@@ -112,5 +113,7 @@ function pathToIbcDenom(tracePath: string, baseDenom: string): string {
   console.log(tracePath, baseDenom)
   const normalizedDenom = baseDenom.trim().toLowerCase();
   const fullTrace = `${tracePath}/u${normalizedDenom}`;
-  return "ibc/" + createHash("sha256").update(fullTrace).digest("hex").toUpperCase();
+  const encoder = new TextEncoder();
+  const hash = sha256(encoder.encode(fullTrace));
+  return "ibc/" + toHex(hash).toUpperCase();
 }
