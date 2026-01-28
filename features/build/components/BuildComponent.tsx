@@ -41,6 +41,8 @@ import { Conditions } from './Conditions/Conditions'
 import { convertDenomToMicroDenom } from '../../../util/conversion'
 import { TrustlessAgentCard } from './TrustlessAgentCard'
 import { processFlowInput } from '../utils/addressUtils'
+import { AiAssistant } from './Ai/AiAssistant'
+
 
 
 
@@ -67,6 +69,8 @@ export const BuildComponent = ({
   const [requestedSubmitFlow, setRequestedSubmitFlow] = useState(false)
   const [requestedSubmitTx, setRequestedSubmitTx] = useState(false)
   const [requestedRegisterICA, setRequestedRegisterICA] = useState(false)
+  const [isAiAssistantOpen, setIsAiAssistantOpen] = useState(false)
+
 
 
   const [icaAddress, isIcaLoading] = useGetICA(flowInput.connectionId, '')
@@ -468,17 +472,26 @@ export const BuildComponent = ({
 
   return (
     <StyledDivForContainer>
-      <Inline css={{ margin: '$6', marginTop: '$12', }}>
-        <StepIcon step={1} />
-        <Text
-          align="center"
-          variant="body"
-          color="tertiary"
-          css={{ padding: '0 $15 0 $6' }}
-        >
-          Choose where to execute
-        </Text>{' '}
+      <Inline css={{ margin: '$6', marginTop: '$12', justifyContent: 'space-between', alignItems: 'center' }}>
+        <Inline>
+          <StepIcon step={1} />
+          <Text
+            align="center"
+            variant="body"
+            color="tertiary"
+            css={{ padding: '0 $15 0 $6' }}
+          >
+            Choose where to execute
+          </Text>{' '}
+        </Inline>
+        <Button
+          variant="secondary"
+          size="small"
+          onClick={() => setIsAiAssistantOpen(true)}
+          iconLeft={<Inline css={{ gap: '$2', alignItems: 'center' }}>✨ Ask AI</Inline>}
+        />
       </Inline>
+
 
       <Card
         css={{ margin: '$4', paddingLeft: '$8', paddingTop: '$1' }}
@@ -681,7 +694,14 @@ export const BuildComponent = ({
           {isExecutingSchedule ? <Spinner instant /> : 'Schedule'}
         </Button>
       </Inline>
+      <AiAssistant
+        isOpen={isAiAssistantOpen}
+        onClose={() => setIsAiAssistantOpen(false)}
+        flowInput={flowInput}
+        onApplyChanges={onFlowChange}
+      />
     </StyledDivForContainer>
+
   )
 }
 

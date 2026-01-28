@@ -272,8 +272,8 @@ export function NavigationSidebar(_: NavigationSidebarProps) {
         <Column gap={6}>
           <Inline
             align="center"
-            justifyContent="space-between"
-            css={{ padding: '0 $12' }}
+            justifyContent="center"
+            css={{ padding: '0 0' }}
           >
             <Link href="/" passHref>
               <StyledDivForLogo as="a">
@@ -283,7 +283,7 @@ export function NavigationSidebar(_: NavigationSidebarProps) {
                 />
               </StyledDivForLogo>
             </Link>{' '}
-            <Text variant="caption" color="primary" css={{ textAlign: 'end', fontFamily: 'Oceanwide, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif', fontWeight: 700, fontSize: 14 }}>
+            <Text variant="caption" color="primary" css={{ textAlign: 'end', fontFamily: 'Oceanwide, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif', fontWeight: 600, fontSize: 10 }}>
               {__TEST_MODE__ ? 'Testnet' : 'Mainnet'}
             </Text>
             {triggerMenuButton}
@@ -316,7 +316,7 @@ export function NavigationSidebar(_: NavigationSidebarProps) {
         <Text
           variant="caption"
           color="primary"
-          css={{ textAlign: 'center', paddingBottom: '$5', fontFamily: 'Oceanwide, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif', fontWeight: 700, fontSize: 14 }}
+          css={{ textAlign: 'center', paddingBottom: '$5', fontFamily: 'Oceanwide, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif', fontWeight: 500, fontSize: 12 }}
         >
           {__TEST_MODE__ ? 'Testnet' : 'Mainnet'}
         </Text>
@@ -507,11 +507,10 @@ const StyledListForLinks = styled('div', {
 })
 
 const StyledDivForLogo = styled('div', {
-  display: 'grid',
-  gridTemplateColumns: '50px 1fr',
-  columnGap: '$space$8',
+  display: 'flex',
   alignItems: 'center',
-  paddingLeft: '$4',
+  justifyContent: 'center',
+
 
   '& [data-logo]': {
     marginBottom: '$2',
@@ -545,8 +544,8 @@ const buttonIconCss = {
 }
 
 const StyledPNG = styled('img', {
-  width: '350%',
-  maxWidth: '1000px',
+  width: '100%',
+  maxWidth: '200px',
   zIndex: '$1',
   userSelect: 'none',
   userDrag: 'none',

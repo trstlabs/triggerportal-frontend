@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useMemo } from 'react'
 import { styled, Text, Column, Inline, Button, Tooltip } from 'components/ui-blocks'
-import { parseAbi, encodeFunctionData, AbiFunction } from 'viem'
+import { parseAbi, encodeFunctionData, AbiFunction, keccak256, encodeAbiParameters } from 'viem'
 import { Call, Ucs03, Ucs05, Utils, ZkgmInstruction, TokenOrder } from '@unionlabs/sdk'
 import { Effect, Schema, Match, pipe, ParseResult, Cause, Array as A } from 'effect'
 import { useChain } from '@interchain-kit/react'
@@ -40,7 +40,7 @@ const StyledInput = styled('input', {
 })
 
 const ZKGM_CONTRACT = "into1sq2ze6rq64jg8fkcedpxukfzw0apkxk8t7x7uhava8w9xfz69uyqcypvhk"
-
+const PROXY_ADDRESS = "0xb47133de8336f2264c1dA84094F413aCd29332a6" // Hardcoded for now
 
 
 const encodeInstruction: (
@@ -69,13 +69,51 @@ const encodeInstruction: (
     }),
 )
 
+export const predictProxy = Effect.fn(
+    function* (options: { path: bigint; channel: ChannelId; sender: Ucs05.AnyDisplay }) {
+        const sender = yield* Ucs05.anyDisplayToZkgm(options.sender)
+        const abi = [
+            {
+                name: "path",
+                type: "uint256",
+                internalType: "uint256",
+            },
+            {
+                name: "channelId",
+                type: "uint32",
+                internalType: "uint32",
+            },
+            {
+                name: "sender",
+                type: "bytes",
+                internalType: "bytes",
+            },
+        ] as const
+
+        const salt = yield* pipe(
+            Effect.try(() =>
+                encodeAbiParameters(
+                    abi,
+                    [
+                        options.path,
+                        options.channel,
+                        sender,
+                    ] as const,
+                )
+            ),
+            Effect.map((encoded) => keccak256(encoded, "bytes")),
+        )
+        return salt
+    }
+)
+
 
 export const UnionCallEditor = ({ destinationChainId, onChange, onDiscard }: { destinationChainId: string, onChange: (msg: string) => void, onDiscard: () => void }) => {
     console.log("destinationChainId", destinationChainId)
     const destChainInfo = useChainInfoByChainID(destinationChainId) as any
     const { address, evmAddress } = useAtomValue(walletState)
     const [contractAddress, setContractAddress] = useState('')
-    const [abiString, setAbiString] = useState('function transfer(address to, uint256 amount) returns (bool)')
+    const [abiString, setAbiString] = useState('function transferFrom(address from, address to, uint256 amount) returns (bool)')
     const [selectedFunctionName, setSelectedFunctionName] = useState('')
     const [args, setArgs] = useState<string[]>([])
     const [encodingError, setEncodingError] = useState<string | null>(null)
@@ -122,7 +160,7 @@ export const UnionCallEditor = ({ destinationChainId, onChange, onDiscard }: { d
                 throw new Error(`Please connect your Ethereum wallet first.`)
             }
 
-            // 1. Encode EVM Call Data
+            // 1. Encode Inner Call Data (User's Logic)
             const processedArgs = args.map((arg, i) => {
                 const type = func.inputs[i].type
                 if (type.includes('int') && !type.includes('[]')) return BigInt(arg)
@@ -130,26 +168,42 @@ export const UnionCallEditor = ({ destinationChainId, onChange, onDiscard }: { d
                 return arg
             })
 
-            const contractCalldata = encodeFunctionData({
+            const innerCallData = encodeFunctionData({
                 abi: [func],
                 functionName: selectedFunctionName,
                 args: processedArgs,
             })
 
-            // 2. Create Union Call Object
+            // 2. Encode Outer Execute Call (Proxy Logic)
+            // function execute(address target, uint256 value, bytes memory payload) public
+            const proxyAbi = parseAbi([
+                "function execute(address target, uint256 value, bytes memory payload) public",
+            ])
+
+            const executeData = encodeFunctionData({
+                abi: proxyAbi,
+                functionName: "execute",
+                args: [
+                    contractAddress as `0x${string}`, // Target (User's Contract)
+                    0n, // Value (0 Ether)
+                    innerCallData, // Payload (User's Call)
+                ],
+            })
+
+            // 3. Create Union Call Object
             const call = Call.make({
                 sender: Ucs05.CosmosDisplay.make({
                     address: address as `into1${string}`,
                 }),
                 eureka: false,
                 contractAddress: Ucs05.EvmDisplay.make({
-                    address: contractAddress as `0x${string}`,
+                    address: PROXY_ADDRESS as `0x${string}`, // Proxy Address
                 }),
-                contractCalldata,
+                contractCalldata: executeData,
             })
 
 
-            // 3. Encode to Hex (mimicking script logic)
+            // 4. Encode to Hex (mimicking script logic)
             const program = Effect.gen(function* () {
                 const salt = yield* Utils.generateSalt("cosmos")
                 const instruction = yield* pipe(
@@ -186,6 +240,7 @@ export const UnionCallEditor = ({ destinationChainId, onChange, onDiscard }: { d
             onChange(JSON.stringify(finalMsg, null, 2))
         } catch (e: any) {
             setEncodingError(e.message || "Failed to encode message")
+            console.error(e)
         }
     }
 
@@ -220,7 +275,6 @@ export const UnionCallEditor = ({ destinationChainId, onChange, onDiscard }: { d
                         onChange={(e) => setContractAddress(e.target.value)}
                     />
                 </Column>
-
                 <Column css={{ gap: '$2' }}>
                     <Tooltip content="The ABI (Application Binary Interface) defines the interface for interacting with the smart contract. It specifies the functions, their parameters, and the expected return values. This information is crucial for encoding the function calls correctly.  (e.g. function transfer(address to, uint256 amount))">
                         <Text variant="caption">ABI</Text>
@@ -270,4 +324,3 @@ export const UnionCallEditor = ({ destinationChainId, onChange, onDiscard }: { d
         </StyledContainer>
     )
 }
-

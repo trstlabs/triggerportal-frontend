@@ -1,7 +1,6 @@
 import { Button, ErrorIcon, styled, Text, UpRightArrowIcon } from 'components/ui-blocks'
 
 import { __TEST_MODE__ } from '../../util/constants'
-import ImageRotator from '../ImageRotator'
 
 export const ExtensionSidebar = () => {
   return (
@@ -24,7 +23,6 @@ export const ExtensionSidebar = () => {
       >
         Report an issue
       </Button>
-      <ImageRotator />
 
     </StyledDivForWrapper>
   )

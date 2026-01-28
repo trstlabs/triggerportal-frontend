@@ -3,7 +3,7 @@
     "skipLibCheck": true, // Skip type checking of declaration files to resolve third-party library issues
     "preserveConstEnums": true,
     "removeComments": false,
-    "target": "es6",//ES2020
+    "target": "ES2020",
     "lib": ["dom", "dom.iterable", "esnext"],
     "allowJs": true,
     "esModuleInterop": true,
