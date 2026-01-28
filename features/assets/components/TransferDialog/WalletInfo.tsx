@@ -1,7 +1,7 @@
 import { CSS } from '@stitches/react'
 import { Logo } from 'icons'
-import { ConnectIcon, IconWrapper, styled, Text } from 'junoblocks'
-import { useRecoilValue } from 'recoil'
+import { ConnectIcon, IconWrapper, styled, Text } from 'components/ui-blocks'
+import { useAtomValue } from 'jotai'
 import { ibcWalletState, walletState } from 'state/atoms/walletAtoms'
 
 export const WalletInfo = ({ label, icon, address, css }) => {
@@ -27,7 +27,7 @@ type WalletInfoProps = {
 }
 
 export const KeplrWalletInfo = ({ css, depositing }: WalletInfoProps) => {
-  const { address: ibcWalletAddress } = useRecoilValue(ibcWalletState)
+  const { address: ibcWalletAddress } = useAtomValue(ibcWalletState)
 
   return (
     <WalletInfo
@@ -40,7 +40,7 @@ export const KeplrWalletInfo = ({ css, depositing }: WalletInfoProps) => {
 }
 
 export const AppWalletInfo = ({ css, depositing }: WalletInfoProps) => {
-  const { address: walletAddress } = useRecoilValue(walletState)
+  const { address: walletAddress } = useAtomValue(walletState)
 
   return (
     <WalletInfo

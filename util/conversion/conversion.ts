@@ -67,10 +67,11 @@ export function resolveDenomSync(
   if (ibcAssets?.length) {
     const matchingAsset = ibcAssets.find(
       (asset) =>
-        asset.denom === denom ||
-        asset.denom_local === denom ||
-        (denom.startsWith('ibc/') &&
-          asset.denom.endsWith(denom.split('/').pop()!))
+        asset.denom &&
+        (asset.denom === denom ||
+          asset.denom_local === denom ||
+          (denom.startsWith('ibc/') &&
+            asset.denom.endsWith(denom.split('/').pop()!)))
     )
     if (matchingAsset) {
       return matchingAsset.symbol

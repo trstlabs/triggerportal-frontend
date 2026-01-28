@@ -6,7 +6,7 @@ import {
   Divider,
   Text,
   ValidIcon,
-} from 'junoblocks'
+} from 'components/ui-blocks'
 
 import { SortDirections, SortParameters } from '../hooks/useSortFlows'
 type Props = {
@@ -43,81 +43,78 @@ export const ButtonWithDropdownForSorting = ({
 
   return (
     <ButtonWithDropdown
-      dropdown={
-        <>
-          <Column css={{ padding: '$6 $6 $4' }}>
-            <Button
-              variant="ghost"
-              onClick={() => onSortParameterChange('id')}
-              selected={sortParameter === 'id'}
-              iconLeft={
-                <ValidIcon visible={sortParameter === 'id'} />
-              }
-            >
-            TxID
-            </Button>
-            <Button
-              variant="ghost"
-              onClick={() => onSortParameterChange('label')}
-              selected={sortParameter === 'label'}
-              iconLeft={
-                <ValidIcon visible={sortParameter === 'label'} />
-              }
-            >
-             Label
-            </Button>
-            <Button
-              variant="ghost"
-              onClick={() => onSortParameterChange('exec_time')}
-              selected={sortParameter === 'exec_time'}
-              iconLeft={<ValidIcon visible={sortParameter === 'exec_time'} />}
-            >
-              Execution Time
-            </Button>
-            <Button
-              variant="ghost"
-              onClick={() => onSortParameterChange('start_time')}
-              selected={sortParameter === 'start_time'}
-              iconLeft={<ValidIcon visible={sortParameter === 'start_time'} />}
-            >
-              Start Time
-            </Button>
-            <Button
-              variant="ghost"
-              onClick={() => onSortParameterChange('end_time')}
-              selected={sortParameter === 'end_time'}
-              iconLeft={<ValidIcon visible={sortParameter === 'end_time'} />}
-            >
-              End Time
-            </Button>
-          </Column>
-          <Divider />
-          <Text variant="legend" css={{ padding: '$8 $6 $4' }}>
-            Sorting order
-          </Text>
-          <Column css={{ padding: '0 $6 $6' }}>
-            <Button
-              variant="ghost"
-              onClick={() => onSortDirectionChange('desc')}
-              selected={sortDirection === 'desc'}
-              iconLeft={<ValidIcon visible={sortDirection === 'desc'} />}
-            >
-              Descending
-            </Button>
-            <Button
-              variant="ghost"
-              onClick={() => onSortDirectionChange('asc')}
-              selected={sortDirection === 'asc'}
-              iconLeft={<ValidIcon visible={sortDirection === 'asc'} />}
-            >
-              Ascending
-            </Button>
-          </Column>
-        </>
-      }
+      label={getSortByLabel()}
       iconRight={<ChevronIcon rotation="-90deg" />}
+      variant="ghost"
     >
-      {getSortByLabel()}
+      <Column css={{ padding: '$6 $6 $4' }}>
+        <Button
+          variant="ghost"
+          onClick={() => onSortParameterChange('id')}
+          selected={sortParameter === 'id'}
+          iconLeft={
+            <ValidIcon visible={sortParameter === 'id'} />
+          }
+        >
+          TxID
+        </Button>
+        <Button
+          variant="ghost"
+          onClick={() => onSortParameterChange('label')}
+          selected={sortParameter === 'label'}
+          iconLeft={
+            <ValidIcon visible={sortParameter === 'label'} />
+          }
+        >
+          Label
+        </Button>
+        <Button
+          variant="ghost"
+          onClick={() => onSortParameterChange('exec_time')}
+          selected={sortParameter === 'exec_time'}
+          iconLeft={<ValidIcon visible={sortParameter === 'exec_time'} />}
+        >
+          Execution Time
+        </Button>
+        <Button
+          variant="ghost"
+          onClick={() => onSortParameterChange('start_time')}
+          selected={sortParameter === 'start_time'}
+          iconLeft={<ValidIcon visible={sortParameter === 'start_time'} />}
+        >
+          Start Time
+        </Button>
+        <Button
+          variant="ghost"
+          onClick={() => onSortParameterChange('end_time')}
+          selected={sortParameter === 'end_time'}
+          iconLeft={<ValidIcon visible={sortParameter === 'end_time'} />}
+        >
+          End Time
+        </Button>
+      </Column>
+      <Divider />
+      <Text variant="legend" css={{ padding: '$8 $6 $4' }}>
+        Sorting order
+      </Text>
+      <Column css={{ padding: '0 $6 $6' }}>
+        <Button
+          variant="ghost"
+          onClick={() => onSortDirectionChange('desc')}
+          selected={sortDirection === 'desc'}
+          iconLeft={<ValidIcon visible={sortDirection === 'desc'} />}
+        >
+          Descending
+        </Button>
+        <Button
+          variant="ghost"
+          onClick={() => onSortDirectionChange('asc')}
+          selected={sortDirection === 'asc'}
+          iconLeft={<ValidIcon visible={sortDirection === 'asc'} />}
+        >
+          Ascending
+        </Button>
+      </Column>
     </ButtonWithDropdown>
   )
 }

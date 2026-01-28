@@ -1,5 +1,5 @@
 import { AppLayout } from 'components'
-import { Button, Column, IconWrapper, Inline, media, Spinner, styled, Text } from 'junoblocks'
+import { Button, Column, IconWrapper, Inline, media, Spinner, styled, Text } from 'components/ui-blocks'
 import { useCallback, useState } from 'react'
 import { useFlows } from 'hooks/useFlow'
 import { FlowCard } from '../../features/flows/components/FlowCard'

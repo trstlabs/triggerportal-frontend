@@ -9,7 +9,7 @@ import {
   ChevronIcon, Chevron,
   IconWrapper,
   PlusIcon,
-} from 'junoblocks'
+} from 'components/ui-blocks'
 import React, { useState } from 'react'
 import { Comparison, ExecutionConditions, FeedbackLoop } from 'intentojs/dist/codegen/intento/intent/v1/flow'
 import { FieldArray } from './Fields'
@@ -45,36 +45,36 @@ export const Conditions = ({
   const handleChangeComparison = (index, value: any) => {
     // Create a deep copy of the conditions to avoid mutation issues
     const newComparisons = [...conditions.comparisons];
-    
+
     if (value === undefined) {
       newComparisons.splice(index, 1);
     } else {
       newComparisons[index] = value;
     }
-    
+
     const newConditions = {
       ...conditions,
       comparisons: newComparisons
     };
-    
+
     onChange(newConditions);
   }
 
   const handleChangeFeedbackLoop = (index, value: any) => {
     // Create a deep copy of the conditions to avoid mutation issues
     const newFeedbackLoops = [...conditions.feedbackLoops];
-    
+
     if (value === undefined) {
       newFeedbackLoops.splice(index, 1);
     } else {
       newFeedbackLoops[index] = value;
     }
-    
+
     const newConditions = {
       ...conditions,
       feedbackLoops: newFeedbackLoops
     };
-    
+
     onChange(newConditions);
   }
 
@@ -94,7 +94,7 @@ export const Conditions = ({
       ...conditions,
       feedbackLoops: [...conditions.feedbackLoops, newValue]
     }
-    
+
     onChange(newConditions)
   }
 
@@ -114,7 +114,7 @@ export const Conditions = ({
       ...conditions,
       comparisons: [...(conditions.comparisons || []), newValue]
     }
-    
+
     onChange(newConditions)
   }
 

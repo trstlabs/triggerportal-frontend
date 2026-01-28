@@ -1,4 +1,5 @@
 import { Handler } from '@netlify/functions'
+// @ts-ignore
 import nodemailer from 'nodemailer'
 import { resolveDenom } from '../../util/conversion/conversion'
 
@@ -28,21 +29,21 @@ function buildEmailHtml({
   const label = flow?.label || flowID || 'Flow'
 
   const status = lastExecution
-  ? lastExecution?.executed
-    ? '✅ Executed'
-    : lastExecution?.timed_out
-    ? '⏱️ Timed Out'
-    : (Date.now() - new Date(lastExecution.actual_exec_time).getTime() < 2 * 60 * 1000 &&
-       (lastExecution.errors?.length ?? 0) === 0)
-    ? '⏳ Pending Execution'
-    : '❌ Failed'
-  : 'No execution history yet.'
+    ? lastExecution?.executed
+      ? '✅ Executed'
+      : lastExecution?.timed_out
+        ? '⏱️ Timed Out'
+        : (Date.now() - new Date(lastExecution.actual_exec_time).getTime() < 2 * 60 * 1000 &&
+          (lastExecution.errors?.length ?? 0) === 0)
+          ? '⏳ Pending Execution'
+          : '❌ Failed'
+    : 'No execution history yet.'
 
 
   const summary = lastExecution
     ? `Last execution at <strong>${formatUtc(
-        lastExecution.actual_exec_time
-      )}</strong> – ${status}`
+      lastExecution.actual_exec_time
+    )}</strong> – ${status}`
     : 'No execution history yet.'
 
   const historyHtml = lastExecution
@@ -50,48 +51,42 @@ function buildEmailHtml({
       <h3 style="margin-top:24px;">Execution Details</h3>
       <table style="border-collapse:collapse;width:100%;font-size:14px;">
         <tr><td style="padding:4px 8px;"><strong>Scheduled</strong></td><td>${formatUtc(
-          lastExecution.scheduled_exec_time
-        )}</td></tr>
+      lastExecution.scheduled_exec_time
+    )}</td></tr>
         <tr><td style="padding:4px 8px;"><strong>Actual</strong></td><td>${formatUtc(
-          lastExecution.actual_exec_time
-        )}</td></tr>
-        ${
-          lastExecution.executed
-            ? `<tr><td style="padding:4px 8px;"><strong>Executed</strong></td><td>✅ Yes</td></tr>`
-            : ''
-        }
-        ${
-          lastExecution.timed_out
-            ? `<tr><td style="padding:4px 8px;"><strong>Timed Out</strong></td><td>⏱️ Yes</td></tr>`
-            : ''
-        }
-        ${
-          feeAmount > 0
-            ? `<tr><td style="padding:4px 8px;"><strong>Exec Fee</strong></td><td>${feeAmount} ${feeDenom}</td></tr>`
-            : ''
-        }
-        ${
-          lastExecution.packet_sequences?.length
-            ? `<tr><td style="padding:4px 8px;"><strong>Packet Sequences</strong></td><td>${lastExecution.packet_sequences.join(
-                ', '
-              )}</td></tr>`
-            : ''
-        }
-        ${
-          Array.isArray(lastExecution?.msg_responses) &&
-          lastExecution.msg_responses.length
-            ? `<tr><td style="padding:4px 8px;"><strong>Responses</strong></td><td>${lastExecution.msg_responses
-                .map((m) => m['@type'])
-                .join(', ')}</td></tr>`
-            : ''
-        }
-        ${
-          Array.isArray(lastExecution?.errors) && lastExecution.errors.length
-            ? `<tr><td style="padding:4px 8px;color:#b00020;"><strong>Errors</strong></td><td>${lastExecution.errors.join(
-                ', '
-              )}</td></tr>`
-            : ''
-        }
+      lastExecution.actual_exec_time
+    )}</td></tr>
+        ${lastExecution.executed
+      ? `<tr><td style="padding:4px 8px;"><strong>Executed</strong></td><td>✅ Yes</td></tr>`
+      : ''
+    }
+        ${lastExecution.timed_out
+      ? `<tr><td style="padding:4px 8px;"><strong>Timed Out</strong></td><td>⏱️ Yes</td></tr>`
+      : ''
+    }
+        ${feeAmount > 0
+      ? `<tr><td style="padding:4px 8px;"><strong>Exec Fee</strong></td><td>${feeAmount} ${feeDenom}</td></tr>`
+      : ''
+    }
+        ${lastExecution.packet_sequences?.length
+      ? `<tr><td style="padding:4px 8px;"><strong>Packet Sequences</strong></td><td>${lastExecution.packet_sequences.join(
+        ', '
+      )}</td></tr>`
+      : ''
+    }
+        ${Array.isArray(lastExecution?.msg_responses) &&
+      lastExecution.msg_responses.length
+      ? `<tr><td style="padding:4px 8px;"><strong>Responses</strong></td><td>${lastExecution.msg_responses
+        .map((m) => m['@type'])
+        .join(', ')}</td></tr>`
+      : ''
+    }
+        ${Array.isArray(lastExecution?.errors) && lastExecution.errors.length
+      ? `<tr><td style="padding:4px 8px;color:#b00020;"><strong>Errors</strong></td><td>${lastExecution.errors.join(
+        ', '
+      )}</td></tr>`
+      : ''
+    }
       </table>
     `
     : ''
@@ -104,11 +99,10 @@ function buildEmailHtml({
       <p style="margin:0 0 16px;">
          <strong>Owner:</strong> ${owner}<br/>
          <strong>Event:</strong> ${eventType}<br/>
-         ${
-           totalExecutions
-             ? `<strong>Total Executions:</strong> ${totalExecutions}<br/>`
-             : ''
-         }
+         ${totalExecutions
+      ? `<strong>Total Executions:</strong> ${totalExecutions}<br/>`
+      : ''
+    }
       </p>
       <p style="margin:24px 0;">
         <a href="${flowUrl}" style="padding:10px 18px;background:#0055ff;color:white;border-radius:6px;text-decoration:none;display:inline-block;">🔎 View Flow</a>
@@ -117,9 +111,8 @@ function buildEmailHtml({
       <hr style="margin:32px 0;border:none;border-top:1px solid #ddd;" />
       <p style="font-size:12px;color:#555;">
         <a href="${unsubUrls.flow}">Unsubscribe from this flow</a> |
-        <a href="${
-          unsubUrls.owner
-        }">Unsubscribe from all flows by this owner</a>
+        <a href="${unsubUrls.owner
+    }">Unsubscribe from all flows by this owner</a>
       </p>
     </div>
   `
@@ -191,16 +184,14 @@ export const handler: Handler = async (event, _context) => {
     const results = await Promise.allSettled(
       emails.map((email: string) => {
         const unsubUrls = {
-          flow: `${
-            process.env.BASE_URL
-          }/.netlify/functions/flow-alert?flowID=${encodeURIComponent(
-            flowID
-          )}&unsubscribe=true&email=${encodeURIComponent(email)}`,
-          owner: `${
-            process.env.BASE_URL
-          }/.netlify/functions/flow-alert?unsubscribe=true&owner=${encodeURIComponent(
-            owner
-          )}&email=${encodeURIComponent(email)}`,
+          flow: `${process.env.BASE_URL
+            }/.netlify/functions/flow-alert?flowID=${encodeURIComponent(
+              flowID
+            )}&unsubscribe=true&email=${encodeURIComponent(email)}`,
+          owner: `${process.env.BASE_URL
+            }/.netlify/functions/flow-alert?unsubscribe=true&owner=${encodeURIComponent(
+              owner
+            )}&email=${encodeURIComponent(email)}`,
         }
 
         const emailHtml = buildEmailHtml({
@@ -233,9 +224,8 @@ export const handler: Handler = async (event, _context) => {
     return {
       statusCode: 200,
       body: JSON.stringify({
-        message: `Emails sent. Success: ${
-          results.length - failed.length
-        }, Failed: ${failed.length}`,
+        message: `Emails sent. Success: ${results.length - failed.length
+          }, Failed: ${failed.length}`,
       }),
     }
   } catch (err) {

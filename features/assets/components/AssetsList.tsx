@@ -1,5 +1,5 @@
 import { useWalletConnectionStatus } from 'hooks/useWalletConnectionStatus'
-import { styled, Text, useDelayedAppearanceFlag } from 'junoblocks'
+import { styled, Text, useDelayedAppearanceFlag } from 'components/ui-blocks'
 import { walletState } from 'state/atoms/walletAtoms'
 import { __TRANSFERS_ENABLED__ } from 'util/constants'
 
@@ -8,7 +8,7 @@ import { AssetCard, AssetCardState } from './AssetCard'
 
 export const AssetsList = ({ onFlowClick }) => {
   const [loadingBalances, [myTokens, allTokens]] =
-  useGetIBCAssetsBalances()
+    useGetIBCAssetsBalances()
 
   const { isConnecting, isConnected } = useWalletConnectionStatus(walletState)
 

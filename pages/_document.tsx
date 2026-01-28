@@ -20,7 +20,6 @@ export default class MyDocument extends Document {
       <Html lang="en">
         <Head>
           {/* Primary Meta Tags */}
-          <title>{title}</title>
           <meta name="title" content={title} />
           <meta name="description" content={description} />
           <meta name="keywords" content="Intento, DeFi, workflows, agents, trustless, crypto, automation, staking, yield farming, cross-chain, blockchain" />

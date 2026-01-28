@@ -1,4 +1,4 @@
-import { Card, Text, Tooltip, Button, UnionIcon, ChevronIcon, Chevron, IconWrapper } from "junoblocks"
+import { Card, Text, Tooltip, Button, UnionIcon, ChevronIcon, Chevron, IconWrapper } from "components/ui-blocks"
 import { Field } from "./Fields"
 import { FeedbackLoop } from "intentojs/dist/codegen/intento/intent/v1/flow"
 import ConditionDropdown from "./ConditionDropdown"

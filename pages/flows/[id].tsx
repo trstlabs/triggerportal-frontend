@@ -8,7 +8,7 @@ import {
   styled,
   useMedia,
   Text,
-} from 'junoblocks'
+} from 'components/ui-blocks'
 import Head from 'next/head'
 import Link from 'next/link'
 import { useRouter } from 'next/router'

@@ -1,8 +1,8 @@
 import React from 'react'
-import { Inline } from 'junoblocks'
+import { Inline } from 'components/ui-blocks'
 import { generalExamples, wasmExamples, osmoExamples, elysExamples, intentoExamples } from '../ExampleMsgs'
 
-import { useControlTheme } from 'junoblocks'
+import { useControlTheme } from 'components/ui-blocks'
 import { useIBCAssetInfo } from '../../../../hooks/useIBCAssetInfo'
 import { useValidators } from 'hooks/useValidators'
 
@@ -186,6 +186,8 @@ export function ExampleFlowChips({ chainSymbol, setAllMessages, index, onCustom,
       )}
       {/* Always show Custom chip (available for any index) */}
       <Inline css={{ marginBottom: '$2', flexWrap: 'wrap', gap: '$2' }}>
+
+
         <IntentTemplateChip
           label="Custom"
           gradient="linear-gradient(90deg, #4a5568 0%, #2d3748 100%)"
@@ -196,3 +198,4 @@ export function ExampleFlowChips({ chainSymbol, setAllMessages, index, onCustom,
     </>
   )
 }
+

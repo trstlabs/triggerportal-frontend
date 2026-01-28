@@ -1,4 +1,4 @@
-import { Text, Tooltip, Button, UnionIcon, Divider } from "junoblocks";
+import { Text, Tooltip, Button, UnionIcon, Divider } from "components/ui-blocks";
 import { Field } from "./Fields";
 import { ICQConfig } from "intentojs/dist/codegen/intento/intent/v1/flow";
 import Dropdown from "./Dropdown";

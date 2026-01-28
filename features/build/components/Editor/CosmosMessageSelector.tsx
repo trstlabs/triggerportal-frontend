@@ -1,4 +1,4 @@
-import { Button, IconWrapper, Inline, Union, styled } from 'junoblocks'
+import { Button, IconWrapper, Inline, Union, styled } from 'components/ui-blocks'
 import React, {
   Dispatch,
   MutableRefObject,
@@ -34,56 +34,56 @@ export const CosmosMessageSelector: React.FC<{
   setExample,
   setMessageListShowing,
 }) => {
-  return (
-    <>
-      <StyledDivForContainer
-        selected={isInputForSearchFocused}
-    ref={wrapperRef}
-      >
-        <QueryInput
-          searchQuery={messageSearchQuery}
-          onQueryChange={setMessageSearchQuery}
-          onFocus={() => {
-            setInputForSearchFocused(true)
+    return (
+      <>
+        <StyledDivForContainer
+          selected={isInputForSearchFocused}
+          ref={wrapperRef}
+        >
+          <QueryInput
+            searchQuery={messageSearchQuery}
+            onQueryChange={setMessageSearchQuery}
+            onFocus={() => {
+              setInputForSearchFocused(true)
+            }}
+            onBlur={() => {
+              setInputForSearchFocused(false)
+            }}
+          /><Button
+            icon={<IconWrapper icon={<Union />} />}
+            variant="ghost"
+            onClick={() => setMessageListShowing(false)}
+            iconColor="tertiary"
+          />
+        </StyledDivForContainer>
+        <MessageSelectList
+          activeMessage={msgTypeName}
+          messageList={filteredMessageList}
+          onSelect={(msgFile) => {
+            console.log('generateDefaultObject1')
+            // if (msgFile.value != null) {
+            setSchema(msgFile.value)
+            console.log('generateDefaultObject')
+            // console.log(
+            //   generateDefaultObject(
+            //     msgFile.value,
+            //     msgFile.value.definitions
+            //   )
+            // )
+            setExample(index, {
+              typeUrl: "/" + msgFile.key.replaceAll('_', '.'),
+              value: generateDefaultObject(
+                msgFile.value,
+                msgFile.value.definitions
+              ),
+            })
+            setMessageListShowing(false)
+            // }
           }}
-          onBlur={() => {
-            setInputForSearchFocused(false)
-          }}
-        /><Button
-        icon={<IconWrapper icon={<Union />} />}
-        variant="ghost"
-        onClick={() => setMessageListShowing(false)}
-        iconColor="tertiary"
-      />
-      </StyledDivForContainer>
-      <MessageSelectList
-        activeMessage={msgTypeName}
-        messageList={filteredMessageList}
-        onSelect={(msgFile) => {
-          console.log('generateDefaultObject1')
-          // if (msgFile.value != null) {
-          setSchema(msgFile.value)
-          console.log('generateDefaultObject')
-          // console.log(
-          //   generateDefaultObject(
-          //     msgFile.value,
-          //     msgFile.value.definitions
-          //   )
-          // )
-          setExample(index, {
-            typeUrl: "/"+msgFile.key.replaceAll('_', '.'),
-            value: generateDefaultObject(
-              msgFile.value,
-              msgFile.value.definitions
-            ),
-          })
-          setMessageListShowing(false)
-          // }
-        }}
-      />
-    </>
-  )
-}
+        />
+      </>
+    )
+  }
 
 function generateDefaultObject(schema: any, definitions: any): any {
   if (schema.$ref) {

@@ -1,6 +1,6 @@
 import { AppLayout, PageHeader } from 'components'
 import React from 'react'
-import { Text, styled } from 'junoblocks'
+import { Text, styled } from 'components/ui-blocks'
 import { BuildWrapper } from '../../features/build'
 
 const StyledContainer = styled('div', {

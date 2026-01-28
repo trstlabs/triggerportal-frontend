@@ -5,7 +5,7 @@ import {
     Card,
     CardContent,
     Tooltip,
-} from 'junoblocks'
+} from 'components/ui-blocks'
 import React from 'react'
 // We don't directly use these types, but they're needed for the FlowInput type
 // which includes conditions and configuration

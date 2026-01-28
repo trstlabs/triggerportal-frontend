@@ -1,5 +1,5 @@
 import React from 'react'
-import { Text, Tooltip } from 'junoblocks'
+import { Text, Tooltip } from 'components/ui-blocks'
 
 // Define props for Dropdown
 type DropdownProps<T extends string | number> = {
@@ -44,7 +44,7 @@ const Dropdown = <T extends string | number>({
                 >
                     {Object.entries(options).map(([key, label]) => (
                         <option key={key} value={key}>
-                            {label}
+                            {label as React.ReactNode}
                         </option>
                     ))}
                 </select>

@@ -1,5 +1,5 @@
-import { SigningStargateClient } from '@cosmjs/stargate'
 import { Coin } from '@cosmjs/stargate'
+import { SigningStargateClient } from '@cosmjs/stargate'
 // import { MsgGrant } from 'cosmjs-types/cosmos/authz/v1beta1/tx'
 import { MsgSend } from 'cosmjs-types/cosmos/bank/v1beta1/tx'
 // import { GenericAuthorization } from 'cosmjs-types/cosmos/authz/v1beta1/authz'

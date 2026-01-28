@@ -1,4 +1,4 @@
-import { styled } from 'junoblocks'
+import { styled } from 'components/ui-blocks'
 import { useState, useEffect } from 'react'
 import { BuildComponent } from './BuildComponent'
 import { generalExamples } from './ExampleMsgs'
@@ -51,12 +51,12 @@ export const BuildWrapper = ({
       try {
         const savedFlow = localStorage.getItem('savedFlow');
         if (!savedFlow) return [initialFlowInput];
-        
+
         // Handle case where it's already an object
         if (typeof savedFlow === 'object') {
           return [savedFlow];
         }
-        
+
         // Handle string case
         const parsed = JSON.parse(savedFlow);
         return [parsed];
@@ -73,28 +73,28 @@ export const BuildWrapper = ({
     if (!router.isReady) return;
     const { flowInput, initialChainId } = router.query;
     if (!flowInput || typeof flowInput !== 'string') return;
-  
+
     try {
       const parsed = JSON.parse(flowInput);
-  
+
       setFlowInputs(prev => {
         const current = prev[0];
         if (JSON.stringify(parsed) === JSON.stringify(current)) return prev;
-  
+
         const updatedFlow = {
           ...parsed,
           trustlessAgent: parsed.trustlessAgent || {},
           label: parsed.label || "",
           chainId: (initialChainId as string) || parsed.chainId,
         };
-  
+
         return [processFlowInput(updatedFlow, !initialChainId)];
       });
     } catch (e) {
       console.error('Failed to parse flowInput from URL', e);
     }
   }, [router.isReady, router.query]);
-  
+
 
 
   // Handle initial message or example from props
@@ -118,7 +118,7 @@ export const BuildWrapper = ({
         return newFlowInputs;
       });
     }
-    
+
   }, [initialMessage, initialExample]);
 
   const displayFlowInput = flowInputs[0];

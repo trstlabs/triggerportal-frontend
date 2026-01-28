@@ -6,7 +6,7 @@ import {
   IconWrapper,
   useMedia,
   Divider,
-} from 'junoblocks'
+} from 'components/ui-blocks'
 import React, { useEffect, useState } from 'react'
 import { convertFromMicroDenom, convertMicroDenomToDenom } from '../../../util/conversion'
 import { useAuthZMsgGrantInfoForUser } from '../../../hooks/useICA'
@@ -36,7 +36,7 @@ export const TrustlessAgentCard = ({
     trustlessAgentICAAddress,
     flowInput
   )
-  const { mutate: handleCreateAuthzGrant, isLoading: isExecutingAuthzGrant } =
+  const { mutate: handleCreateAuthzGrant, isPending: isExecutingAuthzGrant } =
     useCreateAuthzGrant({
       grantee: trustlessAgentICAAddress,
       grantInfos: authzGrants

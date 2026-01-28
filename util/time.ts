@@ -1,4 +1,4 @@
-import { maybePluralize } from 'junoblocks';
+import { maybePluralize } from 'components/ui-blocks';
 import dayjs from 'dayjs';
 
 export const getDuration = (seconds: number) => {
@@ -28,7 +28,7 @@ export const getRelativeTime = (miliseconds: number) => {
         const hoursLeft = Math.floor((minsLeft % 1440) / 60);
         return inPrefix + `${maybePluralize(daysLeft, 'day')} and ${maybePluralize(hoursLeft, 'hour')}`;
     }
-    
+
     if (minsLeft > 60) { // More than an hour
         const hoursLeft = Math.floor(minsLeft / 60);
         const minsLeftAfterHours = minsLeft % 60;

@@ -3,7 +3,7 @@ import {
   styled,
   useSubscribeDefaultAppTheme,
   useThemeClassName,
-} from 'junoblocks'
+} from 'components/ui-blocks'
 import { useEffect, useState } from 'react'
 
 const applyGlobalStyles = globalCss({

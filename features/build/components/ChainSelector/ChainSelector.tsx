@@ -1,6 +1,6 @@
-import { Button, IconWrapper, styled, Union } from 'junoblocks'
+import { Button, IconWrapper, styled, Union } from 'components/ui-blocks'
 import React, { useRef, useState, useEffect, forwardRef } from 'react'
-import { useRecoilValue } from 'recoil'
+import { useAtomValue } from 'jotai'
 import { ibcWalletState, WalletStatusType } from 'state/atoms/walletAtoms'
 import { useConnectIBCWallet } from '../../../../hooks/useConnectIBCWallet'
 
@@ -24,12 +24,12 @@ export const ChainSelector = forwardRef<HTMLDivElement, ChainSelectorProps>((
     initialChainId,
   }, ref
 ) => {
-  const ibcWallet = useRecoilValue(ibcWalletState)
+  const ibcWallet = useAtomValue(ibcWalletState)
 
   const [isChainListShowing, setChainListShowing] = useState(false)
   const [selectedChain, setSelectedChain] = useState(new ChainInfo())
   const { mutate: connectExternalWallet } = useConnectIBCWallet(selectedChain?.chainId, {})
-  const wrapperRef = useRef()
+  const wrapperRef = useRef(null)
 
   const [icaAssetList] = useIBCAssetList() // This uses ibc_assets.json
 

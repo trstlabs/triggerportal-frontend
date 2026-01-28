@@ -1,4 +1,4 @@
-import { Inline, SearchIcon, Text } from 'junoblocks'
+import { Inline, SearchIcon, Text } from 'components/ui-blocks'
 import React, { HTMLProps, useEffect, useRef } from 'react'
 
 type QueryInputProps = {
@@ -11,7 +11,7 @@ export const QueryInput = ({
   onQueryChange,
   ...inputProps
 }: QueryInputProps) => {
-  const inputRef = useRef<HTMLInputElement>()
+  const inputRef = useRef<HTMLInputElement>(null)
 
   useEffect(() => {
     inputRef.current.focus()
@@ -24,7 +24,7 @@ export const QueryInput = ({
   return (
     <Inline gap={5} css={{ padding: '$7 $5', width: '100%' }}>
       <SearchIcon color="tertiary" />
-      <Text variant="secondary">
+      <Text variant="caption">
         <input
           ref={inputRef}
           type="text"

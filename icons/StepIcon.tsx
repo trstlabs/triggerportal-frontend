@@ -1,4 +1,4 @@
-import { Inline, Text } from 'junoblocks'
+import { Inline, Text } from 'components/ui-blocks'
 
 export const StepIcon = ({ step }) => {
   // Calculate padding based on the step number's length to maintain the aspect ratio

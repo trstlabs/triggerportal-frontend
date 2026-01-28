@@ -1,7 +1,7 @@
 
-import { styled, /* useMedia */ } from 'junoblocks'
+import { styled, /* useMedia */ } from 'components/ui-blocks'
 import { useEffect, } from 'react'
-import { useRecoilValue } from 'recoil'
+import { useAtomValue } from 'jotai'
 import {
     TransactionStatus,
     transactionStatusState,
@@ -11,7 +11,7 @@ import { Flows } from './Flows'
 
 export const FlowsModule = () => {
 
-    const transactionStatus = useRecoilValue(transactionStatusState)
+    const transactionStatus = useAtomValue(transactionStatusState)
 
     /* fetch token list and set initial state */
     const [flowList, isFlowListLoading] = useFlows(Number(100), undefined)

@@ -1,4 +1,4 @@
-import { Inline, SearchIcon, Text } from 'junoblocks'
+import { Inline, SearchIcon, Text } from 'components/ui-blocks'
 import React, { HTMLProps, useEffect, useRef } from 'react'
 
 type QueryInputProps = {
@@ -11,10 +11,10 @@ export const QueryInput = ({
   onQueryChange,
   ...inputProps
 }: QueryInputProps) => {
-  const inputRef = useRef<HTMLInputElement>()
+  const inputRef = useRef<HTMLInputElement>(null)
 
   useEffect(() => {
-    inputRef.current.focus()
+    inputRef.current?.focus()
 
     return () => {
       onQueryChange('')

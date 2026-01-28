@@ -1,6 +1,6 @@
 import { useMemo } from 'react'
-import { useQuery } from 'react-query'
-import { useRecoilValue } from 'recoil'
+import { useQuery } from '@tanstack/react-query'
+import { useAtomValue } from 'jotai'
 import { convertMicroDenomToDenom } from 'util/conversion'
 import { SigningStargateClient } from '@cosmjs/stargate'
 // import { CW20 } from '../services/cw20'
@@ -59,13 +59,13 @@ const mapIbcTokenToNative = (ibcToken?: IBCAssetInfo) => {
 }
 
 export const useTokenBalance = (tokenSymbol: string) => {
-  const { address, status, client } = useRecoilValue(walletState)
+  const { address, status, client } = useAtomValue(walletState)
   const ibcAssetInfo = useIBCAssetInfo(tokenSymbol)
 
-  const { data: balance = 0, isLoading } = useQuery(
-    `tokenBalance/${tokenSymbol}/${address}`,
+  const { data: balance = 0, isPending: isLoading } = useQuery({
+    queryKey: [`tokenBalance/${tokenSymbol}/${address}`],
     // ['tokenBalance'],
-    async ({ queryKey: [symbol] }) => {
+    queryFn: async ({ queryKey: [symbol] }) => {
       if (symbol && client && ibcAssetInfo) {
         return await fetchTokenBalance({
           client,
@@ -74,22 +74,20 @@ export const useTokenBalance = (tokenSymbol: string) => {
         })
       }
     },
-    {
-      enabled: Boolean(
-        tokenSymbol && status === WalletStatusType.connected && client && ibcAssetInfo
-      ),
-      refetchOnMount: 'always', // Refetch when the component mounts
-      refetchInterval: 30000,    // Refetch every 30 seconds
-      staleTime: 5000,           // Cache expires after 5 seconds
-      cacheTime: 300000,         // Cache data for 5 minutes
-      refetchOnWindowFocus: true,
-    }
-  )
+    enabled: Boolean(
+      tokenSymbol && status === WalletStatusType.connected && client && ibcAssetInfo
+    ),
+    refetchOnMount: 'always', // Refetch when the component mounts
+    refetchInterval: 30000,    // Refetch every 30 seconds
+    staleTime: 5000,           // Cache expires after 5 seconds
+    gcTime: 300000,         // Cache data for 5 minutes
+    refetchOnWindowFocus: true,
+  })
   return { balance, isLoading }
 }
 
 export const useMultipleTokenBalance = (tokenSymbols?: Array<string>) => {
-  const { address, status, client } = useRecoilValue(walletState)
+  const { address, status, client } = useAtomValue(walletState)
 
   const [ibcAssetsList] = useIBCAssetList()
 
@@ -98,9 +96,9 @@ export const useMultipleTokenBalance = (tokenSymbols?: Array<string>) => {
     [tokenSymbols]
   )
 
-  const { data, isLoading } = useQuery(
-    [queryKey, address],
-    async () => {
+  const { data, isPending: isLoading } = useQuery({
+    queryKey: [queryKey, address],
+    queryFn: async () => {
       const balances = await Promise.all(
         tokenSymbols.map((tokenSymbol) =>
           fetchTokenBalance({
@@ -120,24 +118,18 @@ export const useMultipleTokenBalance = (tokenSymbols?: Array<string>) => {
         balance: balances[index],
       }))
     },
-    {
-      enabled: Boolean(
-        status === WalletStatusType.connected &&
-        tokenSymbols?.length &&
-        ibcAssetsList
-      ),
+    enabled: Boolean(
+      status === WalletStatusType.connected &&
+      tokenSymbols?.length &&
+      ibcAssetsList
+    ),
 
-      refetchOnMount: 'always', // Refetch when the component mounts
-      refetchInterval: 30000,    // Refetch every 30 seconds
-      staleTime: 5000,           // Cache expires after 5 seconds
-      cacheTime: 300000,         // Cache data for 5 minutes
-      refetchOnWindowFocus: true,
-
-      onError(error) {
-        console.error('Cannot fetch token balance bc:', error)
-      },
-    }
-  )
+    refetchOnMount: 'always', // Refetch when the component mounts
+    refetchInterval: 30000,    // Refetch every 30 seconds
+    staleTime: 5000,           // Cache expires after 5 seconds
+    gcTime: 300000,         // Cache data for 5 minutes
+    refetchOnWindowFocus: true,
+  })
 
   return [data, isLoading] as const
 }
@@ -146,14 +138,14 @@ export const useGetBalancesForAcc = (address: string) => {
   const client = useCosmosRpcClient()
   const enabled = !!address && !!client
 
-  const { data, isLoading } = useQuery(
-    ['address', address],
-    async () => {
+  const { data, isPending: isLoading } = useQuery({
+    queryKey: ['address', address],
+    queryFn: async () => {
       const resp: QueryAllBalancesResponse = await getBalanceForAcc({ address, client })
       return resp.balances
     },
-    { enabled }
-  )
+    enabled
+  })
 
   return [data, isLoading] as const
 }

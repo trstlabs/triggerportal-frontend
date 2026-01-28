@@ -6,7 +6,7 @@ import {
   styled,
   Text,
   useTriggerInputFocus,
-} from 'junoblocks'
+} from 'components/ui-blocks'
 
 type AmountInputProps = {
   amount: number

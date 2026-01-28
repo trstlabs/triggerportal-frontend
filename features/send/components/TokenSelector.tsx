@@ -6,7 +6,7 @@ import {
   Union,
   useOnClickOutside,
 
-} from 'junoblocks'
+} from 'components/ui-blocks'
 import React, { useRef, useState } from 'react'
 
 import { QueryInput } from 'components//Input/QueryInput'
@@ -29,8 +29,8 @@ export const TokenSelector = ({
   onChange,
   size = 'large',
 }: TokenSelectorProps) => {
-  const wrapperRef = useRef<HTMLDivElement>()
-  const inputRef = useRef<HTMLInputElement>()
+  const wrapperRef = useRef<HTMLDivElement>(null)
+  const inputRef = useRef<HTMLInputElement>(null)
 
   const [isTokenListShowing, setTokenListShowing] = useState(false)
 

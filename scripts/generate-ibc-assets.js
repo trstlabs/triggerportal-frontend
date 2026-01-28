@@ -30,12 +30,13 @@ const CHAIN_TEMPLATES = {
       decimals: 'DECIMALS',
       denom_local: 'DENOM_LOCAL',
       logo_uri: 'LOGO_URI',
-      prefix: 'PREFIX'
+      prefix: 'PREFIX',
+      rpc: 'RPC'
     }
   },
   // Generic IBC Chain Template
   IBC: {
-    required: ['CHAIN_ID', 'NAME', 'SYMBOL', 'DENOM', 'CHANNEL', 'CHANNEL_TO_INTENTO'],
+    required: ['CHAIN_ID', 'NAME'],
     defaults: {
       REGISTRY_NAME: '',
       DECIMALS: '6',
@@ -44,7 +45,9 @@ const CHAIN_TEMPLATES = {
       CONNECTION_ID: '',
       COUNTERPARTY_CONNECTION_ID: '',
       PREFIX: '',
-      RPC: ''
+      RPC: '',
+      UNION: 'false',
+      UNIVERSAL_ID: ''
     },
     mappings: {
       id: 'CHAIN_ID',
@@ -61,13 +64,16 @@ const CHAIN_TEMPLATES = {
       connection_id: 'CONNECTION_ID',
       counterparty_connection_id: 'COUNTERPARTY_CONNECTION_ID',
       prefix: 'PREFIX',
-      rpc: 'RPC'
+      rpc: 'RPC',
+      union: 'UNION',
+      universal_id: 'UNIVERSAL_ID'
     }
   },
   // Alias COSMOS to IBC for backward compatibility
   COSMOS: null,
   // Alias OSMOSIS to IBC for backward compatibility
-  OSMOSIS: null
+  OSMOSIS: null,
+  BASE: null
 };
 
 // Get environment variable with prefix
@@ -106,6 +112,8 @@ const parseJson = (value) => {
 
 // Get chain configuration from environment variables
 const getChainConfig = (prefix, template) => {
+  console.log("prefix", prefix);
+  
   // Handle template aliases (e.g., COSMOS → IBC)
   if (template === null) {
     // Default to IBC template for aliases
@@ -138,7 +146,7 @@ const getChainConfig = (prefix, template) => {
     if (value === null) return;
     
     // Apply type conversion based on key patterns
-    if (inputKey === 'ENABLED') {
+    if (['ENABLED', 'UNION'].includes(inputKey)) {
       value = parseBoolean(value);
     } else if (['DECIMALS', 'PORT', 'REFRESH_RATE'].includes(inputKey)) {
       value = parseNumber(value);
@@ -151,35 +159,8 @@ const getChainConfig = (prefix, template) => {
       config[outputKey] = value;
     }
   });
-  
+  console.log(config);
   return config;
-};
-
-// Get custom chains from environment variables
-const getCustomChains = () => {
-  const customChains = [];
-  const customPrefixes = new Set();
-  
-  // Find all custom chain prefixes (e.g., CUSTOM1_, CUSTOM2_)
-  Object.keys(process.env).forEach(key => {
-    const match = key.match(/^(CUSTOM\d+)_/);
-    if (match) {
-      customPrefixes.add(match[1]);
-    }
-  });
-  
-  // Process each custom chain
-  customPrefixes.forEach(prefix => {
-    const templateName = process.env[`${prefix}_TEMPLATE`] || 'COSMOS';
-    const template = CHAIN_TEMPLATES[templateName] || CHAIN_TEMPLATES.COSMOS;
-    
-    const config = getChainConfig(prefix, template);
-    if (config) {
-      customChains.push(config);
-    }
-  });
-  
-  return customChains;
 };
 
 // Generate the configuration
@@ -204,10 +185,7 @@ const generateConfig = () => {
       config.push(chainConfig);
     }
   });
-  
-  // Add custom chains
-  const customChains = getCustomChains();
-  config.push(...customChains);
+
   
   // Sort by chain_id for consistent output
   config.sort((a, b) => a.chain_id.localeCompare(b.chain_id));

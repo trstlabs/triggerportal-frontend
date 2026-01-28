@@ -1,6 +1,6 @@
 
 // import Ajv, { ErrorObject } from "ajv-draft-04"
-import { Text } from "junoblocks"
+import { Text } from "components/ui-blocks"
 import * as cosmosMsgsJsonFiles from '../../../../util/scripts/schemas/msgs'
 import * as yup from 'yup';
 

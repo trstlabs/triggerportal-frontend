@@ -1,5 +1,5 @@
 import { useCallback, useRef } from 'react'
-import { useQueryClient, QueryKey } from 'react-query'
+import { useQueryClient, QueryKey } from '@tanstack/react-query'
 
 const sleep = (delayMs: number) =>
   new Promise((resolve) => setTimeout(resolve, delayMs))
@@ -22,15 +22,15 @@ export const useRefetchQueries = (queryKey?: QueryKey, delayMs?: number) => {
       if (typeof queriesToRefetch === 'string') {
         //console.log('Refetch', queryKey)
         // Directly refetch if it's a string
-        await queryClient.refetchQueries(queriesToRefetch)
+        await queryClient.refetchQueries({ queryKey: [queriesToRefetch] })
       } else if (Array.isArray(queriesToRefetch)) {
         // Handle array of query keys, assuming they are strings for simplicity
         await Promise.all(
           queriesToRefetch.map((key) => {
-           // console.log('Refetches', queryKey)
+            // console.log('Refetches', queryKey)
             if (typeof key === 'string') {
               // Use the string directly
-              return queryClient.refetchQueries(key)
+              return queryClient.refetchQueries({ queryKey: [key] })
             }
             // Add more handling here if your keys can be more complex
             return Promise.resolve()

@@ -1,4 +1,4 @@
-import { Card, Text, Tooltip, Button, UnionIcon, ChevronIcon, Chevron, IconWrapper, ToggleSwitch } from "junoblocks"
+import { Card, Text, Tooltip, Button, UnionIcon, ChevronIcon, Chevron, IconWrapper, ToggleSwitch } from "components/ui-blocks"
 import { Field } from "./Fields"
 import { ComparisonOperator, Comparison } from "intentojs/dist/codegen/intento/intent/v1/flow"
 import ConditionDropdown from "./ConditionDropdown"

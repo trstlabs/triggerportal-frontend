@@ -10,7 +10,7 @@ import {
   Toast,
   Error,
   Tooltip,
-} from 'junoblocks'
+} from 'components/ui-blocks'
 import React, { useEffect, useState } from 'react'
 import { toast } from 'react-hot-toast'
 import { FlowInput } from '../../../types/trstTypes'
@@ -35,8 +35,8 @@ export const SchedulingSection = ({ flowInput, chainSymbol, onFlowChange, onFeeC
 
   // State for scheduling parameters (all in milliseconds for flowInput)
   const [startTime, setStartTime] = useState(flowInput.startTime || 0)
-  const [duration, setDuration] = useState(flowInput.duration ||  24 * 60 * 60 * 1000) // 
-  const [interval, setInterval] = useState(flowInput.interval ||  60 * 60 * 1000) // 
+  const [duration, setDuration] = useState(flowInput.duration || 24 * 60 * 60 * 1000) // 
+  const [interval, setInterval] = useState(flowInput.interval || 60 * 60 * 1000) // 
   const [txLabel, _setLabel] = useState(flowInput.label || '')
   // Use the chainSymbol directly instead of storing it in state to ensure it updates when the prop changes
   const feeFundsSymbol = chainSymbol || 'INTO'
@@ -59,7 +59,7 @@ export const SchedulingSection = ({ flowInput, chainSymbol, onFlowChange, onFeeC
   )
   const [editInterval, setEditInterval] = useState(false)
   const [editIntervalValue, setEditIntervalValue] = useState('1 day')
-  
+
   const [displayDuration, setDisplayDuration] = useState(
     flowInput.duration ? formatTimeDisplay(flowInput.duration) : '24 hours'
   )
@@ -129,16 +129,16 @@ export const SchedulingSection = ({ flowInput, chainSymbol, onFlowChange, onFeeC
   const displaySymbol = feeDenom === 'uinto' ? 'INTO' : (feeDenom ? feeDenom.toUpperCase().replace('U', '') : feeDenom)
 
   // Calculate the micro amount (convert to base units)
-  const microAmount = typeof expectedFeeAmount === 'number' 
-    ? Math.round(expectedFeeAmount * 1000000).toString() 
+  const microAmount = typeof expectedFeeAmount === 'number'
+    ? Math.round(expectedFeeAmount * 1000000).toString()
     : '0';
 
   // Notify parent component about fee calculation
   useEffect(() => {
     if (onFeeCalculated) {
       onFeeCalculated(
-        expectedFeeAmount.toString(), 
-        displaySymbol, 
+        expectedFeeAmount.toString(),
+        displaySymbol,
         denomLocal,
         microAmount
       )
@@ -164,9 +164,9 @@ export const SchedulingSection = ({ flowInput, chainSymbol, onFlowChange, onFeeC
   // Format time display based on milliseconds
   function formatTimeDisplay(ms: number): string {
     if (ms === 0) return 'On First Run'
-    
+
     const seconds = Math.floor(ms / 1000)
-    
+
     if (seconds < 60) {
       return seconds === 1 ? '1 second' : `${seconds} seconds`
     } else if (seconds < 60 * 60) {
@@ -373,29 +373,29 @@ export const SchedulingSection = ({ flowInput, chainSymbol, onFlowChange, onFeeC
                     </Inline>
                   ) : (
                     <Inline css={{ gap: 8 }}>
-                    
-                        <StyledInputWithBorder
-                          placeholder="e.g. 1 hour"
-                          value={editStartTimeValue}
-                          onChange={({ target: { value } }) => setEditStartTimeValue(value)}
-                          autoFocus
-                          disabled={false}
-                        />
-                        <Button
-                          size="small"
-                          variant="secondary"
-                          onClick={() => {
-                            const time = convertTime(editStartTimeValue)
-                            if (time > 0) {
-                              handleStartTime('Custom', time)
-                              setDisplayStartTime('Custom')
-                            }
-                            setEditStartTime(false)
-                          }}
-                        >
-                          Set
-                        </Button>
-                     
+
+                      <StyledInputWithBorder
+                        placeholder="e.g. 1 hour"
+                        value={editStartTimeValue}
+                        onChange={({ target: { value } }) => setEditStartTimeValue(value)}
+                        autoFocus
+                        disabled={false}
+                      />
+                      <Button
+                        size="small"
+                        variant="secondary"
+                        onClick={() => {
+                          const time = convertTime(editStartTimeValue)
+                          if (time > 0) {
+                            handleStartTime('Custom', time)
+                            setDisplayStartTime('Custom')
+                          }
+                          setEditStartTime(false)
+                        }}
+                      >
+                        Set
+                      </Button>
+
                       <Button size="small" variant="ghost" onClick={() => setEditStartTime(false)}>
                         Cancel
                       </Button>
@@ -451,24 +451,24 @@ export const SchedulingSection = ({ flowInput, chainSymbol, onFlowChange, onFeeC
                     </Inline>
                   ) : (
                     <Inline css={{ gap: 8 }}>
-                        <StyledInputWithBorder
-                          placeholder="e.g. 3 days"
-                          value={editIntervalValue}
-                          onChange={({ target: { value } }) => setEditIntervalValue(value)}
-                        />
-                        <Button
-                          size="small"
-                          variant="secondary"
-                          onClick={() => {
-                            const time = convertTime(editIntervalValue)
-                            if (time > 0) {
-                              handleInterval(cleanCustomInputForDisplay(editIntervalValue), time)
-                            }
-                            setEditInterval(false)
-                          }}
-                        >
-                          Set
-                        </Button>
+                      <StyledInputWithBorder
+                        placeholder="e.g. 3 days"
+                        value={editIntervalValue}
+                        onChange={({ target: { value } }) => setEditIntervalValue(value)}
+                      />
+                      <Button
+                        size="small"
+                        variant="secondary"
+                        onClick={() => {
+                          const time = convertTime(editIntervalValue)
+                          if (time > 0) {
+                            handleInterval(cleanCustomInputForDisplay(editIntervalValue), time)
+                          }
+                          setEditInterval(false)
+                        }}
+                      >
+                        Set
+                      </Button>
                       <Button size="small" variant="ghost" onClick={() => setEditInterval(false)}>
                         Cancel
                       </Button>
@@ -524,24 +524,24 @@ export const SchedulingSection = ({ flowInput, chainSymbol, onFlowChange, onFeeC
                     </Inline>
                   ) : (
                     <Inline css={{ gap: 8 }}>
-                        <StyledInputWithBorder
-                          placeholder="e.g. 45 days"
-                          value={editDurationValue}
-                          onChange={({ target: { value } }) => setEditDurationValue(value)}
-                        />
-                        <Button
-                          size="small"
-                          variant="secondary"
-                          onClick={() => {
-                            const time = convertTime(editDurationValue)
-                            if (time > 0) {
-                              handleDuration(cleanCustomInputForDisplay(editDurationValue), time)
-                            }
-                            setEditDuration(false)
-                          }}
-                        >
-                          Set
-                        </Button>
+                      <StyledInputWithBorder
+                        placeholder="e.g. 45 days"
+                        value={editDurationValue}
+                        onChange={({ target: { value } }) => setEditDurationValue(value)}
+                      />
+                      <Button
+                        size="small"
+                        variant="secondary"
+                        onClick={() => {
+                          const time = convertTime(editDurationValue)
+                          if (time > 0) {
+                            handleDuration(cleanCustomInputForDisplay(editDurationValue), time)
+                          }
+                          setEditDuration(false)
+                        }}
+                      >
+                        Set
+                      </Button>
                       <Button size="small" variant="ghost" onClick={() => setEditDuration(false)}>
                         Cancel
                       </Button>

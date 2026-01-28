@@ -4,7 +4,6 @@ import { useBaseTokenInfo } from 'hooks/useTokenInfo'
 import {
   Button,
   Column,
-  Copy,
   CopyTextTooltip,
   formatTokenBalance,
   IconWrapper,
@@ -14,11 +13,14 @@ import {
   Text,
   Tooltip,
   Valid, Connect,
-} from 'junoblocks'
+  CopyIcon,
+} from 'components/ui-blocks'
 import React from 'react'
 
-
 import { useGetIBCAssetsBalances } from '../../features/assets/hooks/useGetSupportedAssetsBalances'
+
+
+
 
 type WalletButtonProps = { css?: CSS } & {
   walletName?: string
@@ -77,7 +79,7 @@ export const WalletButton = ({
           {baseToken?.symbol}
         </Text>
         {!loadingBalances && ibcBalances?.map((balance, i) =>
-          <Text key={"bal"+i}
+          <Text key={"bal" + i}
             variant="legend"
             css={{
               '-webkit-background-clip': 'text',
@@ -103,7 +105,7 @@ export const WalletButton = ({
               <Button
                 variant="ghost"
                 size="small"
-                icon={<IconWrapper icon={copied ? <Valid /> : <Copy />} />}
+                icon={copied ? <Valid /> : <CopyIcon />}
                 {...bind}
               />
             )}
@@ -116,8 +118,7 @@ export const WalletButton = ({
               variant="ghost"
               size="small"
               onClick={onDisconnect}
-              icon={<IconWrapper icon={<Logout />} />}
-            />
+              icon={<Logout />} />
           </Tooltip>
         </StyledDivForInlineFlows>
       </StyledDivForFlows>

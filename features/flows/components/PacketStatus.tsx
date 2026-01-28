@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Link } from '@interchain-ui/react';
-import { Tooltip } from 'junoblocks';
+import { Tooltip } from 'components/ui-blocks';
 
 
 type PacketStatusProps = {
@@ -110,26 +110,26 @@ export const PacketStatus = ({
     return (
 
 
-            <>
-                <Tooltip label={tooltipText}>
-                    <Link
-                        href={`${rpc}/tx_search?query="recv_packet.packet_sequence=${packetSequenceStr} AND recv_packet.packet_src_port='icacontroller-${trustlessAgentAddress}'"`}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="text-sm font-mono hover:underline mr-2"
-                    >
-                        📦 {packetSequenceStr}
-                    </Link>
-                </Tooltip>
-                {" "}
-                <button
-                    onClick={checkPacketStatus}
-                    disabled={isLoading}
-                    className={`text-sm font-medium ${statusClass} ${!hasChecked ? 'hover:underline' : ''} flex items-center`}
+        <>
+            <Tooltip label={tooltipText}>
+                <Link
+                    href={`${rpc}/tx_search?query="recv_packet.packet_sequence=${packetSequenceStr} AND recv_packet.packet_src_port='icacontroller-${trustlessAgentAddress}'"`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-sm font-mono hover:underline mr-2"
                 >
-                    {isLoading ? 'Checking...' : statusText}
-                </button>
-            </>
+                    📦 {packetSequenceStr}
+                </Link>
+            </Tooltip>
+            {" "}
+            <button
+                onClick={checkPacketStatus}
+                disabled={isLoading}
+                className={`text-sm font-medium ${statusClass} ${!hasChecked ? 'hover:underline' : ''} flex items-center`}
+            >
+                {isLoading ? 'Checking...' : statusText}
+            </button>
+        </>
 
     );
 };

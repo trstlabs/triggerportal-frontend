@@ -3,35 +3,30 @@ import {
   Button,
   ChevronIcon,
   Column,
-  WalletIcon,
   Inline,
   Text,
   ImageForTokenLogo,
   Card,
   CardContent,
-  convertDenomToMicroDenom,
+
   Spinner,
   Tooltip,
-  styled,
+
   IconWrapper,
   Chevron,
-  Union,
   useMedia,
-} from 'junoblocks'
+} from 'components/ui-blocks'
 import Link from 'next/link'
 import React from 'react'
 
 import { MsgUpdateFlowParams } from '../../../types/trstTypes'
 import { Flow, ExecutionConfiguration, Comparison } from 'intentojs/dist/codegen/intento/intent/v1/flow'
-import { useConnectIBCWallet } from '../../../hooks/useConnectIBCWallet'
 
 import {
   useGetICA,
-  useICATokenBalance,
 } from '../../../hooks/useICA'
 import { useGetBalancesForAcc } from 'hooks/useTokenBalance'
 import { IBCAssetInfo, useIBCAssetList } from '../../../hooks/useChainList'
-import { useSendFundsOnHost, useUpdateFlow } from '../../build/hooks'
 import { getDuration, getRelativeTime } from '../../../util/time'
 
 import { FlowHistory } from './FlowHistory'
@@ -42,13 +37,15 @@ import { Configuration } from '../../build/components/Conditions/Configuration'
 import { JsonFormWrapper } from '../../build/components/Editor/JsonFormWrapper'
 import JsonViewer from '../../build/components/Editor/JsonViewer'
 import { Alert } from '../../../icons/Alert'
-import { Share } from 'lucide-react'
+import { List, Share } from 'lucide-react'
 import { EditSchedulingSection } from './EditSchedulingSection'
 import { convertMicroDenomToDenom, resolveDenomSync } from '../../../util/conversion'
 import { XTwitter } from '../../../icons/XTwitter'
 import { AuthzGrantCheck } from '../../build/components/AuthzGrantCheck'
 import { FeedbackLoopForm } from '../../build/components/Conditions/FeedbackLoopForm'
 import { ICQConfigView } from './icqConfig'
+import { useUpdateFlow } from '../../build/hooks'
+
 
 
 type FlowBreakdownProps = {
@@ -66,13 +63,7 @@ export const FlowBreakdown = ({
 
 
   const chainId = ibcInfo ? ibcInfo.chain_id : ''
-  const denom = ibcInfo ? ibcInfo.denom : ''
-  const [showICAHostButtons, setShowICAHostButtons] = useState(false)
-  const [icaBalance, isIcaBalanceLoading] = useICATokenBalance(
-    chainId,
-    icaAddress,
-    true
-  )
+
 
   const [feeBalances, isFeeBalancesLoading] = useGetBalancesForAcc(
     flow.feeAddress
@@ -82,41 +73,9 @@ export const FlowBreakdown = ({
     flow.endTime &&
     flow.execTime &&
     flow.endTime.getTime() >= flow.execTime.getTime() && flow.endTime.getTime() > Date.now()
-  //send funds on host
-  const [feeFundsHostChain, setFeeFundsHostChain] = useState('0.00')
+
   const [editingComparisonIndex, setEditingComparisonIndex] = useState<number | null>(null)
   const [pendingComparison, setPendingComparison] = useState<Comparison | null>(null)
-
-  const [requestedSendFunds, setRequestedSendFunds] = useState(false)
-  const {
-    mutate: handleSendFundsOnHost,
-    isLoading: isExecutingSendFundsOnHost,
-  } = useSendFundsOnHost({
-    toAddress: icaAddress,
-    coin: {
-      denom,
-      amount: convertDenomToMicroDenom(feeFundsHostChain, 6).toString(),
-    },
-  })
-
-  useEffect(() => {
-    const shouldflowSendFunds =
-      !isExecutingSendFundsOnHost && requestedSendFunds
-    if (shouldflowSendFunds) {
-      handleSendFundsOnHost(undefined, {
-        onSettled: () => setRequestedSendFunds(false),
-      })
-    }
-  }, [isExecutingSendFundsOnHost, requestedSendFunds, handleSendFundsOnHost])
-
-
-  const handleSendFundsOnHostClick = () => {
-    const { mutate: connectExternalWallet = () => { } } = useConnectIBCWallet(chainId, false) || {};
-    if (chainId != '') {
-      connectExternalWallet(null)
-    }
-    return setRequestedSendFunds(true)
-  }
 
 
 
@@ -194,8 +153,8 @@ export const FlowBreakdown = ({
     setEditMsgs([])
   }
   const [requestedUpdateFlow, setRequestedUpdateFlow] = useState(false)
-  const { mutate: handleUpdateFlow, isLoading: isExecutingUpdateFlow } =
-    useUpdateFlow({ flowParams: updatedFlowParams }) || {};
+  const { mutate: handleUpdateFlow, isPending: isExecutingUpdateFlow } =
+    useUpdateFlow({ flowParams: updatedFlowParams });
   useEffect(() => {
     const shouldflowUpdateFlow =
       !isExecutingUpdateFlow && requestedUpdateFlow
@@ -314,7 +273,7 @@ export const FlowBreakdown = ({
   const shouldDisableUpdateFlowButton = false // !updatedFlowParams || !updatedFlowParams.id
 
   // Debounce timer reference
-  const debounceTimerRef = React.useRef<NodeJS.Timeout>();
+  const debounceTimerRef = React.useRef<NodeJS.Timeout | null>(null);
 
   // Handle message changes in the editor with debouncing
   const handleChangeMsg = (index: number) => {
@@ -521,7 +480,6 @@ export const FlowBreakdown = ({
           <FlowTransformButton flow={flow} initialChainID={chainId} />
         </Inline>
 
-
         <FlowBreakdownSection expandable onClick={() => toggleFlowSectionExpansion('trustlessAgent')} isExpanded={expandedFlowSections.has('trustlessAgent')}>
           <Column
             css={{ padding: '$3' }}
@@ -619,7 +577,7 @@ export const FlowBreakdown = ({
           </Column>
         </FlowBreakdownSection>
 
-        {icaAddress && icaBalance != 0 && flow.selfHostedIca?.connectionId !== undefined && (
+        {/* {icaAddress && icaBalance != 0 && flow.selfHostedIca?.connectionId !== undefined && (
           <FlowBreakdownSection expandable onClick={() => toggleFlowSectionExpansion('ibcPort')} isExpanded={expandedFlowSections.has('ibcPort')}>
             <Column
               style={{
@@ -742,7 +700,7 @@ export const FlowBreakdown = ({
               )}
             </Column>
           </FlowBreakdownSection>
-        )}
+        )} */}
 
         {flow.msgs.map((msg: any, msgIndex) => (
           <div key={msgIndex}>
@@ -1511,7 +1469,7 @@ const InfoHeader = ({ id, good }: InfoHeaderProps) => (
   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '2rem 0', width: '100%' }}>
     <div style={{ display: 'flex', alignItems: 'center', gap: '1.5rem' }}>
       <Link href="/flows" passHref>
-        <Button as="a" variant="ghost" size="large" iconLeft={<WalletIcon />}>
+        <Button as="a" variant="ghost" size="large" iconLeft={<List />}>
           <span style={{ paddingLeft: '1rem' }}>All Flows</span>
         </Button>
       </Link>
@@ -1522,11 +1480,3 @@ const InfoHeader = ({ id, good }: InfoHeaderProps) => (
     </div>
   </div>
 )
-
-const StyledInput = styled('input', {
-  width: '100%',
-  color: 'inherit',
-  padding: '$2',
-  margin: '$2',
-})
-

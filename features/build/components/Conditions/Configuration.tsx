@@ -4,7 +4,7 @@ import {
   CardContent,
   ToggleSwitch,
   Tooltip,
-} from 'junoblocks'
+} from 'components/ui-blocks'
 import React, { useState } from 'react'
 import { ExecutionConfiguration } from 'intentojs/dist/codegen/intento/intent/v1/flow'
 

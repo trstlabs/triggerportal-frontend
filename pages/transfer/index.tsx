@@ -9,10 +9,10 @@ import {
   styled,
   Toast,
   UpRightArrow,
-} from 'junoblocks'
+} from 'components/ui-blocks'
 import React, { useEffect, useReducer } from 'react'
 import { toast } from 'react-hot-toast'
-import { useRecoilValue } from 'recoil'
+import { useAtomValue } from 'jotai'
 import { walletState, WalletStatusType } from 'state/atoms/walletAtoms'
 import { useIBCAssetInfo } from '../../hooks/useIBCAssetInfo'
 
@@ -74,7 +74,7 @@ export default function Transfer() {
   )
 
 
-  const { status } = useRecoilValue(walletState)
+  const { status } = useAtomValue(walletState)
   useEffect(() => {
     async function connectInternalAndExternalWallets() {
       if (status !== WalletStatusType.connected) {

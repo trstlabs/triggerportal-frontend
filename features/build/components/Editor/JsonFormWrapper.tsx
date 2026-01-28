@@ -9,8 +9,8 @@ import {
   ToggleSwitch,
   Card,
   CardContent,
-} from 'junoblocks';
-import React, { useEffect, useState } from 'react';
+} from 'components/ui-blocks';
+import React, { JSX, useEffect, useState } from 'react';
 import JsonFormEditor from './DynamicForm';
 import { JsonCodeMirrorEditor } from './CodeMirror';
 import { findFileBySuffix } from './Validation';
@@ -87,6 +87,7 @@ export const JsonFormWrapper = ({
           onCustom={() => setShowCustom(!showCustom)}
           selectedTemplateLabel={selectedTemplateLabel}
         />}
+
         {showCustom && setExample && (
           <Inline css={{ justifyContent: 'space-between' }}>
             {(
@@ -114,7 +115,7 @@ export const JsonFormWrapper = ({
             setExample={setExample}
             messageIndex={index}
           />}
-          { setExample && <Divider offsetY="$6" />}
+          {setExample && <Divider offsetY="$6" />}
           <div style={{ margin: '$4', padding: '$4' }}>
             <Inline css={{ justifyContent: 'space-between' }}>
               <Button

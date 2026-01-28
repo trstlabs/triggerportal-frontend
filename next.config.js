@@ -42,6 +42,7 @@ const config = {
       path: false,
       stream: false,
       string_decoder: false,
+      os: false,
     })
 
     return config

@@ -5,9 +5,9 @@ import {
   Inline,
   Button,
   Spinner,
-} from 'junoblocks'
+} from 'components/ui-blocks'
 import { CheckCircle, AlertTriangle } from 'lucide-react'
-import { useRecoilState } from 'recoil'
+import { useAtom } from 'jotai'
 import { ibcWalletState, WalletStatusType } from 'state/atoms/walletAtoms'
 import { FlowInput } from '../../../types/trstTypes'
 import { useAuthZMsgGrantInfoForUser } from '../../../hooks/useICA'
@@ -39,7 +39,7 @@ export const AuthzGrantCheck: React.FC<AuthzGrantCheckProps> = ({
   chainName,
 }) => {
   // Get wallet state and connection
-  const [ibcState, _setIbcState] = useRecoilState(ibcWalletState)
+  const [ibcState, _setIbcState] = useAtom(ibcWalletState)
 
   // Setup wallet connection
   const { mutate: connectExternalWallet } = useConnectIBCWallet(
@@ -60,17 +60,17 @@ export const AuthzGrantCheck: React.FC<AuthzGrantCheckProps> = ({
   const [lastChecked, setLastChecked] = React.useState<Date | null>(null)
 
   // Use props if provided, otherwise fall back to hook
-  const { 
-    grants: authzGrants = [], 
+  const {
+    grants: authzGrants = [],
     isLoading: isAuthzGrantsLoading,
-    error: _authzError 
-  } = propAuthzGrants !== undefined 
-    ? { 
-        grants: propAuthzGrants || [], 
+    error: _authzError
+  } = propAuthzGrants !== undefined
+      ? {
+        grants: propAuthzGrants || [],
         isLoading: propIsAuthzGrantsLoading,
         error: null
-      } 
-    : useAuthZMsgGrantInfoForUser(grantee, flowInput);
+      }
+      : useAuthZMsgGrantInfoForUser(grantee, flowInput);
 
 
   // Use the shared grant validation hook
@@ -92,7 +92,7 @@ export const AuthzGrantCheck: React.FC<AuthzGrantCheckProps> = ({
   }
 
   // Setup the mutation for creating grants
-  const { mutate: handleCreateAuthzGrant, isLoading: isExecutingAuthzGrant } = useCreateAuthzGrant({
+  const { mutate: handleCreateAuthzGrant, isPending: isExecutingAuthzGrant } = useCreateAuthzGrant({
     grantee,
     grantInfos: [...(missingGrants || []), ...(expiredGrants || [])],
     expirationDurationMs: (flowInput.startTime && flowInput.startTime > Date.now() ? flowInput.startTime - Date.now() : 0) + (flowInput.duration || 0) + 86400000,
@@ -125,7 +125,7 @@ export const AuthzGrantCheck: React.FC<AuthzGrantCheckProps> = ({
   //   )
   // }
 
- 
+
 
   // Show connection UI if not connected
   if (!ibcState.address || ibcState.status !== WalletStatusType.connecting && ibcState.status !== WalletStatusType.connected || !grantee) {
@@ -138,7 +138,7 @@ export const AuthzGrantCheck: React.FC<AuthzGrantCheckProps> = ({
               : `Connect ${chainName || 'IBC'} Wallet`}
           </Text>
           {ibcState.status === WalletStatusType.connecting ? (
-            <Spinner size={16} />
+            <Spinner size="small" />
           ) : (
             <AlertTriangle size={16} color="#FFD700" />
           )}
@@ -165,7 +165,7 @@ export const AuthzGrantCheck: React.FC<AuthzGrantCheckProps> = ({
       <Column css={{ gap: '$2', padding: '$3', background: '$colors$dark5', borderRadius: '8px' }}>
         <Inline justifyContent="space-between">
           <Text variant="primary" css={{ fontWeight: 'medium', fontSize: '14px' }}>Checking authorizations...</Text>
-          <Spinner size={16} />
+          <Spinner size="small" />
         </Inline>
         {lastChecked && (
           <Text variant="caption" color="tertiary">
@@ -200,7 +200,7 @@ export const AuthzGrantCheck: React.FC<AuthzGrantCheckProps> = ({
             css={{ padding: '4px 8px', minWidth: 'auto' }}
           >
             {isChecking ? (
-              <Spinner size={14} />
+              <Spinner size="small" />
             ) : (
               <Text variant="caption" color="tertiary">
                 Check Permissions
@@ -252,7 +252,7 @@ export const AuthzGrantCheck: React.FC<AuthzGrantCheckProps> = ({
               onClick={() => handleCreateAuthzGrant()}
             >
               {isExecutingAuthzGrant ? (
-                <Spinner size={16} />
+                <Spinner size="small" />
               ) : (
                 `Create ${missingGrants.length + expiredGrants.length} Authorization${missingGrants.length + expiredGrants.length > 1 ? 's' : ''}`
               )}

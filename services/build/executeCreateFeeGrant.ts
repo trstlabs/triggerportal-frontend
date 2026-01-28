@@ -18,7 +18,7 @@ export const executeCreateFeeGrant = async ({
 }: ExecuteCreateFeeGrantArgs): Promise<any> => {
   console.log(grantee)
   console.log(granter)
-  
+
   const msgGrantAllowance = {
     typeUrl: "/cosmos.feegrant.v1beta1.MsgGrantAllowance",
     value: MsgGrantAllowance.fromPartial({

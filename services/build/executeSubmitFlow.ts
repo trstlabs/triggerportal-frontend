@@ -3,7 +3,7 @@
 import { replacePlaceholders } from './replacePlaceholders'
 import { SigningStargateClient } from '@cosmjs/stargate'
 import { toUtf8 } from '@cosmjs/encoding'
-import { intento } from 'intentojs'
+import { getIntentoSigningClientOptions, intento } from 'intentojs'
 import { validateTransactionSuccess } from '../../util/validateTx'
 import { FlowInput } from '../../types/trstTypes'
 import { Coin } from 'intentojs/dist/codegen/cosmos/base/v1beta1/coin'
@@ -12,6 +12,7 @@ import { MsgExec } from 'intentojs/dist/codegen/cosmos/authz/v1beta1/tx'
 import { Any } from 'intentojs/dist/codegen/google/protobuf/any'
 import { processDenomFields } from '../../features/build/utils/addressUtils'
 import { removeEmptyProperties } from '../../util/conversion'
+import { Registry } from "@cosmjs/proto-signing";
 
 type ExecuteSubmitFlowArgs = {
   owner: string
@@ -46,6 +47,7 @@ export const executeSubmitFlow = async ({
   let duration = flowInput.duration + 'ms'
   let interval = flowInput.interval + 'ms'
   let msgs: any[] = []
+  const { registry } = getIntentoSigningClientOptions()
 
   // Adjust condition operands for TWAP accumulators based on interval seconds
   try {
@@ -63,11 +65,11 @@ export const executeSubmitFlow = async ({
           (c?.responseKey ===
             'osmosistwapv1beta1.TwapRecord.P0ArithmeticTwapAccumulator' &&
             c?.valueType ===
-              'osmosistwapv1beta1.TwapRecord.P0ArithmeticTwapAccumulator') ||
+            'osmosistwapv1beta1.TwapRecord.P0ArithmeticTwapAccumulator') ||
           (c?.responseKey ===
             'osmosistwapv1beta1.TwapRecord.P1ArithmeticTwapAccumulator' &&
             c?.valueType ===
-              'osmosistwapv1beta1.TwapRecord.P1ArithmeticTwapAccumulator')
+            'osmosistwapv1beta1.TwapRecord.P1ArithmeticTwapAccumulator')
         ) {
           const opStr: string = c.operand?.toString?.() ?? ''
           const opNum = parseFloat(opStr)
@@ -91,7 +93,7 @@ export const executeSubmitFlow = async ({
     : [flowInput.msgs]
   msgs = transformAndEncodeMsgs({
     flowInputMsgs: inputMsgs,
-    client,
+    registry,
     msgs: [],
     ownerAddress: owner,
     ibcWalletAddress,
@@ -116,7 +118,9 @@ export const executeSubmitFlow = async ({
             msgs: [msg],
           },
         }
-        return client.registry.encodeAsAny(execMsg)
+
+
+        return registry.encodeAsAny(execMsg)
       }
     })
   }
@@ -139,13 +143,13 @@ export const executeSubmitFlow = async ({
     configuration: flowInput.configuration
       ? flowInput.configuration
       : {
-          saveResponses: false,
-          updatingDisabled: false,
-          stopOnSuccess: false,
-          stopOnFailure: false,
-          stopOnTimeout: false,
-          walletFallback: true,
-        },
+        saveResponses: false,
+        updatingDisabled: false,
+        stopOnSuccess: false,
+        stopOnFailure: false,
+        stopOnTimeout: false,
+        walletFallback: true,
+      },
     feeFunds,
     conditions: flowInput.conditions,
     trustlessAgent: flowInput.trustlessAgent,
@@ -170,7 +174,7 @@ export const executeSubmitFlow = async ({
 
 interface TransformAndEncodeMsgsParams {
   flowInputMsgs: string[]
-  client: SigningStargateClient
+  registry: Registry
   msgs?: Any[]
   ownerAddress?: string
   ibcWalletAddress?: string
@@ -178,7 +182,7 @@ interface TransformAndEncodeMsgsParams {
 
 export function transformAndEncodeMsgs({
   flowInputMsgs,
-  client,
+  registry,
   msgs = [],
   ownerAddress,
   ibcWalletAddress,
@@ -214,7 +218,7 @@ export function transformAndEncodeMsgs({
       })
     }
 
-    return client.registry.encodeAsAny({
+    return registry.encodeAsAny({
       typeUrl,
       value,
     })

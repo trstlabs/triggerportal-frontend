@@ -6,7 +6,7 @@ import {
   IconWrapper,
   ImageForTokenLogo,
   styled,
-} from 'junoblocks'
+} from 'components/ui-blocks'
 import React from 'react'
 import { getPropsForInteractiveElement } from 'util/getPropsForInteractiveElement'
 
@@ -27,7 +27,7 @@ export const ChannelSelectorToggle = ({
   /*   availableAmount, */
   channel,
 }: ChannelSelectorToggleProps) => {
-  
+
   const hasTokenSelected = Boolean(channel)
 
   return (
@@ -38,7 +38,7 @@ export const ChannelSelectorToggle = ({
     >
       {(isSelecting || !hasTokenSelected) && (
         <>
-         Select a Chain
+          Select a Chain
           <IconWrapper
             size="large"
             rotation={channel ? '90deg' : '-90deg'}
@@ -50,7 +50,7 @@ export const ChannelSelectorToggle = ({
       {!isSelecting && hasTokenSelected && (
         <>
           <ImageForTokenLogo logoURI={chainLogoURI} size="big" alt={channel} />
-         {chainName}
+          {chainName}
           <IconWrapper
             size="medium"
             rotation="-90deg"

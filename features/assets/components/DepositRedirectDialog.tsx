@@ -1,4 +1,4 @@
-import { Button, Dialog, DialogContent, DialogHeader, Text } from 'junoblocks'
+import { Button, Dialog, DialogContent, DialogHeader, Text } from 'components/ui-blocks'
 
 type DepositRedirectDialogProps = {
   isShowing: boolean
@@ -15,7 +15,7 @@ export const DepositRedirectDialog = ({
 }: DepositRedirectDialogProps) => {
   return (
     <Dialog isShowing={isShowing} onRequestClose={onRequestClose}>
-      <DialogHeader paddingBottom="$10">
+      <DialogHeader>
         <Text variant="header">External asset deposit</Text>
       </DialogHeader>
       <DialogContent css={{ paddingBottom: '$12' }}>

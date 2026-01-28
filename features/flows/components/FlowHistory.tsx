@@ -7,7 +7,7 @@ import {
   Spinner,
   Card,
   Divider,
-} from 'junoblocks'
+} from 'components/ui-blocks'
 
 import React from 'react'
 
@@ -209,22 +209,22 @@ export const FlowHistory = ({
 
                     {packetSequences != undefined && packetSequences.length > 0 && <Text variant="caption"> Packet{packetSequences.length > 1 ? 's' : ''} Received: {packetSequences != undefined && packetSequences.length > 0 && packetSequences.map((packetSequence, i) => (
                       <>
-                  
-                      {i < packetSequences.length - 1 ? ', ' : ' '} <PacketStatus
+
+                        {i < packetSequences.length - 1 ? ', ' : ' '} <PacketStatus
                           rpc={rpc}
                           packetSequence={packetSequence}
                           trustlessAgentAddress={trustlessAgentAddress}
                           packetTime={actualExecTime}
-                        /> </> 
+                        /> </>
                     ))}</Text>}
                     {packetSequences != undefined && packetSequences.length > 0 && <Text variant="caption"> Packet{packetSequences.length > 1 ? 's' : ''} Acknowledgement{packetSequences.length > 1 ? 's' : ''}: {packetSequences != undefined && packetSequences.length > 0 && packetSequences.map((packetSequence, i) => (
                       <Link key={i} href={process.env.NEXT_PUBLIC_INTO_RPC + `/tx_search?query="acknowledge_packet.packet_sequence=${packetSequence}"`} target="_blank">
-                       🆗 {Number(packetSequence)}
+                        🆗 {Number(packetSequence)}
                         {i < packetSequences.length - 1 ? ', ' : ''}
                       </Link>
 
                     ))}</Text>}
-                   
+
 
                     {queryResponses.map((queryResponse, i) => (
                       <Column key={i}>

@@ -16,7 +16,7 @@ import {
   Toast,
   UpRightArrow,
   Valid,
-} from 'junoblocks'
+} from 'components/ui-blocks'
 import React, { useState } from 'react'
 import { toast } from 'react-hot-toast'
 
@@ -52,7 +52,7 @@ export const TransferDialog = ({
   const [tokenAmount, setTokenAmount] = useState(0)
   const refetchQueries = useRefetchQueries([`tokenBalance/INTO`, 'ibcTokenBalance'])
 
-  const { isLoading, mutate: mutateTransferAsset } = useTransferAssetMutation({
+  const { isPending: isLoading, mutate: mutateTransferAsset } = useTransferAssetMutation({
     transactionKind,
     tokenAmount,
     ibcAssetInfo,
@@ -64,9 +64,8 @@ export const TransferDialog = ({
       toast.custom((t) => (
         <Toast
           icon={<IconWrapper icon={<Valid />} color="valid" />}
-          title={`${tokenSymbol} ${
-            transactionKind === 'deposit' ? 'deposit' : 'withdrawal'
-          } successfully initiated`}
+          title={`${tokenSymbol} ${transactionKind === 'deposit' ? 'deposit' : 'withdrawal'
+            } successfully initiated`}
           onClose={() => toast.dismiss(t.id)}
         />
       ))
@@ -78,9 +77,8 @@ export const TransferDialog = ({
       toast.custom((t) => (
         <Toast
           icon={<IconWrapper icon={<Error />} color="error" />}
-          title={`Couldn't ${
-            transactionKind === 'deposit' ? 'Deposit' : 'Withdraw'
-          } the asset`}
+          title={`Couldn't ${transactionKind === 'deposit' ? 'Deposit' : 'Withdraw'
+            } the asset`}
           body={(error as any)?.message ?? error?.toString()}
           buttons={
             <Button
@@ -109,7 +107,7 @@ export const TransferDialog = ({
 
   return (
     <Dialog isShowing={isShowing} onRequestClose={onRequestClose}>
-      <DialogHeader paddingBottom="$13">
+      <DialogHeader css={{ paddingBottom: '$13' }}>
         <Text variant="header">{capitalizedTransactionType}</Text>
       </DialogHeader>
       <DialogContent>
@@ -122,7 +120,7 @@ export const TransferDialog = ({
           }
         />
       </DialogContent>
-      <DialogDivider offsetY="$10" />
+      <DialogDivider css={{ margin: '$10 0' }} />
       <DialogContent>
         <Text variant="primary" css={{ paddingBottom: '$6' }}>
           Amount
@@ -137,30 +135,26 @@ export const TransferDialog = ({
           onAmountChange={setTokenAmount}
         />
       </DialogContent>
-      <DialogDivider offsetY="$10" />
+      <DialogDivider css={{ margin: '$10 0' }} />
       <DialogContent css={{ paddingBottom: '$8' }}>
         <WalletInfoPerformingFlowAgainst depositing={true} />
       </DialogContent>
-      <DialogButtons
-        cancellationButton={
-          <Button onClick={onRequestClose} variant="secondary">
-            Cancel
-          </Button>
-        }
-        confirmationButton={
-          <Button
-            disabled={
-              transactionKind === 'deposit'
-                ? externalIbcAssetBalance <= 0
-                : nativeAssetBalance <= 0
-            }
-            onClick={() => mutateTransferAsset(null)}
-            variant="primary"
-          >
-            {isLoading ? <Spinner instant={true} size={16} /> : 'Transfer'}
-          </Button>
-        }
-      />
+      <DialogButtons>
+        <Button onClick={onRequestClose} variant="secondary">
+          Cancel
+        </Button>
+        <Button
+          disabled={
+            transactionKind === 'deposit'
+              ? externalIbcAssetBalance <= 0
+              : nativeAssetBalance <= 0
+          }
+          onClick={() => mutateTransferAsset(null)}
+          variant="primary"
+        >
+          {isLoading ? <Spinner instant={true} size={16} /> : 'Transfer'}
+        </Button>
+      </DialogButtons>
     </Dialog>
   )
 }

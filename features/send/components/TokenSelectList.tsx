@@ -9,7 +9,7 @@ import {
   Spinner,
   styled,
   Text,
-} from 'junoblocks'
+} from 'components/ui-blocks'
 import { ComponentPropsWithoutRef, useMemo } from 'react'
 
 import { SelectChainInfo } from '../../../types/trstTypes'

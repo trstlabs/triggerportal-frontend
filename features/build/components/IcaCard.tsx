@@ -10,7 +10,7 @@ import {
   Divider,
   useMedia,
   convertDenomToMicroDenom,
-} from 'junoblocks'
+} from 'components/ui-blocks'
 import React, { useEffect, useMemo, useState } from 'react'
 import { Row, StyledInput } from './BuildComponent'
 
@@ -61,7 +61,7 @@ export const IcaCard = ({
     },
     false
   )
-  
+
 
   const [requestedAuthzGrant, setRequestedCreateAuthzGrant] = useState(false)
   const [requestedSendAndAuthzGrant, setRequestedSendAndAuthzGrant] = useState(false)
@@ -69,7 +69,7 @@ export const IcaCard = ({
     icaAddress,
     flowInput
   )
-  const { mutate: handleCreateAuthzGrant, isLoading: isExecutingAuthzGrant } =
+  const { mutate: handleCreateAuthzGrant, isPending: isExecutingAuthzGrant } =
     useCreateAuthzGrant({
       grantee: icaAddress,
       grantInfos: icaAuthzGrants
@@ -173,7 +173,7 @@ export const IcaCard = ({
             ) : (
               <Spinner instant />
             ))}
-          {icaAuthzGrants != undefined  && <><Text variant="legend"> Grants</Text>
+          {icaAuthzGrants != undefined && <><Text variant="legend"> Grants</Text>
             {isAuthzGrantsLoading && !icaAuthzGrants ? (
               <Spinner />
             ) : (

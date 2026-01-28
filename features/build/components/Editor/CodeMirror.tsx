@@ -1,7 +1,7 @@
 import { json } from '@codemirror/lang-json'
 import ReactCodeMirror from '@uiw/react-codemirror'
 import React from 'react'
-import { styled, useControlTheme, useMedia } from 'junoblocks'
+import { styled, useControlTheme, useMedia } from 'components/ui-blocks'
 import { ErrorStack, validateJSON } from './Validation'
 
 interface JsonCodeMirrorEditorProps {
@@ -32,11 +32,11 @@ export const JsonCodeMirrorEditor = ({
 
   // Use a ref to track the previous value and prevent unnecessary updates
   const prevJsonValueRef = React.useRef(jsonValue);
-  
+
   // Only update if the incoming value has actually changed
   const handleChange = React.useCallback((val: string) => {
     if (val === prevJsonValueRef.current) return;
-    
+
     prevJsonValueRef.current = val;
     onChange?.(val);
 
@@ -45,7 +45,7 @@ export const JsonCodeMirrorEditor = ({
       try {
         const parsedJSON = JSON.parse(val);
         const errors = validateJSON(parsedJSON, jsonSchema);
-        
+
         if (errors && errors.length > 0) {
           setValidationErrors(errors);
           onValidate?.(false);
@@ -82,7 +82,7 @@ export const JsonCodeMirrorEditor = ({
         onChange={handleChange}
         theme={themeController.theme.name === 'dark' ? 'dark' : 'light'}
         placeholder={JSON.stringify(defaultPlaceholder, null, 2)}
-        style={{ 
+        style={{
           border: '1px solid var(--colors-dark10)',
           borderRadius: '4px',
           height: '100%',

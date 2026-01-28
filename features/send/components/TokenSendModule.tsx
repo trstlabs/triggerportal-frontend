@@ -1,8 +1,8 @@
 
-import { styled, useMedia, } from 'junoblocks'
+import { styled, useMedia, } from 'components/ui-blocks'
 import { useEffect, useRef, useState } from 'react'
 
-import { useRecoilValue } from 'recoil'
+import { useAtomValue } from 'jotai'
 import {
   TransactionStatus,
   transactionStatusState,
@@ -24,7 +24,7 @@ export const TokenSendModule = ({ initialToken }: TokenSendModuleProps) => {
   /* connect to recoil */
   const [tokenSymbol, setToken] = useState('')
 
-  const transactionStatus = useRecoilValue(transactionStatusState)
+  const transactionStatus = useAtomValue(transactionStatusState)
 
   const [tokenRecipientList, setTokenRecipientList] = useState([new RecipientInfo()])
 

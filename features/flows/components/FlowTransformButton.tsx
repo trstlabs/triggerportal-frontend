@@ -1,9 +1,8 @@
 import { Flow } from 'intentojs/dist/codegen/intento/intent/v1/flow';
 import { FlowInput } from '../../../types/trstTypes';
-import { Button, CopyIcon } from 'junoblocks';
+import { Button, CopyIcon } from 'components/ui-blocks';
 import { fetchFlowMsgs } from '../../../hooks/useGetMsgsFromAPI';
 import { convertBigIntToString } from '../../../util/conversion';
-
 
 type FlowTransformButtonProps = {
     flow: any
@@ -11,7 +10,7 @@ type FlowTransformButtonProps = {
 }
 
 export const FlowTransformButton = ({ flow, initialChainID }: FlowTransformButtonProps) => {
-    
+
 
     const transformFlow = async (flow: Flow) => {
         const msgs = await transformFlowMsgs(flow)
@@ -51,7 +50,7 @@ export const FlowTransformButton = ({ flow, initialChainID }: FlowTransformButto
         }
     };
 
-    return <Button variant="secondary" iconRight={<CopyIcon />} onClick={handleClick}>Copy and Create</Button>;
+    return <Button variant="secondary" iconRight={<CopyIcon color="white" />} onClick={handleClick}>Copy and Create</Button>;
 };
 const cleanMessageObject = (
     obj: any,

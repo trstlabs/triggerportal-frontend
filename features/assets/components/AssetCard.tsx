@@ -7,7 +7,7 @@ import {
   ImageForTokenLogo,
   styled,
   Text,
-} from 'junoblocks'
+} from 'components/ui-blocks'
 import { HTMLProps, useState } from 'react'
 import { __TRANSFERS_ENABLED__ } from 'util/constants'
 
@@ -39,7 +39,7 @@ export const AssetCard = ({
     useIBCAssetInfo(tokenSymbol) || {}
   const [showingRedirectDepositDialog, setShowingRedirectDepositDialog] =
     useState(false)
- 
+
   //const [dollarValue] = useTokenDollarValue(tokenSymbol)
 
   const shouldPerformDepositOutsideApp = Boolean(external_deposit_uri)
@@ -108,7 +108,7 @@ export const AssetCard = ({
             <Button
               disabled={!__TRANSFERS_ENABLED__}
               onClick={handleDepositClick}
-              iconRight={<ArrowUpIcon rotation="45deg" />}
+              iconRight={<ArrowUpIcon />}
               variant="ghost"
             >
               Transfer
@@ -130,7 +130,7 @@ export const AssetCard = ({
               <Button
                 disabled={!__TRANSFERS_ENABLED__}
                 onClick={__TRANSFERS_ENABLED__ ? handleDepositClick : undefined}
-                iconRight={<ArrowUpIcon rotation="180deg" />}
+                iconRight={<ArrowUpIcon />}
                 variant="ghost"
               >
                 Deposit

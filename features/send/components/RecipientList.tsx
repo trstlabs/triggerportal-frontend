@@ -14,14 +14,14 @@ import {
   Column,
   convertDenomToMicroDenom,
   ImageForTokenLogo,
-} from 'junoblocks'
+} from 'components/ui-blocks'
 
 import React, { HTMLProps, useEffect, useState, useRef } from 'react'
 
 import { useTokenSend } from '../hooks'
 import { walletState, WalletStatusType } from 'state/atoms/walletAtoms'
 import { ChannelSelector } from './ChannelSelector'
-import { useRecoilValue } from 'recoil'
+import { useAtomValue } from 'jotai'
 import { SubmitFlowDialog } from '../../build/components/SubmitFlowDialog'
 import { ChannelInfo } from './ChannelSelectList'
 import { useSubmitFlow } from '../../build/hooks'
@@ -51,7 +51,7 @@ export const RecipientList = ({
   onRecipientsChange,
   onRemoveRecipient,
 }: RecipientsInputProps) => {
-  const inputRef = useRef<HTMLInputElement>()
+  const inputRef = useRef<HTMLInputElement>(null)
 
   const [prefix, setPrefix] = useState('into')
   const [requestedSend, setRequestedSend] = useState(false)
@@ -82,11 +82,11 @@ export const RecipientList = ({
   }
   data.conditions = initConditions
   const [flowInput, setflowInput] = useState(data)
-  const { address, status } = useRecoilValue(walletState)
+  const { address, status } = useAtomValue(walletState)
 
-  const { mutate: handleSend, isLoading: isExecutingTransaction } =
+  const { mutate: handleSend, isPending: isExecutingTransaction } =
     useTokenSend({ ibcAsset, recipientInfos: recipients })
-  const { mutate: handleSchedule, isLoading: isExecutingSchedule } =
+  const { mutate: handleSchedule, isPending: isExecutingSchedule } =
     useSubmitFlow({ flowInput })
 
   useEffect(() => {

@@ -7,7 +7,7 @@ import {
   Union,
   useOnClickOutside,
 
-} from 'junoblocks'
+} from 'components/ui-blocks'
 import React, { useRef, useState } from 'react'
 
 import { ChannelSelectorToggle } from './ChannelSelectorToggle'
@@ -30,8 +30,8 @@ export const ChannelSelector = ({
   onChange,
   size = 'large',
 }: ChannelSelectorProps) => {
-  const wrapperRef = useRef<HTMLDivElement>()
-  const inputRef = useRef<HTMLInputElement>()
+  const wrapperRef = useRef<HTMLDivElement>(null)
+  const inputRef = useRef<HTMLInputElement>(null)
 
   const [isChannelListShowing, setChannelListShowing] = useState(false)
 
@@ -43,7 +43,7 @@ export const ChannelSelector = ({
     setChainLogoURI(channelInfo.logoURI)
     setChainName(channelInfo.name)
     onChange(channelInfo)
-    
+
     setChannelListShowing(false)
   }
 
@@ -76,8 +76,8 @@ export const ChannelSelector = ({
             activeChannel={channel}
             onSelect={(slct) => handleSelectChannel(slct)}
             css={{ padding: '$4 $6 $12' }}
-          
-            
+
+
             visibleNumberOfTokensInViewport={4.5}
           />
         )}
@@ -92,7 +92,7 @@ export const ChannelSelector = ({
     >
       <StyledDivForWrapper>
         <StyledDivForSelector>
-         
+
           {!isChannelListShowing && (
             <ChannelSelectorToggle
               channel={channel}
@@ -106,7 +106,7 @@ export const ChannelSelector = ({
               }
             />
           )}
-         
+
         </StyledDivForSelector>
         <StyledDivForAmountWrapper>
           {isChannelListShowing && (
@@ -175,7 +175,7 @@ const StyledDivForOverlay = styled('div', {
   zIndex: 0,
   backgroundColor: '$colors$dark0',
   transition: 'background-color .1s ease-out',
- 
+
 })
 
 const selectedVariantForInputWrapper = {
