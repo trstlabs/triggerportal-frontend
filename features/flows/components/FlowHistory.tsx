@@ -66,10 +66,8 @@ export const FlowHistory = ({
   const uniqueFetchedHistory = useMemo(() => {
     if (fetchedHistory && fetchedHistory.history && fetchedHistory.history.length > 0) {
       const existingIds = new Set(flowHistory.map(entry => entry.scheduledExecTime));
-      //console.log('Existing IDs:', existingIds);
 
       const uniqueEntries = fetchedHistory.history.filter(entry => !existingIds.has(entry.scheduledExecTime));
-      //console.log('Filtered Unique Entries:', uniqueEntries);
 
       return uniqueEntries;
     }
@@ -89,8 +87,6 @@ export const FlowHistory = ({
             return acc;
           }
         }, []);
-        //console.log('Combined History Before Removing Duplicates:', combinedHistory);
-        //console.log('Combined History After Removing Duplicates:', uniqueCombinedHistory);
 
         return uniqueCombinedHistory;
       });

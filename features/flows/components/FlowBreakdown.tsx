@@ -30,6 +30,7 @@ import { IBCAssetInfo, useIBCAssetList } from '../../../hooks/useChainList'
 import { getDuration, getRelativeTime } from '../../../util/time'
 
 import { FlowHistory } from './FlowHistory'
+import { UnionFlowHistory } from './UnionFlowHistory'
 import { FlowTransformButton, transformFlowMsgs } from './FlowTransformButton'
 import { ComparisonForm, ComparisonOperatorLabels } from '../../build/components/Conditions/ComparisonForm'
 
@@ -1288,16 +1289,22 @@ export const FlowBreakdown = ({
           isAuthzGrantsLoading={false}
         />
         }
-        <FlowHistory
-          rpc={ibcInfo?.rpc || process.env.NEXT_PUBLIC_INTO_RPC}
-          id={flow.id.toString()}
-          transformedMsgs={transformedMsgs}
-          trustlessAgentAddress={flow?.trustlessAgent?.agentAddress || ""}
-          showCreateGrants={(show: boolean) => setCreateGrants(show)}
-          ibcAssetList={ibcAssetList}
-        />
 
-
+        {flow.label.toLowerCase().includes("Union") ? (
+          <UnionFlowHistory
+            rpc={ibcInfo?.rpc || process.env.NEXT_PUBLIC_INTO_RPC}
+            id={flow.id.toString()}
+          />
+        ) : (
+          <FlowHistory
+            rpc={ibcInfo?.rpc || process.env.NEXT_PUBLIC_INTO_RPC}
+            id={flow.id.toString()}
+            transformedMsgs={transformedMsgs}
+            trustlessAgentAddress={flow?.trustlessAgent?.agentAddress || ""}
+            showCreateGrants={(show: boolean) => setCreateGrants(show)}
+            ibcAssetList={ibcAssetList}
+          />
+        )}
       </>
     </>
   )
