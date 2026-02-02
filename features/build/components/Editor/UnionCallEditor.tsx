@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useMemo } from 'react'
-import { styled, Text, Column, Inline, Button, Tooltip } from 'components/ui-blocks'
+import { styled, Text, Column, Inline, Button, Tooltip, Card } from 'components/ui-blocks'
 import { parseAbi, encodeFunctionData, AbiFunction, keccak256, encodeAbiParameters } from 'viem'
 import { Call, Ucs03, Ucs05, Utils, ZkgmInstruction, TokenOrder } from '@unionlabs/sdk'
 import { Effect, Schema, Match, pipe, ParseResult, Cause, Array as A } from 'effect'
@@ -10,18 +10,11 @@ import { walletState } from '../../../../state/atoms/walletAtoms'
 import { ChannelId } from '@unionlabs/sdk/schema/channel'
 
 
-const StyledContainer = styled('div', {
-    padding: '$4',
-    backgroundColor: '$colors$dark5',
-    borderRadius: '$4',
-    border: '1px solid $colors$dark10',
-})
-
 const StyledTextArea = styled('textarea', {
     width: '100%',
     minHeight: '100px',
     backgroundColor: '$colors$dark10',
-    color: 'inherit',
+    color: '$colors$dark50',
     padding: '$2',
     borderRadius: '$2',
     border: '1px solid $colors$dark20',
@@ -179,7 +172,7 @@ export const UnionCallEditor = ({ destinationChainId, onChange, onDiscard }: { d
             const proxyAbi = parseAbi([
                 "function execute(address target, uint256 value, bytes memory payload) public",
             ])
-
+            console.log(innerCallData)
             const executeData = encodeFunctionData({
                 abi: proxyAbi,
                 functionName: "execute",
@@ -189,6 +182,7 @@ export const UnionCallEditor = ({ destinationChainId, onChange, onDiscard }: { d
                     innerCallData, // Payload (User's Call)
                 ],
             })
+            console.log(executeData)
 
             // 3. Create Union Call Object
             const call = Call.make({
@@ -201,7 +195,7 @@ export const UnionCallEditor = ({ destinationChainId, onChange, onDiscard }: { d
                 }),
                 contractCalldata: executeData,
             })
-
+            console.log("call", call)
 
             // 4. Encode to Hex (mimicking script logic)
             const program = Effect.gen(function* () {
@@ -210,6 +204,7 @@ export const UnionCallEditor = ({ destinationChainId, onChange, onDiscard }: { d
                     encodeInstruction(call), //
                     Effect.flatMap(Schema.encode(Ucs03.Ucs03WithInstructionFromHex)),
                 )
+                console.log("instruction", instruction)
                 const tenHoursInNs = BigInt(10) * BigInt(60) * BigInt(60) * BigInt(1000) * BigInt(1000000);
                 const nowInNs = BigInt(Date.now()) * BigInt(1000000);
 
@@ -220,12 +215,13 @@ export const UnionCallEditor = ({ destinationChainId, onChange, onDiscard }: { d
                         timeout_height: "0",//Date.now().toString(),
                         timeout_timestamp,
                         salt: salt as `0x${string}`,
-                        instruction: instruction,
+                        instruction,
                     }
                 }
             })
-
+            console.log("program", program)
             const encodedUcs03 = await Effect.runPromise(program)
+            console.log("encodedUcs03", encodedUcs03)
 
             const finalMsg = {
                 typeUrl: "/cosmwasm.wasm.v1.MsgExecuteContract",
@@ -236,6 +232,7 @@ export const UnionCallEditor = ({ destinationChainId, onChange, onDiscard }: { d
                     funds: []
                 }
             }
+            console.log("finalMsg", finalMsg)
 
             onChange(JSON.stringify(finalMsg, null, 2))
         } catch (e: any) {
@@ -247,7 +244,12 @@ export const UnionCallEditor = ({ destinationChainId, onChange, onDiscard }: { d
     const selectedFunction = functions.find(f => f.name === selectedFunctionName)
 
     return (
-        <StyledContainer>
+
+        <Card
+            css={{ margin: '$4', padding: '$8', width: '100%' }}
+            variant="secondary"
+            disabled
+        >
             <Column css={{ gap: '$4' }}>
                 <Inline css={{ justifyContent: 'space-between' }}>
                     <Text variant="body" css={{ fontWeight: 'bold' }}>Union Cross-Chain Call</Text>
@@ -321,6 +323,6 @@ export const UnionCallEditor = ({ destinationChainId, onChange, onDiscard }: { d
                     Generate Union Call
                 </Button>
             </Column>
-        </StyledContainer>
+        </Card>
     )
 }

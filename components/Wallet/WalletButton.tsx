@@ -4,14 +4,13 @@ import { useBaseTokenInfo } from 'hooks/useTokenInfo'
 import {
   Button,
   Column,
-  CopyTextTooltip,
+  CopyText,
   formatTokenBalance,
   IconWrapper,
   Logout,
   media,
   styled,
   Text,
-  Tooltip,
   Valid, Connect,
   CopyIcon,
 } from 'components/ui-blocks'
@@ -95,10 +94,7 @@ export const WalletButton = ({
       </div>
       <StyledDivForFlows>
         <StyledDivForInlineFlows>
-          <CopyTextTooltip
-            label="Copy wallet address"
-            successLabel="Wallet address copied!"
-            ariaLabel="Copy wallet address"
+          <CopyText
             value={address}
           >
             {({ copied, ...bind }) => (
@@ -109,17 +105,14 @@ export const WalletButton = ({
                 {...bind}
               />
             )}
-          </CopyTextTooltip>
-          <Tooltip
-            label="Disconnect your wallet"
-            aria-label="Disconnect your wallet"
-          >
-            <Button
-              variant="ghost"
-              size="small"
-              onClick={onDisconnect}
-              icon={<Logout />} />
-          </Tooltip>
+          </CopyText>
+
+          <Button
+            variant="ghost"
+            size="small"
+            onClick={onDisconnect}
+            icon={<Logout />} />
+
         </StyledDivForInlineFlows>
       </StyledDivForFlows>
     </StyledWalletButton >

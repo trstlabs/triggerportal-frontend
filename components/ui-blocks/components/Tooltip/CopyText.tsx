@@ -1,21 +1,14 @@
 import React, { ReactElement, useState, useEffect, ReactNode } from 'react'
-import { Tooltip } from './Tooltip'
 
-type CopyTextTooltipProps = {
-    label: string
-    successLabel?: string
-    ariaLabel?: string
+type CopyTextProps = {
     value: string
     children: (args: { copied: boolean; onClick: (e: React.MouseEvent) => void }) => ReactNode
 }
 
-export const CopyTextTooltip = ({
-    label,
-    successLabel = 'Copied!',
-    ariaLabel,
+export const CopyText = ({
     value,
     children,
-}: CopyTextTooltipProps) => {
+}: CopyTextProps) => {
     const [copied, setCopied] = useState(false)
 
     useEffect(() => {
@@ -45,8 +38,8 @@ export const CopyTextTooltip = ({
     const childElement = children({ copied, onClick: handleClick }) as ReactElement
 
     return (
-        <Tooltip label={copied ? successLabel : label} aria-label={ariaLabel}>
+        <>
             {childElement}
-        </Tooltip>
+        </>
     )
 }

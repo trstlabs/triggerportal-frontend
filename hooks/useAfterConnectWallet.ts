@@ -27,11 +27,12 @@ export const useAfterConnectWallet = (
 
       try {
         if (address) {
-          const evmWallet = wallet.getWalletOfType(EthereumWallet)
-          const evmAddress = (await evmWallet?.getAccount("ethereum")).address
-          console.log(evmAddress)
           const signer = await wallet?.getOfflineSigner()
           const client = await SigningStargateClient.connectWithSigner(process.env.NEXT_PUBLIC_INTO_RPC, signer as OfflineSigner, getIntentoSigningClientOptions())
+
+          const evmWallet = wallet.getWalletOfType(EthereumWallet)
+          const evmAddress = await (await evmWallet?.getAccount("base")).address
+          console.log(evmAddress)
 
           if (client) {
             setWalletState({
@@ -72,7 +73,7 @@ export const useAfterConnectWallet = (
       console.log("restoreWalletConnectionIfHadBeenConnectedBefore", status)
       /* restore wallet connection if the state has been set with the */
       if (status === WalletStatusType.restored || status === WalletStatusType.idle) {
-        connect()
+        //connect()
         mutation.mutate()
       }
     },

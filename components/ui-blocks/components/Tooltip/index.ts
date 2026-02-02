@@ -1,2 +1,2 @@
 export * from './Tooltip'
-export * from './CopyTextTooltip'
+export * from './CopyText'

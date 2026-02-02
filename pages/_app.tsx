@@ -26,9 +26,10 @@ import { __TEST_MODE__ } from '../util/constants'
 import { ChainProvider, InterchainWalletModal } from '@interchain-kit/react'
 
 import { keplrWallet } from "@interchain-kit/keplr-extension";
-import { metaMaskWallet } from "@interchain-kit/metamask-extension";
+import { trustWallet } from "@interchain-kit/trust-extension";
+import { leapWallet } from "@interchain-kit/leap-extension";
+import { cosmosExtensionMetaMask } from "@interchain-kit/cosmos-extension-metamask";
 
-import { ledgerWallet } from "@interchain-kit/ledger";
 
 import { assetLists, chains } from 'chain-registry'
 import {
@@ -121,7 +122,7 @@ const walletConnect = new WCWallet(undefined, {
 });
 
 
-const wallets = [keplrWallet, walletConnect, metaMaskWallet, ledgerWallet]
+const wallets = [keplrWallet, trustWallet, leapWallet, cosmosExtensionMetaMask, walletConnect]
 var chainList = chains
 function IntentoPortalApp({ Component, pageProps }: AppProps) {
   const [dataPushed, setDataPushed] = useState(false);
