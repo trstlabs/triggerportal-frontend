@@ -83,7 +83,6 @@ export const UnionFlowHistory = ({
 
                     const events: BlockEvent[] = resultsJson.result.finalize_block_events
                     const packets: PacketEvent[] = []
-
                     for (const event of events) {
                         if (event.type === 'wasm-packet_send') {
                             const packet: any = {}
@@ -116,6 +115,7 @@ export const UnionFlowHistory = ({
                                 if (key === 'packet_data') packet.packetData = value
                                 if (key === 'packet_destination_channel_id') packet.packetDestinationChannelId = value
                                 if (key === 'packet_hash') packet.packetHash = value
+                                console.log(packet)
                             })
 
                             // Only add if we have a packet hash (vital for the explorer link)
@@ -184,7 +184,7 @@ export const UnionFlowHistory = ({
 
                                         <Inline css={{ alignItems: 'center', gap: '$2' }}>
                                             <Link
-                                                href={`https://app.union.build/explorer/packets/${packet.packetHash}`}
+                                                href={`https://app.union.build/explorer/packets/${packet.packetHash}?GRAPHQL_ENDPOINT=https://development.graphql.union.build/v1/graphql`}
                                                 target="_blank"
                                             >
                                                 {packet.packetHash} ↗

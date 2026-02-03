@@ -8,6 +8,9 @@ import { useChainInfoByChainID } from '../../../../hooks/useChainList'
 import { useAtomValue } from 'jotai'
 import { walletState } from '../../../../state/atoms/walletAtoms'
 import { ChannelId } from '@unionlabs/sdk/schema/channel'
+import { Edit } from 'lucide-react'
+
+
 
 
 const StyledTextArea = styled('textarea', {
@@ -33,7 +36,7 @@ const StyledInput = styled('input', {
 })
 
 const ZKGM_CONTRACT = "into1sq2ze6rq64jg8fkcedpxukfzw0apkxk8t7x7uhava8w9xfz69uyqcypvhk"
-const PROXY_ADDRESS = "0xb47133de8336f2264c1dA84094F413aCd29332a6" // Hardcoded for now
+const PROXY_ADDRESS = "0xB5dAAC9B3ED56656F32cdb516c8afb59bA597EDD" // Hardcoded for now
 
 
 const encodeInstruction: (
@@ -111,6 +114,7 @@ export const UnionCallEditor = ({ destinationChainId, onChange, onDiscard }: { d
     const [args, setArgs] = useState<string[]>([])
     const [encodingError, setEncodingError] = useState<string | null>(null)
     const { connect } = useChain('intento')
+    const [isLocked, setIsLocked] = useState(false)
 
 
     const functions = useMemo(() => {
@@ -167,13 +171,14 @@ export const UnionCallEditor = ({ destinationChainId, onChange, onDiscard }: { d
                 args: processedArgs,
             })
 
+
             // 2. Encode Outer Execute Call (Proxy Logic)
             // function execute(address target, uint256 value, bytes memory payload) public
             const proxyAbi = parseAbi([
                 "function execute(address target, uint256 value, bytes memory payload) public",
             ])
             console.log(innerCallData)
-            const executeData = encodeFunctionData({
+            const executeData = ("0x" + encodeFunctionData({
                 abi: proxyAbi,
                 functionName: "execute",
                 args: [
@@ -181,7 +186,7 @@ export const UnionCallEditor = ({ destinationChainId, onChange, onDiscard }: { d
                     0n, // Value (0 Ether)
                     innerCallData, // Payload (User's Call)
                 ],
-            })
+            }).slice(10)) as `0x${string}`
             console.log(executeData)
 
             // 3. Create Union Call Object
@@ -235,6 +240,7 @@ export const UnionCallEditor = ({ destinationChainId, onChange, onDiscard }: { d
             console.log("finalMsg", finalMsg)
 
             onChange(JSON.stringify(finalMsg, null, 2))
+            setIsLocked(true)
         } catch (e: any) {
             setEncodingError(e.message || "Failed to encode message")
             console.error(e)
@@ -256,72 +262,82 @@ export const UnionCallEditor = ({ destinationChainId, onChange, onDiscard }: { d
                     <Button variant="ghost" size="small" onClick={onDiscard}>Discard</Button>
                 </Inline>
 
-                <Column css={{ gap: '$2' }}>
-                    <Text variant="caption">Destination Chain: {destinationChainId} (via Union)</Text>
 
-                    <Text variant="caption">Sender Address (Metamask)</Text>
-                    {!evmAddress ? (
-                        <Button variant="secondary" size="small" onClick={async () => await connect()}>
-                            {evmAddress ? 'Connected' : 'Connect Ethereum Wallet'}
-                        </Button>
-                    ) : (
-                        <Text variant="caption" color="tertiary">
-                            Sender: {evmAddress}
-                        </Text>
+                <div style={{ position: 'relative' }}>
+                    {isLocked && (
+                        <div style={{ position: 'absolute', top: 0, right: 0, zIndex: 10 }}>
+                            <Button variant="ghost" size="small" onClick={() => setIsLocked(false)}>
+                                <Edit size={16} style={{ marginRight: '4px' }} /> Unlock
+                            </Button>
+                        </div>
+                    )}
+                    <Column css={{ gap: '$2', opacity: isLocked ? 0.5 : 1, pointerEvents: isLocked ? 'none' : 'auto', transition: 'opacity 0.2s' }}>
+                        <Text variant="caption">Destination Chain: {destinationChainId} (via Union)</Text>
+
+                        <Text variant="caption">Sender Address (Metamask)</Text>
+                        {!evmAddress ? (
+                            <Button variant="secondary" size="small" onClick={async () => await connect()}>
+                                {evmAddress ? 'Connected' : 'Connect Ethereum Wallet'}
+                            </Button>
+                        ) : (
+                            <Text variant="caption" color="tertiary">
+                                Sender: {evmAddress}
+                            </Text>
+                        )}
+
+                        <Text variant="caption">Target EVM Contract Address</Text>
+                        <StyledInput
+                            placeholder="0x..."
+                            value={contractAddress}
+                            onChange={(e) => setContractAddress(e.target.value)}
+                        />
+                    </Column>
+                    <Column css={{ gap: '$2', opacity: isLocked ? 0.5 : 1, pointerEvents: isLocked ? 'none' : 'auto', transition: 'opacity 0.2s' }}>
+                        <Tooltip content="The ABI (Application Binary Interface) defines the interface for interacting with the smart contract. It specifies the functions, their parameters, and the expected return values. This information is crucial for encoding the function calls correctly.  (e.g. function transfer(address to, uint256 amount))">
+                            <Text variant="caption">ABI</Text>
+                        </Tooltip>
+                        <StyledTextArea
+                            value={abiString}
+                            onChange={(e) => setAbiString(e.target.value)}
+                        />
+                    </Column>
+
+                    {functions.length > 0 && (
+                        <Column css={{ gap: '$2', opacity: isLocked ? 0.5 : 1, pointerEvents: isLocked ? 'none' : 'auto', transition: 'opacity 0.2s' }}>
+                            <Text variant="caption">Select Function</Text>
+                            <select
+                                value={selectedFunctionName}
+                                onChange={handleFunctionChange}
+                                style={{ backgroundColor: '#1a1b1f', color: 'white', padding: '8px', borderRadius: '4px', border: '1px solid #353846' }}
+                            >
+                                {functions.map(f => <option key={f.name} value={f.name}>{f.name}</option>)}
+                            </select>
+
+                            {selectedFunction?.inputs.map((input, i) => (
+                                <Column key={i} css={{ gap: '$1' }}>
+                                    <Text variant="caption">{input.name || `Arg ${i}`} ({input.type})</Text>
+                                    <StyledInput
+                                        value={args[i] || ''}
+                                        onChange={(e) => handleArgChange(i, e.target.value)}
+                                        placeholder={input.type}
+                                    />
+                                </Column>
+                            ))}
+                        </Column>
                     )}
 
-                    <Text variant="caption">Target EVM Contract Address</Text>
-                    <StyledInput
-                        placeholder="0x..."
-                        value={contractAddress}
-                        onChange={(e) => setContractAddress(e.target.value)}
-                    />
-                </Column>
-                <Column css={{ gap: '$2' }}>
-                    <Tooltip content="The ABI (Application Binary Interface) defines the interface for interacting with the smart contract. It specifies the functions, their parameters, and the expected return values. This information is crucial for encoding the function calls correctly.  (e.g. function transfer(address to, uint256 amount))">
-                        <Text variant="caption">ABI</Text>
-                    </Tooltip>
-                    <StyledTextArea
-                        value={abiString}
-                        onChange={(e) => setAbiString(e.target.value)}
-                    />
-                </Column>
+                    {encodingError && (
+                        <Text color="error" variant="caption">{encodingError}</Text>
+                    )}
 
-                {functions.length > 0 && (
-                    <Column css={{ gap: '$2' }}>
-                        <Text variant="caption">Select Function</Text>
-                        <select
-                            value={selectedFunctionName}
-                            onChange={handleFunctionChange}
-                            style={{ backgroundColor: '#1a1b1f', color: 'white', padding: '8px', borderRadius: '4px', border: '1px solid #353846' }}
-                        >
-                            {functions.map(f => <option key={f.name} value={f.name}>{f.name}</option>)}
-                        </select>
-
-                        {selectedFunction?.inputs.map((input, i) => (
-                            <Column key={i} css={{ gap: '$1' }}>
-                                <Text variant="caption">{input.name || `Arg ${i}`} ({input.type})</Text>
-                                <StyledInput
-                                    value={args[i] || ''}
-                                    onChange={(e) => handleArgChange(i, e.target.value)}
-                                    placeholder={input.type}
-                                />
-                            </Column>
-                        ))}
-                    </Column>
-                )}
-
-                {encodingError && (
-                    <Text color="error" variant="caption">{encodingError}</Text>
-                )}
-
-                <Button
-                    variant="primary"
-                    onClick={generateMessage}
-                    disabled={!contractAddress || !selectedFunctionName || !evmAddress}
-                >
-                    Generate Union Call
-                </Button>
+                    <Button
+                        variant="primary"
+                        onClick={generateMessage}
+                        disabled={!contractAddress || !selectedFunctionName || !evmAddress || isLocked}
+                    >
+                        {isLocked ? 'Generated' : 'Generate Union Call'}
+                    </Button>
+                </div>
             </Column>
         </Card>
     )

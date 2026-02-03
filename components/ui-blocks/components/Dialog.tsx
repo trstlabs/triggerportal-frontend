@@ -43,7 +43,7 @@ const StyledContent = styled(DialogPrimitive.Content, {
     maxWidth: '500px',
     maxHeight: '85vh',
     overflowY: 'auto',
-    padding: '$4',
+    padding: '$6',
     zIndex: 1001,
     transition: 'background-color 200ms ease, border-color 200ms ease',
     '@media (prefers-reduced-motion: no-preference)': {

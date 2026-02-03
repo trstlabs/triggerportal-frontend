@@ -205,12 +205,12 @@ export const BuildComponent = ({
 
   //////////////////////////////////////// Flow message data \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
   const handleChangeMsg = (index: number) => (msg: string) => {
-    flowInput.label = ""
     const newMsgs = [...flowInput.msgs];
     newMsgs[index] = msg;
     const updatedFlowInput = {
       ...flowInput,
       msgs: newMsgs,
+      label: universalId ? `${universalId} via Union` : ""
     };
     onFlowChange(updatedFlowInput);
   };
@@ -230,7 +230,8 @@ export const BuildComponent = ({
       ...flowInput,
       connectionId,
       hostConnectionId,
-      msgs: [...flowInput.msgs]
+      msgs: [...flowInput.msgs],
+      label: universalId ? `${universalId} via Union` : flowInput.label
     };
 
     const isIntoChain = newChainId === process.env.NEXT_PUBLIC_INTO_CHAIN_ID;
