@@ -37,7 +37,7 @@ export const ChainSelector = forwardRef<HTMLDivElement, ChainSelectorProps>((
   useEffect(() => {
     if (initialChainId && !selectedChain.logoURI && icaAssetList.length > 0) {
       const matchingChain = icaAssetList.find(
-        chain => chain.chain_id === initialChainId
+        chain => chain.chain_id === initialChainId || chain.universal_id === initialChainId
       )
 
       if (matchingChain) {
@@ -51,6 +51,7 @@ export const ChainSelector = forwardRef<HTMLDivElement, ChainSelectorProps>((
         chainInfo.symbol = matchingChain.symbol
         chainInfo.prefix = matchingChain.prefix
         chainInfo.trstDenom = matchingChain.denom_local || ''
+        chainInfo.universalId = matchingChain.universal_id || ''
 
         setSelectedChain(chainInfo)
         onChange(chainInfo)

@@ -71,27 +71,46 @@ export const BuildWrapper = ({
   // Handle URL parameters in a separate effect
   useEffect(() => {
     if (!router.isReady) return;
-    const { flowInput, initialChainId } = router.query;
-    if (!flowInput || typeof flowInput !== 'string') return;
+    const { flowInput, initialChainId, chainId } = router.query;
+    console.log('BuildWrapper: URL Params', { flowInput, initialChainId, chainId });
 
-    try {
-      const parsed = JSON.parse(flowInput);
 
+    // If we have flowInput, parse it
+    if (flowInput && typeof flowInput === 'string') {
+      try {
+        const parsed = JSON.parse(flowInput);
+        setFlowInputs(prev => {
+          const current = prev[0];
+          if (JSON.stringify(parsed) === JSON.stringify(current)) return prev;
+
+          const targetChainId = (chainId as string) || (initialChainId as string) || parsed.chainId;
+
+          const updatedFlow = {
+            ...parsed,
+            trustlessAgent: parsed.trustlessAgent || {},
+            label: parsed.label || "",
+            chainId: targetChainId,
+          };
+
+          return [processFlowInput(updatedFlow, !chainId && !initialChainId)];
+        });
+      } catch (e) {
+        console.error('Failed to parse flowInput from URL', e);
+      }
+    } else if (chainId || initialChainId) {
+      // Handle case where ONLY chainId is present (no flowInput)
+      const targetChainId = (chainId as string) || (initialChainId as string);
       setFlowInputs(prev => {
         const current = prev[0];
-        if (JSON.stringify(parsed) === JSON.stringify(current)) return prev;
+        if (current.chainId === targetChainId) return prev;
 
+        // Update existing flow with new chainID
         const updatedFlow = {
-          ...parsed,
-          trustlessAgent: parsed.trustlessAgent || {},
-          label: parsed.label || "",
-          chainId: (initialChainId as string) || parsed.chainId,
+          ...current,
+          chainId: targetChainId,
         };
-
-        return [processFlowInput(updatedFlow, !initialChainId)];
+        return [processFlowInput(updatedFlow, false)]; // assuming false for isIntoChain check logic inside processFlowInput relative to just chainId switch
       });
-    } catch (e) {
-      console.error('Failed to parse flowInput from URL', e);
     }
   }, [router.isReady, router.query]);
 

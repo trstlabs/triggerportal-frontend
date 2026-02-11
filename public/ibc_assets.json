@@ -28,8 +28,7 @@
     "decimals": 6,
     "denom_local": "uinto",
     "logo_uri": "https://raw.githubusercontent.com/cosmos/chain-registry/master/intento/images/into.png",
-    "prefix": "into",
-    "rpc": "https://rpc-devnet.intento.zone"
+    "prefix": "into"
   },
   {
     "id": "intento-dev-1",
@@ -38,6 +37,7 @@
     "chain_id": "intento-dev-1",
     "decimals": 6,
     "channel": "2",
+    "channel_to_intento": "3",
     "denom_local": "",
     "logo_uri": "https://avatars.githubusercontent.com/u/108554348?s=200&v=4",
     "connection_id": "",

@@ -1,4 +1,5 @@
-import React, { useState, useEffect, useMemo } from 'react'
+import React, { useState, useEffect, useMemo, useRef } from 'react'
+import { useRouter } from 'next/router'
 import { styled, Text, Column, Inline, Button, Tooltip, Card } from 'components/ui-blocks'
 import { parseAbi, encodeFunctionData, AbiFunction, keccak256, encodeAbiParameters } from 'viem'
 import { Call, Ucs03, Ucs05, Utils, ZkgmInstruction, TokenOrder } from '@unionlabs/sdk'
@@ -8,10 +9,8 @@ import { useChainInfoByChainID } from '../../../../hooks/useChainList'
 import { useAtomValue } from 'jotai'
 import { walletState } from '../../../../state/atoms/walletAtoms'
 import { ChannelId } from '@unionlabs/sdk/schema/channel'
-import { Edit } from 'lucide-react'
-
-
-
+import { Edit, Info } from 'lucide-react'
+import { predictProxyAccount } from './predictUnionProxy'
 
 const StyledTextArea = styled('textarea', {
     width: '100%',
@@ -28,15 +27,14 @@ const StyledTextArea = styled('textarea', {
 const StyledInput = styled('input', {
     width: '100%',
     backgroundColor: '$colors$dark10',
-    color: 'inherit',
+    color: '$colors$dark50',
     padding: '$2',
     borderRadius: '$2',
     border: '1px solid $colors$dark20',
-    fontSize: '14px',
+    fontSize: '12px',
 })
 
 const ZKGM_CONTRACT = "into1sq2ze6rq64jg8fkcedpxukfzw0apkxk8t7x7uhava8w9xfz69uyqcypvhk"
-const PROXY_ADDRESS = "0xB5dAAC9B3ED56656F32cdb516c8afb59bA597EDD" // Hardcoded for now
 
 
 const encodeInstruction: (
@@ -104,6 +102,41 @@ export const predictProxy = Effect.fn(
 )
 
 
+const AddressDisplay = ({ label, address, tooltip }: { label: string, address: string, tooltip: string }) => {
+    const [copied, setCopied] = useState(false)
+
+    const handleCopy = (e: React.MouseEvent) => {
+        e.stopPropagation()
+        navigator.clipboard.writeText(address)
+        setCopied(true)
+        setTimeout(() => setCopied(false), 2000)
+    }
+
+    return (
+        <Column css={{ gap: '$1' }}>
+            <Inline css={{ gap: '$2', alignItems: 'center' }}>
+                <Text variant="caption">{label}</Text>
+                <Tooltip label={tooltip}>
+                    <Info size={14} style={{ color: '#888', cursor: 'help' }} />
+                </Tooltip>
+            </Inline>
+            <Text
+                variant="caption"
+                color="tertiary"
+                css={{
+                    cursor: 'pointer',
+                    '&:hover': { color: '$textColors$primary' },
+                    transition: 'color 0.2s',
+                    wordBreak: 'break-all'
+                }}
+                onClick={handleCopy}
+            >
+                {address} {copied && <span style={{ color: '#4CAF50', marginLeft: '8px' }}>(Copied!)</span>}
+            </Text>
+        </Column>
+    )
+}
+
 export const UnionCallEditor = ({ destinationChainId, onChange, onDiscard }: { destinationChainId: string, onChange: (msg: string) => void, onDiscard: () => void }) => {
     console.log("destinationChainId", destinationChainId)
     const destChainInfo = useChainInfoByChainID(destinationChainId) as any
@@ -111,10 +144,41 @@ export const UnionCallEditor = ({ destinationChainId, onChange, onDiscard }: { d
     const [contractAddress, setContractAddress] = useState('')
     const [abiString, setAbiString] = useState('function transferFrom(address from, address to, uint256 amount) returns (bool)')
     const [selectedFunctionName, setSelectedFunctionName] = useState('')
-    const [args, setArgs] = useState<string[]>([])
+    const [argsState, setArgsState] = useState<string[]>([])
     const [encodingError, setEncodingError] = useState<string | null>(null)
     const { connect } = useChain('intento')
     const [isLocked, setIsLocked] = useState(false)
+    const router = useRouter()
+    const autoGenRef = useRef(false)
+
+    useEffect(() => {
+        if (!router.isReady) return
+        const { target, abi: urlAbi, method, args: urlArgs } = router.query
+
+        if (target && typeof target === 'string' && !contractAddress) {
+            setContractAddress(target)
+        }
+        if (urlAbi && typeof urlAbi === 'string' && urlAbi !== abiString) {
+            setAbiString(urlAbi)
+        }
+        // Method and Args handling
+        if (method && typeof method === 'string' && !selectedFunctionName) {
+            setSelectedFunctionName(method)
+        }
+        if (urlArgs && typeof urlArgs === 'string' && urlArgs.length > 0) {
+            try {
+                const parsedArgs = JSON.parse(urlArgs)
+                if (Array.isArray(parsedArgs)) {
+                    // Start checking if we have populated args (state) yet
+                    if (argsState.length === 0 || (argsState.length > 0 && argsState[0] === ''))
+                        setArgsState(parsedArgs)
+                }
+            } catch (e) {
+                console.error("Failed to parse args from URL", e)
+            }
+        }
+    }, [router.isReady, router.query, contractAddress, abiString, selectedFunctionName, argsState])
+
 
 
     const functions = useMemo(() => {
@@ -126,10 +190,27 @@ export const UnionCallEditor = ({ destinationChainId, onChange, onDiscard }: { d
         }
     }, [abiString])
 
+    const DEPLOYER_ADDRESS = "0x5fbe74a283f7954f10aa04c2edf55578811aeb03"
+
+    const predictedProxy = useMemo(() => {
+        if (!address || !destChainInfo?.channel_to_intento || !DEPLOYER_ADDRESS) return null;
+        try {
+            return predictProxyAccount(
+                0n, // path
+                Number(destChainInfo.channel_to_intento), // channelId
+                address, // sender (bech32)
+                DEPLOYER_ADDRESS // deployer
+            )
+        } catch (e) {
+            console.error("Failed to predict proxy account", e)
+            return null
+        }
+    }, [address, destChainInfo?.channel])
+
     useEffect(() => {
         if (functions.length > 0 && !selectedFunctionName) {
             setSelectedFunctionName(functions[0].name)
-            setArgs(new Array(functions[0].inputs.length).fill(''))
+            setArgsState(new Array(functions[0].inputs.length).fill(''))
         }
     }, [functions, selectedFunctionName])
 
@@ -137,14 +218,14 @@ export const UnionCallEditor = ({ destinationChainId, onChange, onDiscard }: { d
         const func = functions.find(f => f.name === e.target.value)
         setSelectedFunctionName(e.target.value)
         if (func) {
-            setArgs(new Array(func.inputs.length).fill(''))
+            setArgsState(new Array(func.inputs.length).fill(''))
         }
     }
 
     const handleArgChange = (index: number, value: string) => {
-        const newArgs = [...args]
+        const newArgs = [...argsState]
         newArgs[index] = value
-        setArgs(newArgs)
+        setArgsState(newArgs)
     }
 
     const generateMessage = async () => {
@@ -157,8 +238,12 @@ export const UnionCallEditor = ({ destinationChainId, onChange, onDiscard }: { d
                 throw new Error(`Please connect your Ethereum wallet first.`)
             }
 
+            if (!predictedProxy?.address) {
+                throw new Error(`Could not predict proxy address.`)
+            }
+
             // 1. Encode Inner Call Data (User's Logic)
-            const processedArgs = args.map((arg, i) => {
+            const processedArgs = argsState.map((arg, i) => {
                 const type = func.inputs[i].type
                 if (type.includes('int') && !type.includes('[]')) return BigInt(arg)
                 if (type === 'bool') return arg.toLowerCase() === 'true'
@@ -196,7 +281,7 @@ export const UnionCallEditor = ({ destinationChainId, onChange, onDiscard }: { d
                 }),
                 eureka: false,
                 contractAddress: Ucs05.EvmDisplay.make({
-                    address: PROXY_ADDRESS as `0x${string}`, // Proxy Address
+                    address: predictedProxy.address as `0x${string}`, // Proxy Address
                 }),
                 contractCalldata: executeData,
             })
@@ -247,6 +332,34 @@ export const UnionCallEditor = ({ destinationChainId, onChange, onDiscard }: { d
         }
     }
 
+    // Auto-generate effect
+    useEffect(() => {
+        if (!router.isReady) return
+        const { auto } = router.query
+
+        // Check if auto is requested, not locked, not already attempted
+        if (auto === 'true' && !isLocked && !autoGenRef.current) {
+            // Check if all necessary data is present
+            const func = functions.find(f => f.name === selectedFunctionName)
+            const isConnected = !!evmAddress
+            const isProxyReady = !!predictedProxy?.address
+            const isContractReady = !!contractAddress
+
+            if (func && isConnected && isProxyReady && isContractReady) {
+                // Trigger generation
+                // We need to wait a tick? No, state should be consistent.
+                // However, generateMessage is dependent on state values from scope.
+                // Since generateMessage closes over state from render, and this effect runs when dependencies change...
+                // We should ensure generateMessage uses latest state? 
+                // generateMessage uses state variables directly.
+                // So we simply call it.
+                generateMessage()
+                autoGenRef.current = true
+            }
+        }
+    }, [router.isReady, router.query, functions, selectedFunctionName, evmAddress, predictedProxy, contractAddress, isLocked])
+
+
     const selectedFunction = functions.find(f => f.name === selectedFunctionName)
 
     return (
@@ -272,17 +385,26 @@ export const UnionCallEditor = ({ destinationChainId, onChange, onDiscard }: { d
                         </div>
                     )}
                     <Column css={{ gap: '$2', opacity: isLocked ? 0.5 : 1, pointerEvents: isLocked ? 'none' : 'auto', transition: 'opacity 0.2s' }}>
-                        <Text variant="caption">Destination Chain: {destinationChainId} (via Union)</Text>
+                        {/* <Text variant="caption">Destination Chain: {destinationChainId} (via Union)</Text> */}
 
-                        <Text variant="caption">Sender Address (Metamask)</Text>
                         {!evmAddress ? (
                             <Button variant="secondary" size="small" onClick={async () => await connect()}>
                                 {evmAddress ? 'Connected' : 'Connect Ethereum Wallet'}
                             </Button>
                         ) : (
-                            <Text variant="caption" color="tertiary">
-                                Sender: {evmAddress}
-                            </Text>
+                            <AddressDisplay
+                                label="EVM Sender (Metamask)"
+                                address={evmAddress}
+                                tooltip="Your connected Ethereum wallet address that will initiate the transaction."
+                            />
+                        )}
+
+                        {predictedProxy?.address && (
+                            <AddressDisplay
+                                label="Proxy Account"
+                                address={predictedProxy.address}
+                                tooltip="This is the account that will execute the call on the destination chain. Use this address to give allowance/permits for the cross-chain call."
+                            />
                         )}
 
                         <Text variant="caption">Target EVM Contract Address</Text>
@@ -293,9 +415,28 @@ export const UnionCallEditor = ({ destinationChainId, onChange, onDiscard }: { d
                         />
                     </Column>
                     <Column css={{ gap: '$2', opacity: isLocked ? 0.5 : 1, pointerEvents: isLocked ? 'none' : 'auto', transition: 'opacity 0.2s' }}>
-                        <Tooltip content="The ABI (Application Binary Interface) defines the interface for interacting with the smart contract. It specifies the functions, their parameters, and the expected return values. This information is crucial for encoding the function calls correctly.  (e.g. function transfer(address to, uint256 amount))">
-                            <Text variant="caption">ABI</Text>
-                        </Tooltip>
+                        <Inline css={{ justifyContent: 'space-between', alignItems: 'center' }}>
+                            <Inline css={{ gap: '$2', alignItems: 'center' }}>
+                                <Text variant="caption">ABI</Text>
+                                <Tooltip label="The ABI (Application Binary Interface) defines the interface for interacting with the smart contract. It specifies the functions, their parameters, and the expected return values. This information is crucial for encoding the function calls correctly.  (e.g. function transfer(address to, uint256 amount))">
+                                    <Info size={14} style={{ color: '#888', cursor: 'help' }} />
+                                </Tooltip>
+                            </Inline>
+                            <Button
+                                variant="ghost"
+                                size="small"
+                                onClick={async () => {
+                                    try {
+                                        const text = await navigator.clipboard.readText()
+                                        if (text) setAbiString(text)
+                                    } catch (e) {
+                                        console.error('Failed to read clipboard', e)
+                                    }
+                                }}
+                            >
+                                Paste
+                            </Button>
+                        </Inline>
                         <StyledTextArea
                             value={abiString}
                             onChange={(e) => setAbiString(e.target.value)}
@@ -317,7 +458,7 @@ export const UnionCallEditor = ({ destinationChainId, onChange, onDiscard }: { d
                                 <Column key={i} css={{ gap: '$1' }}>
                                     <Text variant="caption">{input.name || `Arg ${i}`} ({input.type})</Text>
                                     <StyledInput
-                                        value={args[i] || ''}
+                                        value={argsState[i] || ''}
                                         onChange={(e) => handleArgChange(i, e.target.value)}
                                         placeholder={input.type}
                                     />
