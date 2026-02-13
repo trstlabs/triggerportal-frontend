@@ -3,6 +3,8 @@ import { FlowInput } from '../../../types/trstTypes';
 import { Button, CopyIcon } from 'components/ui-blocks';
 import { fetchFlowMsgs } from '../../../hooks/useGetMsgsFromAPI';
 import { convertBigIntToString } from '../../../util/conversion';
+import { Ucs03 } from '@unionlabs/sdk';
+import { Schema } from 'effect';
 
 type FlowTransformButtonProps = {
     flow: any
@@ -117,6 +119,43 @@ const cleanMessageObject = (
 
     return result;
 };
+// Helper to prettify decoded Union instructions
+const prettifyUnionInstruction = (instruction: any): any => {
+    if (!instruction || typeof instruction !== 'object') return instruction;
+
+    // Handle Call
+    if (instruction._tag === "@unionlabs/sdk/Ucs03/Call" && Array.isArray(instruction.operand)) {
+        return {
+            type: "Call",
+            sender: instruction.operand[0],
+            eureka: instruction.operand[1],
+            contractAddress: instruction.operand[2],
+            calldata: instruction.operand[3],
+        };
+    }
+
+    // Handle Batch
+    if (instruction._tag === "@unionlabs/sdk/Ucs03/Batch" && Array.isArray(instruction.operand)) {
+        return {
+            type: "Batch",
+            instructions: instruction.operand.map(prettifyUnionInstruction)
+        };
+    }
+
+    // Handle Forward
+    if (instruction._tag === "@unionlabs/sdk/Ucs03/Forward" && Array.isArray(instruction.operand)) {
+        return {
+            type: "Forward",
+            path: instruction.operand[0].toString(),
+            timeoutHeight: instruction.operand[1].toString(),
+            timeoutTimestamp: instruction.operand[2].toString(),
+            instruction: prettifyUnionInstruction(instruction.operand[3])
+        };
+    }
+
+    return instruction;
+};
+
 export async function transformFlowMsgs(flow) {
     let msgs: string[] = [];
 
@@ -136,16 +175,43 @@ export async function transformFlowMsgs(flow) {
 
                     // Handle MsgExecuteContract with base64 encoded msg
                     if (msgObj.typeUrl?.includes("MsgExecuteContract") &&
+                        msgObj.value?.msg) {
+                        try {
+                            // Try to decode Union/ZKGM instruction
+                            if (msgObj.value.msg.send && typeof msgObj.value.msg.send.instruction === 'string') {
+                                try {
+                                    const decodedInstruction = Schema.decodeSync(Ucs03.Ucs03WithInstructionFromHex)(msgObj.value.msg.send.instruction);
+                                    msgObj.value.msg.send.instruction = prettifyUnionInstruction(decodedInstruction);
+                                } catch (e) {
+                                    console.warn("Failed to decode ZKGM instruction:", e);
+                                }
+                            }
+
+                        } catch (e) {
+                            console.warn("Failed to decode MsgExecuteContract msg:", e);
+                        }
+                    } else if (msgObj.typeUrl?.includes("MsgExecuteContract") &&
                         msgObj.msg && typeof msgObj.msg === 'string') {
+                        // Fallback for flat structure if cleanMessageObject didn't nest it under value yet or if structure differs
                         try {
                             const decodedMsg = JSON.parse(
                                 Buffer.from(msgObj.msg, 'base64').toString('utf-8')
                             );
-                            msgObj.msg = cleanMessageObject(decodedMsg);
+
+                            if (decodedMsg.send && typeof decodedMsg.send.instruction === 'string') {
+                                try {
+                                    const decodedInstruction = Schema.decodeSync(Ucs03.Ucs03WithInstructionFromHex)(decodedMsg.send.instruction);
+                                    decodedMsg.send.instruction = prettifyUnionInstruction(decodedInstruction);
+                                } catch (e) {
+                                    console.warn("Failed to decode ZKGM instruction:", e);
+                                }
+                            }
+                            msgObj.msg = decodedMsg;
                         } catch (e) {
                             console.warn("Failed to decode MsgExecuteContract msg:", e);
                         }
                     }
+
 
                     // Handle nested msgs array (common in MsgExec)
                     if (Array.isArray(msgObj.msgs)) {
