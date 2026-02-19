@@ -12,7 +12,7 @@ import { EthereumWallet } from '@interchain-kit/core'
 export const useAfterConnectWallet = (
   mutationOptions?: UseMutationOptions<void, unknown, void, unknown>,
 ) => {
-  let { connect, wallet, address, username, status: walletStatus } =
+  let { wallet, address, username, status: walletStatus } =
     useChain(process.env.NEXT_PUBLIC_INTO_REGISTRY_NAME)
 
   const [{ status }, setWalletState] = useAtom(walletState)
