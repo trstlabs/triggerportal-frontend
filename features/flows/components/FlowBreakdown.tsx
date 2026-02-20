@@ -1290,7 +1290,7 @@ export const FlowBreakdown = ({
         />
         }
 
-        {flow.label.toLowerCase().includes("Union") ? (
+        {flow.label.toLowerCase().includes("union") ? (
           <UnionFlowHistory
             rpc={ibcInfo?.rpc || process.env.NEXT_PUBLIC_INTO_RPC}
             id={flow.id.toString()}
